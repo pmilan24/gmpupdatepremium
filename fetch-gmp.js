@@ -124,15 +124,17 @@ function parseMarkdownTable(markdown) {
 }
 
 async function fetchFromWeb() {
-  console.log('Fetching live data from:', JINA_URL);
-  const response = await fetch(JINA_URL, {
+  const cacheBustUrl = `https://r.jina.ai/https://www.ipopremium.in?t=${Date.now()}`;
+  console.log('Fetching live data from:', cacheBustUrl);
+  const response = await fetch(cacheBustUrl, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      'Accept': 'text/plain',
+      'x-no-cache': 'true'
     }
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch from ${JINA_URL}: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch from ${cacheBustUrl}: ${response.status} ${response.statusText}`);
   }
 
   const markdown = await response.text();
@@ -141,15 +143,7 @@ async function fetchFromWeb() {
 
 async function main() {
   try {
-    let data;
-    const samplePath = '/tmp/ipopremium_sample.md';
-    if (fs.existsSync(samplePath)) {
-      console.log('Using local cached sample to test parser...');
-      const sample = fs.readFileSync(samplePath, 'utf-8');
-      data = parseMarkdownTable(sample);
-    } else {
-      data = await fetchFromWeb();
-    }
+    const data = await fetchFromWeb();
 
     console.log(`Successfully parsed ${data.length} IPOs!`);
     console.log('Sample item:', JSON.stringify(data[0], null, 2));

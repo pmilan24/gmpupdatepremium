@@ -224,12 +224,22 @@
     let fetchSource = '';
 
     try {
-      // 1. Try Live Proxy
+      // 1. Try Live Proxy with cache-busting
       try {
-        const response = await fetch(PRIMARY_URL, {
+        const liveUrl = `${PRIMARY_URL}?t=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const response = await fetch(liveUrl, {
           cache: 'no-cache',
-          headers: { 'Accept': 'text/plain, text/markdown, */*' }
+          signal: controller.signal,
+          headers: {
+            'Accept': 'text/plain',
+            'x-no-cache': 'true'
+          }
         });
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const text = await response.text();
           const parsed = parseMarkdown(text);
@@ -244,7 +254,7 @@
 
       // 2. Fallback to data.json
       if (!rawData || rawData.length === 0) {
-        const fallbackRes = await fetch(FALLBACK_URL + '?t=' + Date.now());
+        const fallbackRes = await fetch(FALLBACK_URL + '?t=' + Date.now(), { cache: 'no-cache' });
         if (fallbackRes.ok) {
           const json = await fallbackRes.json();
           rawData = json.ipos || json;
