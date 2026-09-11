@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPO Premium – Live GMP Rumors Tracker</title>
+  <meta name="description" content="Live Grey Market Premium (GMP) tracker for Indian IPOs from ipopremium.in with real-time auto-refresh, historical comparison, and change highlights.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="container header-content">
+      <div class="logo-section">
+        <div class="logo-badge">₹</div>
+        <div class="title-group">
+          <h1>
+            IPO Premium GMP Tracker
+            <span class="live-pill">LIVE</span>
+          </h1>
+          <p>
+            Tracking Grey Market Premium from <a href="https://www.ipopremium.in" target="_blank" rel="noopener noreferrer">ipopremium.in</a> · 
+            <span id="lastUpdatedText">Connecting...</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Auto Refresh Countdown Box -->
+        <div class="timer-box" title="Auto-refresh timer">
+          <span>Auto-refresh:</span>
+          <strong id="countdownText">3:00</strong>
+          <div class="countdown-bar">
+            <div id="countdownFill" class="countdown-fill"></div>
+          </div>
+          <select id="intervalSelect" class="sort-select" style="padding: 2px 6px; font-size: 0.78rem;">
+            <option value="60">1 min</option>
+            <option value="180" selected>3 min</option>
+            <option value="300">5 min</option>
+            <option value="600">10 min</option>
+          </select>
+        </div>
+
+        <!-- Refresh Button -->
+        <button id="refreshBtn" class="btn btn-primary" title="Refresh data now">
+          <span id="refreshIcon">🔄</span> Refresh
+        </button>
+
+        <!-- Sound Notification Toggle -->
+        <button id="soundToggleBtn" class="btn btn-outline" title="Sound alerts">
+          <span id="soundIcon">🔔</span>
+        </button>
+
+        <!-- Simulate Change Button for Instant Testing -->
+        <button id="simulateBtn" class="btn btn-outline btn-sm" title="Simulate a GMP change to test highlight & click-to-clear">
+          ⚡ Test Change
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Quick Statistics Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total IPOs Tracked</span>
+        <span id="statTotal" class="stat-val">—</span>
+        <span class="stat-sub">Mainboard & SME</span>
+      </div>
+
+      <div id="cardChangedStat" class="stat-card highlight-card" title="Click to view changed IPOs">
+        <span class="stat-label">Changed GMPs</span>
+        <span id="statChanged" class="stat-val">0</span>
+        <span class="stat-sub">Click to filter changed</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Active with Premium</span>
+        <span id="statActive" class="stat-val">—</span>
+        <span class="stat-sub">GMP > ₹0</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Highest GMP</span>
+        <span id="statTopGmp" class="stat-val">—</span>
+        <span class="stat-sub">Top expected listing gain</span>
+      </div>
+    </div>
+
+    <!-- Alert Banner (shown only when changes occur) -->
+    <div id="alertBanner" class="alert-banner" style="display: none;">
+      <div class="alert-banner-text">
+        <span>⚡ <strong><span id="alertBannerCount">0</span> IPO(s)</strong> have updated GMP values! Highlighted on the right side.</span>
+      </div>
+      <button id="markAllReadBtn" class="btn btn-outline btn-sm">
+        Mark All Read ✓
+      </button>
+    </div>
+
+    <!-- Control Bar: Search, Filters & Sorting -->
+    <div class="control-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search company name, type, or price...">
+      </div>
+
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all">All IPOs</button>
+        <button class="chip" data-filter="changed">🔥 Changed GMP (0)</button>
+        <button class="chip" data-filter="mainboard">Mainboard</button>
+        <button class="chip" data-filter="sme">SME</button>
+        <button class="chip" data-filter="active">Active GMP</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Sort:</span>
+        <select id="sortSelect" class="sort-select">
+          <option value="default">Default (Order)</option>
+          <option value="gmp-desc">GMP (High to Low)</option>
+          <option value="gmp-asc">GMP (Low to High)</option>
+          <option value="profit-desc">Est. Profit (High to Low)</option>
+          <option value="name-asc">Company Name (A–Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Main IPO Table -->
+    <div class="table-container">
+      <table class="ipo-table">
+        <thead>
+          <tr>
+            <th>Company Name</th>
+            <th>GMP Rumors *</th>
+            <th>Price Band</th>
+            <th>Lot Size</th>
+            <th>Est. Profit / Lot</th>
+            <th style="text-align: right;">Status / Highlight</th>
+          </tr>
+        </thead>
+        <tbody id="ipoTableBody">
+          <tr>
+            <td colspan="6">
+              <div class="loading-box">
+                <div class="loading-spinner"></div>
+                <p>Loading live GMP values from ipopremium.in...</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="app-footer container">
+    <p>
+      Data sourced from <a href="https://www.ipopremium.in" target="_blank" rel="noopener noreferrer">ipopremium.in</a> for educational purposes.
+      Grey Market Premium (GMP) values are unofficial estimates. Not SEBI registered investment advice.
+    </p>
+    <p style="margin-top: 6px; font-size: 0.75rem; color: #6b7280;">
+      Runs directly in your browser without any server · Auto-refreshes every 3–5 minutes · Hostable on GitHub Pages
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
