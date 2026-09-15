@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-15T05:02:18.104Z",
+  "lastUpdated": "2026-09-15T09:58:20.998Z",
   "source": "https://www.ipopremium.in",
   "count": 50,
   "ipos": [
@@ -21,7 +21,7 @@
       "listingDate": "Oct 1, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1360/a-one-steels-india-ltd",
-      "updatedAt": "2026-09-15T05:02:18.103Z"
+      "updatedAt": "2026-09-15T09:58:20.997Z"
     },
     {
       "id": "s-k-offset-ltd--bse-sme-",
@@ -41,7 +41,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1364/skoffset-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.997Z"
     },
     {
       "id": "fx-multitech-ltd--bse-sme-",
@@ -61,16 +61,16 @@
       "listingDate": "Sep 28, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1365/fx-multitech-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.997Z"
     },
     {
       "id": "robokidz-eduventures-ltd--bse-sme-",
       "fullName": "Robokidz Eduventures Ltd (BSE SME)",
       "displayName": "Robokidz Eduventures Ltd",
       "type": "SME",
-      "gmp": 45,
-      "gmpPercent": "+42.5%",
-      "rawGmp": "45 (42.5%)",
+      "gmp": 15,
+      "gmpPercent": "+14.2%",
+      "rawGmp": "15 (14.2%)",
       "openDate": "Sep 21, 2026",
       "closeDate": "Sep 23, 2026",
       "priceBand": "100-106",
@@ -79,9 +79,9 @@
       "issueSize": "31.08",
       "allotmentDate": "Sep 24, 2026",
       "listingDate": "Sep 28, 2026",
-      "estimatedProfit": 54000,
+      "estimatedProfit": 18000,
       "url": "https://www.ipopremium.in/view/ipo/1363/robokidz-eduventures-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "axiom-gas-engineering-ltd--nse-sme-",
@@ -101,16 +101,16 @@
       "listingDate": "Sep 25, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1350/axiom-gas-engineering-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "national-stock-exchange-of-india-ltd--mainboard-",
       "fullName": "National Stock Exchange of India Ltd (MAINBOARD)",
       "displayName": "National Stock Exchange of India Ltd",
       "type": "Mainboard",
-      "gmp": 200,
-      "gmpPercent": "+11.2%",
-      "rawGmp": "200 (11.2%)",
+      "gmp": 179,
+      "gmpPercent": "+10.0%",
+      "rawGmp": "179 (10.0%)",
       "openDate": "Sep 17, 2026",
       "closeDate": "Sep 21, 2026",
       "priceBand": "1700-1785",
@@ -119,9 +119,9 @@
       "issueSize": "22561.60",
       "allotmentDate": "Sep 22, 2026",
       "listingDate": "Sep 24, 2026",
-      "estimatedProfit": 1600,
+      "estimatedProfit": 1432,
       "url": "https://www.ipopremium.in/view/ipo/1325/national-stock-exchange-of-india-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "spectraa-technology-ltd---nse-sme--",
@@ -136,21 +136,21 @@
       "priceBand": "112-118",
       "priceUpper": 118,
       "lotSize": 1200,
-      "issueSize": "41.01",
+      "issueSize": "42.52",
       "allotmentDate": "Sep 22, 2026",
       "listingDate": "Sep 24, 2026",
       "estimatedProfit": 60000,
       "url": "https://www.ipopremium.in/view/ipo/1359/spectraa-technology-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "kheria-autocomp-ltd--nse-sme-",
       "fullName": "Kheria Autocomp Ltd (NSE SME)",
       "displayName": "Kheria Autocomp Ltd",
       "type": "SME",
-      "gmp": 0,
-      "gmpPercent": "0%",
-      "rawGmp": "0",
+      "gmp": 10,
+      "gmpPercent": "+9.9%",
+      "rawGmp": "10 (9.9%)",
       "openDate": "Sep 17, 2026",
       "closeDate": "Sep 21, 2026",
       "priceBand": "96-101",
@@ -159,18 +159,18 @@
       "issueSize": "46.44",
       "allotmentDate": "Sep 22, 2026",
       "listingDate": "Sep 24, 2026",
-      "estimatedProfit": 0,
+      "estimatedProfit": 12000,
       "url": "https://www.ipopremium.in/view/ipo/1357/kheria-autocomp-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "sona-selection-india-ltd--mainboard-",
       "fullName": "Sona Selection India Ltd (MAINBOARD)",
       "displayName": "Sona Selection India Ltd",
       "type": "Mainboard",
-      "gmp": 0,
-      "gmpPercent": "0%",
-      "rawGmp": "0",
+      "gmp": 5,
+      "gmpPercent": "+5.1%",
+      "rawGmp": "5 (5.1%)",
       "openDate": "Sep 17, 2026",
       "closeDate": "Sep 21, 2026",
       "priceBand": "94-99",
@@ -179,18 +179,18 @@
       "issueSize": "141.57",
       "allotmentDate": "Sep 22, 2026",
       "listingDate": "Sep 24, 2026",
-      "estimatedProfit": 0,
+      "estimatedProfit": 750,
       "url": "https://www.ipopremium.in/view/ipo/1353/sona-selection-india-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "hero-motors-ltd--mainboard-",
       "fullName": "Hero Motors Ltd (MAINBOARD)",
       "displayName": "Hero Motors Ltd",
       "type": "Mainboard",
-      "gmp": 20,
-      "gmpPercent": "+23.8%",
-      "rawGmp": "20 (23.8%)",
+      "gmp": 22,
+      "gmpPercent": "+26.2%",
+      "rawGmp": "22 (26.2%)",
       "openDate": "Sep 16, 2026",
       "closeDate": "Sep 18, 2026",
       "priceBand": "79-84",
@@ -199,9 +199,9 @@
       "issueSize": "1000.00",
       "allotmentDate": "Sep 21, 2026",
       "listingDate": "Sep 23, 2026",
-      "estimatedProfit": 3560,
+      "estimatedProfit": 3916,
       "url": "https://www.ipopremium.in/view/ipo/1347/hero-motors-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "ss-retail-ltd---mainboard-",
@@ -221,7 +221,7 @@
       "listingDate": "Sep 23, 2026",
       "estimatedProfit": 5075,
       "url": "https://www.ipopremium.in/view/ipo/1354/ss-retail-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "jindal-supreme--india--ltd---mainboard-",
@@ -241,7 +241,7 @@
       "listingDate": "Sep 23, 2026",
       "estimatedProfit": 4347,
       "url": "https://www.ipopremium.in/view/ipo/1349/jindal-supreme",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "shakti-polytarp-ltd---bse-sme-",
@@ -261,7 +261,7 @@
       "listingDate": "Sep 22, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1351/shakti-polytarp-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "vama-wovenfab-ltd---bse-sme-",
@@ -281,7 +281,7 @@
       "listingDate": "Sep 22, 2026",
       "estimatedProfit": 4000,
       "url": "https://www.ipopremium.in/view/ipo/1356/vama-wovenfab-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "quanto-agroworld-ltd--bse-sme-",
@@ -301,7 +301,7 @@
       "listingDate": "Sep 22, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1352/quanto-agroworld-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "century-business-media-ltd--bse-sme-",
@@ -321,7 +321,7 @@
       "listingDate": "Sep 21, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1344/century-business-media-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "injecto-polymers-ltd---bse-sme-",
@@ -341,16 +341,16 @@
       "listingDate": "Sep 21, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1348/injecto-polymers-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "manika-plastech-ltd---mainboard-",
       "fullName": "Manika Plastech Ltd. (Mainboard)",
       "displayName": "Manika Plastech Ltd.",
       "type": "Mainboard",
-      "gmp": 7,
-      "gmpPercent": "+16.3%",
-      "rawGmp": "7 (16.3%)",
+      "gmp": 4,
+      "gmpPercent": "+9.3%",
+      "rawGmp": "4 (9.3%)",
       "openDate": "Sep 11, 2026",
       "closeDate": "Sep 16, 2026",
       "priceBand": "40-43",
@@ -359,18 +359,18 @@
       "issueSize": "125.50",
       "allotmentDate": "Sep 17, 2026",
       "listingDate": "Sep 21, 2026",
-      "estimatedProfit": 2436,
+      "estimatedProfit": 1392,
       "url": "https://www.ipopremium.in/view/ipo/1341/manika-plastech-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "raksan-transformers-ltd--bse-sme-",
       "fullName": "Raksan Transformers Ltd (BSE SME)",
       "displayName": "Raksan Transformers Ltd",
       "type": "SME",
-      "gmp": 61,
-      "gmpPercent": "+22.3%",
-      "rawGmp": "61 (22.3%)",
+      "gmp": 50,
+      "gmpPercent": "+18.3%",
+      "rawGmp": "50 (18.3%)",
       "openDate": "Sep 10, 2026",
       "closeDate": "Sep 15, 2026",
       "priceBand": "258-273",
@@ -379,9 +379,9 @@
       "issueSize": "150.49",
       "allotmentDate": "Sep 16, 2026",
       "listingDate": "Sep 18, 2026",
-      "estimatedProfit": 24400,
+      "estimatedProfit": 20000,
       "url": "https://www.ipopremium.in/view/ipo/1245/raksan-transformers-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "om-galaxy-ltd--bse-sme-",
@@ -401,16 +401,16 @@
       "listingDate": "Sep 18, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1342/om-galaxy-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "panchatv-bharat-ltd---bse-sme-",
       "fullName": "Panchatv Bharat Ltd. (BSE SME)",
       "displayName": "Panchatv Bharat Ltd.",
       "type": "SME",
-      "gmp": 21,
-      "gmpPercent": "+15.0%",
-      "rawGmp": "21 (15.0%)",
+      "gmp": 3,
+      "gmpPercent": "+2.1%",
+      "rawGmp": "3 (2.1%)",
       "openDate": "Sep 10, 2026",
       "closeDate": "Sep 15, 2026",
       "priceBand": "140-140",
@@ -419,18 +419,18 @@
       "issueSize": "24.59",
       "allotmentDate": "Sep 16, 2026",
       "listingDate": "Sep 18, 2026",
-      "estimatedProfit": 21000,
+      "estimatedProfit": 3000,
       "url": "https://www.ipopremium.in/view/ipo/1345/panchatv-bharat-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "maharaja---speedex-india-ltd--bse-sme-",
       "fullName": "Maharaja & Speedex India Ltd (BSE SME)",
       "displayName": "Maharaja & Speedex India Ltd",
       "type": "SME",
-      "gmp": 40,
-      "gmpPercent": "+21.5%",
-      "rawGmp": "40 (21.5%)",
+      "gmp": 23,
+      "gmpPercent": "+12.4%",
+      "rawGmp": "23 (12.4%)",
       "openDate": "Sep 10, 2026",
       "closeDate": "Sep 15, 2026",
       "priceBand": "177-186",
@@ -439,18 +439,18 @@
       "issueSize": "80.12",
       "allotmentDate": "Sep 16, 2026",
       "listingDate": "Sep 18, 2026",
-      "estimatedProfit": 24000,
+      "estimatedProfit": 13800,
       "url": "https://www.ipopremium.in/view/ipo/1340/maharaja-speedex-india-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "veegaland-developers-ltd--mainboard-",
       "fullName": "Veegaland Developers Ltd (MAINBOARD)",
       "displayName": "Veegaland Developers Ltd",
       "type": "Mainboard",
-      "gmp": 17,
-      "gmpPercent": "+12.1%",
-      "rawGmp": "17 (12.1%)",
+      "gmp": 7,
+      "gmpPercent": "+5.0%",
+      "rawGmp": "7 (5.0%)",
       "openDate": "Sep 10, 2026",
       "closeDate": "Sep 15, 2026",
       "priceBand": "130-140",
@@ -459,9 +459,9 @@
       "issueSize": "210.00",
       "allotmentDate": "Sep 16, 2026",
       "listingDate": "Sep 18, 2026",
-      "estimatedProfit": 1819,
+      "estimatedProfit": 749,
       "url": "https://www.ipopremium.in/view/ipo/1326/veegaland-developers-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "amtech-esters-ltd---bse-sme-",
@@ -481,16 +481,16 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 11200,
       "url": "https://www.ipopremium.in/view/ipo/1332/amtech-esters-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "lcc-projects-ltd---mainboard-",
       "fullName": "LCC Projects Ltd. (Mainboard)",
       "displayName": "LCC Projects Ltd.",
       "type": "Mainboard",
-      "gmp": 63,
-      "gmpPercent": "+43.2%",
-      "rawGmp": "63 (43.2%)",
+      "gmp": 54,
+      "gmpPercent": "+37.0%",
+      "rawGmp": "54 (37.0%)",
       "openDate": "Sep 9, 2026",
       "closeDate": "Sep 11, 2026",
       "priceBand": "139-146",
@@ -499,18 +499,18 @@
       "issueSize": "427.14",
       "allotmentDate": "Sep 15, 2026",
       "listingDate": "Sep 17, 2026",
-      "estimatedProfit": 6426,
+      "estimatedProfit": 5508,
       "url": "https://www.ipopremium.in/view/ipo/1333/lcc-projects-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "asset-reconstruction-company--india--limited--mainboard-",
       "fullName": "Asset Reconstruction Company (India) Limited (MAINBOARD)",
       "displayName": "Asset Reconstruction Company (India) Limited",
       "type": "Mainboard",
-      "gmp": 16,
+      "gmp": 15,
       "gmpPercent": "0%",
-      "rawGmp": "16.5 (11.9%)",
+      "rawGmp": "15.5 (11.2%)",
       "openDate": "Sep 9, 2026",
       "closeDate": "Sep 11, 2026",
       "priceBand": "132-139",
@@ -519,18 +519,18 @@
       "issueSize": "732.97",
       "allotmentDate": "Sep 15, 2026",
       "listingDate": "Sep 17, 2026",
-      "estimatedProfit": 1712,
+      "estimatedProfit": 1605,
       "url": "https://www.ipopremium.in/view/ipo/1331/asset-reconstruction-company",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "manipal-payment---identity-solutions-ltd---mainboard-",
       "fullName": "Manipal Payment & Identity Solutions Ltd. (Mainboard)",
       "displayName": "Manipal Payment & Identity Solutions Ltd.",
       "type": "Mainboard",
-      "gmp": 1,
-      "gmpPercent": "+0.3%",
-      "rawGmp": "1 (0.3%)",
+      "gmp": -10,
+      "gmpPercent": "0%",
+      "rawGmp": "-10",
       "openDate": "Sep 9, 2026",
       "closeDate": "Sep 11, 2026",
       "priceBand": "322-339",
@@ -539,18 +539,18 @@
       "issueSize": "805.00",
       "allotmentDate": "Sep 15, 2026",
       "listingDate": "Sep 17, 2026",
-      "estimatedProfit": 44,
+      "estimatedProfit": -440,
       "url": "https://www.ipopremium.in/view/ipo/1328/manipal-payment-identity-solutions-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "steamhouse-india-ltd---mainboard-",
       "fullName": "Steamhouse India Ltd. (Mainboard)",
       "displayName": "Steamhouse India Ltd.",
       "type": "Mainboard",
-      "gmp": 24,
-      "gmpPercent": "+29.6%",
-      "rawGmp": "24 (29.6%)",
+      "gmp": 23,
+      "gmpPercent": "+28.4%",
+      "rawGmp": "23 (28.4%)",
       "openDate": "Sep 9, 2026",
       "closeDate": "Sep 11, 2026",
       "priceBand": "77-81",
@@ -559,18 +559,18 @@
       "issueSize": "414.00",
       "allotmentDate": "Sep 15, 2026",
       "listingDate": "Sep 17, 2026",
-      "estimatedProfit": 4440,
+      "estimatedProfit": 4255,
       "url": "https://www.ipopremium.in/view/ipo/1337/steamhouse-india-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "rentomojo-ltd---mainboard-",
       "fullName": "Rentomojo Ltd. (Mainboard)",
       "displayName": "Rentomojo Ltd.",
       "type": "Mainboard",
-      "gmp": 158,
-      "gmpPercent": "+39.1%",
-      "rawGmp": "158 (39.1%)",
+      "gmp": 142,
+      "gmpPercent": "+35.1%",
+      "rawGmp": "142 (35.1%)",
       "openDate": "Sep 9, 2026",
       "closeDate": "Sep 11, 2026",
       "priceBand": "384-404",
@@ -579,9 +579,9 @@
       "issueSize": "1255.57",
       "allotmentDate": "Sep 15, 2026",
       "listingDate": "Sep 17, 2026",
-      "estimatedProfit": 5846,
+      "estimatedProfit": 5254,
       "url": "https://www.ipopremium.in/view/ipo/1327/rentomojo-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "infrax-renewable-ltd--bse-sme-",
@@ -601,7 +601,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1339/infrax-renewable-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "vinod-texworld-ltd---nse-sme-",
@@ -621,16 +621,16 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 1200,
       "url": "https://www.ipopremium.in/view/ipo/1338/vinod-texworld-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "karamtara-engineering-ltd--mainboard-",
       "fullName": "Karamtara Engineering Ltd (MAINBOARD)",
       "displayName": "Karamtara Engineering Ltd",
       "type": "Mainboard",
-      "gmp": 71,
-      "gmpPercent": "+28.0%",
-      "rawGmp": "71 (28.0%)",
+      "gmp": 65,
+      "gmpPercent": "+25.6%",
+      "rawGmp": "65 (25.6%)",
       "openDate": "Sep 9, 2026",
       "closeDate": "Sep 11, 2026",
       "priceBand": "241-254",
@@ -639,18 +639,18 @@
       "issueSize": "875.00",
       "allotmentDate": "Sep 15, 2026",
       "listingDate": "Sep 17, 2026",
-      "estimatedProfit": 4189,
+      "estimatedProfit": 3835,
       "url": "https://www.ipopremium.in/view/ipo/1107/karamtara-engineering-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "glass-wall-systems--india--ltd--mainboard-",
       "fullName": "Glass Wall Systems (India) Ltd (MAINBOARD)",
       "displayName": "Glass Wall Systems (India) Ltd",
       "type": "Mainboard",
-      "gmp": 52,
-      "gmpPercent": "0%",
-      "rawGmp": "52.5 (28.8%)",
+      "gmp": 41,
+      "gmpPercent": "+22.5%",
+      "rawGmp": "41 (22.5%)",
       "openDate": "Sep 8, 2026",
       "closeDate": "Sep 10, 2026",
       "priceBand": "172-182",
@@ -659,9 +659,9 @@
       "issueSize": "427.89",
       "allotmentDate": "Sep 11, 2026",
       "listingDate": "Sep 16, 2026",
-      "estimatedProfit": 4264,
+      "estimatedProfit": 3362,
       "url": "https://www.ipopremium.in/view/ipo/1334/glass-wall-systems",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "prasol-chemicals-ltd---mainboard-",
@@ -681,16 +681,16 @@
       "listingDate": "Sep 16, 2026",
       "estimatedProfit": -286,
       "url": "https://www.ipopremium.in/view/ipo/1336/prasol-chemicals-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "kanohar-electricals-ltd--mainboard-",
       "fullName": "Kanohar Electricals Ltd (MAINBOARD)",
       "displayName": "Kanohar Electricals Ltd",
       "type": "Mainboard",
-      "gmp": 225,
-      "gmpPercent": "+35.6%",
-      "rawGmp": "225 (35.6%)",
+      "gmp": 209,
+      "gmpPercent": "+33.1%",
+      "rawGmp": "209 (33.1%)",
       "openDate": "Sep 8, 2026",
       "closeDate": "Sep 10, 2026",
       "priceBand": "601-632",
@@ -699,9 +699,9 @@
       "issueSize": "1055.74",
       "allotmentDate": "Sep 11, 2026",
       "listingDate": "Sep 16, 2026",
-      "estimatedProfit": 5175,
+      "estimatedProfit": 4807,
       "url": "https://www.ipopremium.in/view/ipo/1330/kanohar-electricals-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "pranav-constructions-ltd---mainboard-",
@@ -721,7 +721,7 @@
       "listingDate": "Sep 15, 2026",
       "estimatedProfit": 6360,
       "url": "https://www.ipopremium.in/view/ipo/1329/pranav-constructions-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "apana-logistics-ltd--bse-sme-",
@@ -741,7 +741,7 @@
       "listingDate": "Sep 15, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1335/apana-logistics-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "qualiance-international-ltd---nse-sme-",
@@ -761,7 +761,7 @@
       "listingDate": "Sep 11, 2026",
       "estimatedProfit": 81000,
       "url": "https://www.ipopremium.in/view/ipo/1284/qualiance-international-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "deepa-jewellers--mainboard-",
@@ -781,7 +781,7 @@
       "listingDate": "Sep 8, 2026",
       "estimatedProfit": 2100,
       "url": "https://www.ipopremium.in/view/ipo/1321/deepa-jewellers",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "farm-peace-ltd--bse-sme-",
@@ -801,7 +801,7 @@
       "listingDate": "Sep 8, 2026",
       "estimatedProfit": 118000,
       "url": "https://www.ipopremium.in/view/ipo/1322/farm-peace-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "fly-hi-maritime-travels-ltd--bse-sme-",
@@ -821,7 +821,7 @@
       "listingDate": "Sep 8, 2026",
       "estimatedProfit": 1200,
       "url": "https://www.ipopremium.in/view/ipo/1323/fly-hi-maritime-travels-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "rays-of-belief-ltd---mainboard-",
@@ -841,7 +841,7 @@
       "listingDate": "Sep 8, 2026",
       "estimatedProfit": 930,
       "url": "https://www.ipopremium.in/view/ipo/1313/rays-of-belief-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "purple-style-labs-ltd---mainboard-",
@@ -861,7 +861,7 @@
       "listingDate": "Sep 7, 2026",
       "estimatedProfit": -260,
       "url": "https://www.ipopremium.in/view/ipo/1319/purple-style-labs-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "shanti-inorganics-ltd--nse-sme-",
@@ -881,7 +881,7 @@
       "listingDate": "Sep 7, 2026",
       "estimatedProfit": 88000,
       "url": "https://www.ipopremium.in/view/ipo/1317/shanti-inorganics-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "phychem-technologies-ltd---bse-sme-",
@@ -901,7 +901,7 @@
       "listingDate": "Sep 7, 2026",
       "estimatedProfit": 2000,
       "url": "https://www.ipopremium.in/view/ipo/1282/phychem-technologies-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "ashutosh-fibre-ltd---nse-sme-",
@@ -921,7 +921,7 @@
       "listingDate": "Sep 7, 2026",
       "estimatedProfit": 67200,
       "url": "https://www.ipopremium.in/view/ipo/1320/ashutosh-fibre-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "priority-jewels-ltd--mainboard-",
@@ -941,7 +941,7 @@
       "listingDate": "Sep 4, 2026",
       "estimatedProfit": 2100,
       "url": "https://www.ipopremium.in/view/ipo/1315/priority-jewels-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "complete-sports---management-india-ltd--bse-sme-",
@@ -961,7 +961,7 @@
       "listingDate": "Sep 4, 2026",
       "estimatedProfit": 0,
       "url": "https://www.ipopremium.in/view/ipo/1314/complete-sports-management-india-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "paluck-technologies-ltd---bse-sme-",
@@ -981,7 +981,7 @@
       "listingDate": "Sep 4, 2026",
       "estimatedProfit": 27000,
       "url": "https://www.ipopremium.in/view/ipo/1316/paluck-technologies-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     },
     {
       "id": "esds-software-solution-ltd--mainboard-",
@@ -1001,7 +1001,7 @@
       "listingDate": "Sep 4, 2026",
       "estimatedProfit": 10574,
       "url": "https://www.ipopremium.in/view/ipo/1318/esds-software-solution-ltd",
-      "updatedAt": "2026-09-15T05:02:18.104Z"
+      "updatedAt": "2026-09-15T09:58:20.998Z"
     }
   ]
 }
