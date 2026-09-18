@@ -62,6 +62,11 @@
     scheduleBadge: document.getElementById('marketScheduleBadge'),
     scheduleDot: document.getElementById('scheduleDot'),
     scheduleStatusText: document.getElementById('scheduleStatusText'),
+    viewSyncLogsBtn: document.getElementById('viewSyncLogsBtn'),
+    syncLogsModal: document.getElementById('syncLogsModal'),
+    syncLogsContainer: document.getElementById('syncLogsContainer'),
+    closeSyncLogsBtn: document.getElementById('closeSyncLogsBtn'),
+    doneSyncLogsBtn: document.getElementById('doneSyncLogsBtn'),
     // Modal
     checkModal: document.getElementById('checkModal'),
     modalTitle: document.getElementById('modalTitle'),
@@ -1341,6 +1346,86 @@
         renderUI();
       });
     }
+
+    // Sync Activity Logs Modal Listeners
+    if (els.viewSyncLogsBtn) {
+      els.viewSyncLogsBtn.addEventListener('click', openSyncLogsModal);
+    }
+    if (els.closeSyncLogsBtn) {
+      els.closeSyncLogsBtn.addEventListener('click', () => {
+        if (els.syncLogsModal) els.syncLogsModal.style.display = 'none';
+      });
+    }
+    if (els.doneSyncLogsBtn) {
+      els.doneSyncLogsBtn.addEventListener('click', () => {
+        if (els.syncLogsModal) els.syncLogsModal.style.display = 'none';
+      });
+    }
+    if (els.syncLogsModal) {
+      els.syncLogsModal.addEventListener('click', (e) => {
+        if (e.target === els.syncLogsModal) els.syncLogsModal.style.display = 'none';
+      });
+    }
+  }
+
+  async function openSyncLogsModal() {
+    if (!els.syncLogsModal) return;
+    els.syncLogsModal.style.display = 'flex';
+
+    if (els.syncLogsContainer) {
+      els.syncLogsContainer.innerHTML = '<div class="loading-box"><div class="loading-spinner"></div><p>Loading sync logs...</p></div>';
+    }
+
+    let logs = [];
+    try {
+      const res = await fetch(`./anchor-sync-log.json?t=${Date.now()}`, { cache: 'no-cache' });
+      if (res.ok) {
+        logs = await res.json();
+      }
+    } catch (e) {
+      console.warn('Could not fetch anchor-sync-log.json directly:', e.message);
+    }
+
+    if (!Array.isArray(logs) || logs.length === 0) {
+      try {
+        const snapRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
+        if (snapRes.ok) {
+          const snapData = await snapRes.json();
+          if (Array.isArray(snapData.recentLogs)) {
+            logs = snapData.recentLogs;
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (!els.syncLogsContainer) return;
+
+    if (!Array.isArray(logs) || logs.length === 0) {
+      els.syncLogsContainer.innerHTML = `
+        <div class="empty-box" style="padding: 24px; text-align: center;">
+          <p style="color: var(--text-muted); font-size: 0.85rem;">No background sync logs recorded in the past 48 hours.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    logs.forEach(item => {
+      const statusClass = `status-${item.status || 'SUCCESS'}`;
+      const badgeText = (item.status || 'SUCCESS').replace(/_/g, ' ');
+
+      html += `
+        <div class="sync-log-entry">
+          <div class="sync-log-top">
+            <span class="sync-log-time">📅 ${item.istDate} ${item.istTime}</span>
+            <span class="sync-log-badge ${statusClass}">${badgeText}</span>
+          </div>
+          <div class="sync-log-msg">${item.message || 'Synchronization step completed'}</div>
+        </div>
+      `;
+    });
+
+    els.syncLogsContainer.innerHTML = html;
   }
 
   // Initialization

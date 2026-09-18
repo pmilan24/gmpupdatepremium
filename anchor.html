@@ -70,6 +70,11 @@
         <button id="simulateBtn" class="btn btn-outline btn-sm" title="Simulate a new Anchor Allocation Report release with 1-min countdown highlight">
           ⚡ Test Anchor (1 Min)
         </button>
+
+        <!-- View Background Sync Logs Button -->
+        <button id="viewSyncLogsBtn" class="btn btn-outline btn-sm" title="View past 48 hours automated background sync logs">
+          📋 Sync Logs
+        </button>
       </div>
     </div>
   </header>
@@ -243,6 +248,31 @@
       </div>
       <div class="modal-footer">
         <button id="modalDoneBtn" class="btn btn-primary btn-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync Activity Logs Modal (Past 48 Hours) -->
+  <div id="syncLogsModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>
+          <span>📋</span>
+          <span>Background Sync Activity Log</span>
+        </h3>
+        <button id="closeSyncLogsBtn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">
+          Chronological record of automated background runs. Retains logs for <strong>1–2 days (48 hours)</strong>; older records are automatically pruned.
+        </p>
+        <div id="syncLogsContainer" class="sync-logs-container">
+          <div class="loading-box"><div class="loading-spinner"></div><p>Loading sync logs...</p></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Window: Mon–Fri 3:00 PM – 11:00 PM IST (Weekend OFF)</span>
+        <button id="doneSyncLogsBtn" class="btn btn-primary btn-sm">Close</button>
       </div>
     </div>
   </div>

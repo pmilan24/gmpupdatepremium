@@ -1,0 +1,24 @@
+[
+  {
+    "timestamp": "2026-09-18T17:39:30.995Z",
+    "istDate": "2026-09-18",
+    "istTime": "23:09:30 IST",
+    "status": "SUCCESS",
+    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
+    "details": {
+      "count": 24,
+      "anchorCount": 11
+    }
+  },
+  {
+    "timestamp": "2026-09-18T17:39:20.517Z",
+    "istDate": "2026-09-18",
+    "istTime": "23:09:20 IST",
+    "status": "SKIPPED_WINDOW",
+    "message": "Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: 23:09:20 IST.",
+    "details": {
+      "day": 5,
+      "timeIST": "2026-09-18 23:09:20"
+    }
+  }
+]

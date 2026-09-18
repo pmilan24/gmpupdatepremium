@@ -1790,4 +1790,83 @@ body {
   box-shadow: 0 0 6px #3b82f6;
 }
 
+/* Sync Activity Log Modal */
+.sync-logs-container {
+  max-height: 380px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.sync-log-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(17, 24, 39, 0.75);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  transition: background 0.2s ease;
+}
+
+.sync-log-entry:hover {
+  background: rgba(26, 34, 52, 0.85);
+}
+
+.sync-log-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.sync-log-time {
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
+.sync-log-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sync-log-badge.status-SUCCESS {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.sync-log-badge.status-SKIPPED_WINDOW,
+.sync-log-badge.status-SKIPPED_WEEKEND,
+.sync-log-badge.status-SKIPPED_CADENCE {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.sync-log-badge.status-SKIPPED_ALL_RECEIVED {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+.sync-log-badge.status-ERROR {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.sync-log-msg {
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+
 
