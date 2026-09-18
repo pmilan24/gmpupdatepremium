@@ -281,6 +281,19 @@ function parseLocalDate(str) {
  * E.g. If issue opens Monday, Anchor releases Friday (or Saturday).
  * If issue opens Wednesday, Anchor releases Tuesday.
  */
+function getIndiaToday() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  }).formatToParts(new Date());
+  const m = parseInt(parts.find(p => p.type === 'month').value, 10);
+  const d = parseInt(parts.find(p => p.type === 'day').value, 10);
+  const y = parseInt(parts.find(p => p.type === 'year').value, 10);
+  return new Date(y, m - 1, d);
+}
+
 function checkAnchorDateEligibility(startDateStr) {
   if (!startDateStr) return { eligible: false, isToday: false, message: 'Date unknown' };
 
@@ -289,8 +302,7 @@ function checkAnchorDateEligibility(startDateStr) {
     return { eligible: true, isToday: false, message: 'Date pending' };
   }
 
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const today = getIndiaToday();
 
   // Calculate expected anchor date (1 business day before)
   const expectedAnchorDate = new Date(issueDate);
@@ -348,16 +360,28 @@ function checkAnchorDateEligibility(startDateStr) {
  * Fetch and enrich active/upcoming BSE IPOs with anchor status
  */
 async function getEnrichedBSEIpoList() {
-  // 1. Concurrently fetch BSE Public Issues list and live notice feeds for today + past few trading days
+  // 1. Concurrently fetch BSE Public Issues list and live notice feeds for today + past few trading days in India Time
   const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+  const todayParts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(now);
+  const todayStr = todayParts.replace(/-/g, '');
   
   // Calculate prior business days to index
   const pastDates = [];
   for (let d = 1; d <= 4; d++) {
     const p = new Date(now);
     p.setDate(now.getDate() - d);
-    pastDates.push(p.toISOString().slice(0, 10).replace(/-/g, ''));
+    const pParts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(p);
+    pastDates.push(pParts.replace(/-/g, ''));
   }
   const dateFlagsToFetch = ['', todayStr, ...pastDates];
 

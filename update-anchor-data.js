@@ -7,22 +7,66 @@ const SNAPSHOT_PATH = path.join(__dirname, 'nse-ipo-data.json');
 const LOG_PATH = path.join(__dirname, 'anchor-sync-log.json');
 const MAX_LOG_AGE_MS = 2 * 24 * 60 * 60 * 1000; // 2 days (48 hours)
 
+function formatIndiaDateTime(date = new Date()) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  }).format(date) + ' IST';
+}
+
+function formatIndiaDate(date = new Date()) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  }).format(date);
+}
+
+function formatIndiaTime(date = new Date()) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  }).format(date) + ' IST';
+}
+
 function getISTTime() {
   const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const istDate = new Date(utc + (3600000 * 5.5));
-  const day = istDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  const hours = istDate.getHours();
-  const minutes = istDate.getMinutes();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Kolkata',
+    hourCycle: 'h23',
+    weekday: 'short',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  const parts = Object.fromEntries(formatter.formatToParts(now).map(p => [p.type, p.value]));
+  const hours = parseInt(parts.hour, 10);
+  const minutes = parseInt(parts.minute, 10);
   const totalMinutes = hours * 60 + minutes;
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const day = dayNames.indexOf(parts.weekday);
 
   return {
     day,
     hours,
     minutes,
     totalMinutes,
-    timeStr: istDate.toTimeString().split(' ')[0],
-    dateStr: istDate.toISOString().slice(0, 10),
+    timeStr: formatIndiaTime(now),
+    dateStr: formatIndiaDate(now),
+    formattedDateTimeIST: formatIndiaDateTime(now),
     isWeekend: day === 0 || day === 6,
     // 3:00 PM IST (15:00 = 900) to 11:00 PM IST (23:00 = 1380)
     isWithinWindow: day >= 1 && day <= 5 && totalMinutes >= 900 && totalMinutes <= 1380,
@@ -74,15 +118,15 @@ function checkAllTodayAnchorsReceived() {
  */
 function recordSyncLog(status, message, details = {}) {
   const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const istDate = new Date(utc + (3600000 * 5.5));
-  const timeStr = istDate.toTimeString().split(' ')[0];
-  const dateStr = istDate.toISOString().slice(0, 10);
+  const timestampIST = formatIndiaDateTime(now);
+  const dateStr = formatIndiaDate(now);
+  const timeStr = formatIndiaTime(now);
 
   const entry = {
-    timestamp: now.toISOString(),
+    timestampIST,
+    epochMs: now.getTime(),
     istDate: dateStr,
-    istTime: `${timeStr} IST`,
+    istTime: timeStr,
     status, // 'SUCCESS' | 'SKIPPED_WEEKEND' | 'SKIPPED_WINDOW' | 'SKIPPED_CADENCE' | 'SKIPPED_ALL_RECEIVED' | 'ERROR'
     message,
     details
@@ -105,7 +149,7 @@ function recordSyncLog(status, message, details = {}) {
   const cutoff = Date.now() - MAX_LOG_AGE_MS;
   const initialCount = logs.length;
   logs = logs.filter(item => {
-    const ts = new Date(item.timestamp).getTime();
+    const ts = item.epochMs || (item.timestamp ? new Date(item.timestamp).getTime() : 0);
     return !isNaN(ts) && ts >= cutoff;
   });
 
@@ -133,22 +177,22 @@ async function main() {
   const isForce = process.argv.includes('--force') || process.env.FORCE_SYNC === 'true';
   const ist = getISTTime();
 
-  console.log(`[SCHEDULE] Current IST: ${ist.dateStr} ${ist.timeStr} (Day ${ist.day})`);
+  console.log(`[SCHEDULE] Current IST: ${ist.formattedDateTimeIST} (Day ${ist.day})`);
 
   if (!isForce) {
     // 1. Check Weekend (Saturday & Sunday OFF)
     if (ist.isWeekend) {
       const msg = `Weekend detected (Saturday/Sunday). Market is closed. Sync is OFF. Next scheduled run: Monday at 3:00 PM IST.`;
       console.log(`[SCHEDULE] ⏸️ ${msg}`);
-      recordSyncLog('SKIPPED_WEEKEND', msg, { day: ist.day, timeIST: `${ist.dateStr} ${ist.timeStr}` });
+      recordSyncLog('SKIPPED_WEEKEND', msg, { day: ist.day, timeIST: ist.formattedDateTimeIST });
       process.exit(0);
     }
 
     // 2. Check Time Window (Monday - Friday: 3:00 PM to 11:00 PM IST)
     if (!ist.isWithinWindow) {
-      const msg = `Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: ${ist.timeStr} IST.`;
+      const msg = `Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: ${ist.timeStr}.`;
       console.log(`[SCHEDULE] 🌙 ${msg}`);
-      recordSyncLog('SKIPPED_WINDOW', msg, { day: ist.day, timeIST: `${ist.dateStr} ${ist.timeStr}` });
+      recordSyncLog('SKIPPED_WINDOW', msg, { day: ist.day, timeIST: ist.formattedDateTimeIST });
       process.exit(0);
     }
 
@@ -156,9 +200,9 @@ async function main() {
     if ((ist.isAfternoon15Min || ist.isNight15Min) && !ist.isEvening5Min) {
       const minMod15 = ist.minutes % 15;
       if (minMod15 > 3 && minMod15 < 12) {
-        const msg = `15-minute cadence active for this hour (${ist.timeStr} IST). Skipping off-cadence trigger.`;
+        const msg = `15-minute cadence active for this hour (${ist.timeStr}). Skipping off-cadence trigger.`;
         console.log(`[SCHEDULE] ⏳ ${msg}`);
-        recordSyncLog('SKIPPED_CADENCE', msg, { timeIST: `${ist.dateStr} ${ist.timeStr}` });
+        recordSyncLog('SKIPPED_CADENCE', msg, { timeIST: ist.formattedDateTimeIST });
         process.exit(0);
       }
     }
@@ -168,7 +212,7 @@ async function main() {
     if (anchorCheck.shouldStop) {
       console.log(`[SCHEDULE] ✨ ${anchorCheck.reason}`);
       console.log(`[SCHEDULE] All required anchor files for today have arrived. Stopping further refreshes for today.`);
-      recordSyncLog('SKIPPED_ALL_RECEIVED', anchorCheck.reason, { todayCount: anchorCheck.todayCount });
+      recordSyncLog('SKIPPED_ALL_RECEIVED', anchorCheck.reason, { todayCount: anchorCheck.todayCount, timeIST: ist.formattedDateTimeIST });
       process.exit(0);
     } else {
       console.log(`[SCHEDULE] 🎯 Active check: ${anchorCheck.reason}`);
@@ -187,13 +231,14 @@ async function main() {
     // Record successful sync log
     const recentLogs = recordSyncLog('SUCCESS', `Synchronized ${ipos.length} unified IPOs (${anchorCount} Anchor Reports Released).`, {
       count: ipos.length,
-      anchorCount
+      anchorCount,
+      timeIST: ist.formattedDateTimeIST
     });
 
     const output = {
-      lastUpdated: new Date().toISOString(),
+      lastUpdated: formatIndiaDateTime(new Date()),
       scheduleStatus: {
-        lastRunIST: `${ist.dateStr} ${ist.timeStr}`,
+        lastRunIST: formatIndiaDateTime(new Date()),
         activeWindow: 'Mon-Fri 3:00 PM - 11:00 PM IST'
       },
       count: ipos.length,

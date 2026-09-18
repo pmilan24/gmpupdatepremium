@@ -119,6 +119,52 @@
     } catch (e) {}
   }
 
+  // Standard India Standard Time (IST, UTC+5:30) Formatting Helpers
+  function formatIndiaDateTime(date = new Date()) {
+    return new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(date) + ' IST';
+  }
+
+  function formatIndiaTime(date = new Date()) {
+    return new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(date) + ' IST';
+  }
+
+  function formatIndiaDate(date = new Date()) {
+    return new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).format(date);
+  }
+
+  function getIndiaTodayDate() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    }).formatToParts(new Date());
+    const m = parseInt(parts.find(p => p.type === 'month').value, 10);
+    const d = parseInt(parts.find(p => p.type === 'day').value, 10);
+    const y = parseInt(parts.find(p => p.type === 'year').value, 10);
+    return new Date(y, m - 1, d);
+  }
+
   // Helper: Calculate Anchor Date Eligibility
   function checkAnchorDateEligibility(startDateStr) {
     if (!startDateStr || startDateStr === '—') {
@@ -140,8 +186,7 @@
       anchorDate.setDate(anchorDate.getDate() - 1);
     }
 
-    const now = new Date();
-    const todayDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayDateOnly = getIndiaTodayDate();
     const anchorDateOnly = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate());
 
     const diffMs = todayDateOnly - anchorDateOnly;
@@ -424,7 +469,7 @@
 
     // Live Sync Time Badge
     if (els.trackerTimeText) {
-      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const nowStr = formatIndiaTime(new Date());
       els.trackerTimeText.textContent = isComplete ? `Synced at ${nowStr}` : 'Live Sync Active';
     }
   }
@@ -536,6 +581,7 @@
       // 3. Merge Both Exchanges
       const unifiedList = mergeNseAndBse(nseList, bseList);
 
+      let snapshotTimeIST = null;
       if (unifiedList.length > 0) {
         ipoList = unifiedList;
       } else {
@@ -545,6 +591,11 @@
           if (fbRes.ok) {
             const fbData = await fbRes.json();
             ipoList = fbData.ipos || fbData;
+            if (fbData.lastUpdated) {
+              snapshotTimeIST = fbData.lastUpdated.includes('IST') 
+                ? fbData.lastUpdated 
+                : formatIndiaDateTime(new Date(fbData.lastUpdated));
+            }
             if (Array.isArray(ipoList)) {
               if (nseList.length === 0) {
                 nseList = ipoList.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE')));
@@ -578,9 +629,12 @@
       });
 
       if (els.lastUpdatedText) {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        els.lastUpdatedText.textContent = `${timeStr} · Live (NSE + BSE India)`;
+        if (snapshotTimeIST && nseList.length === 0 && bseList.length === 0) {
+          els.lastUpdatedText.textContent = `${snapshotTimeIST} · Live Snapshot`;
+        } else {
+          const timeStr = formatIndiaTime(new Date());
+          els.lastUpdatedText.textContent = `${timeStr} · Live (NSE + BSE India)`;
+        }
         els.lastUpdatedText.style.color = '';
       }
 
@@ -1122,13 +1176,22 @@
 
   // IST Schedule & Monitoring Window Rules
   function getISTScheduleState() {
-    const now = new Date();
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const istDate = new Date(utc + (3600000 * 5.5));
-    const day = istDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const hours = istDate.getHours();
-    const minutes = istDate.getMinutes();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hourCycle: 'h23',
+      weekday: 'short',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const parts = Object.fromEntries(formatter.formatToParts(new Date()).map(p => [p.type, p.value]));
+    const hours = parseInt(parts.hour, 10);
+    const minutes = parseInt(parts.minute, 10);
     const totalMinutes = hours * 60 + minutes;
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const day = dayNames.indexOf(parts.weekday);
 
     const isWeekend = day === 0 || day === 6;
     // Window: Monday to Friday 3:00 PM (900m) to 11:00 PM (1380m) IST
@@ -1180,7 +1243,7 @@
       activeIntervalSeconds,
       statusText,
       statusType,
-      timeStr: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} IST`
+      timeStr: formatIndiaTime(new Date())
     };
   }
 
@@ -1414,10 +1477,12 @@
       const statusClass = `status-${item.status || 'SUCCESS'}`;
       const badgeText = (item.status || 'SUCCESS').replace(/_/g, ' ');
 
+      const displayTime = item.timestampIST || (item.istDate && item.istTime ? `${item.istDate}, ${item.istTime}` : (item.timestamp ? formatIndiaDateTime(new Date(item.timestamp)) : ''));
+
       html += `
         <div class="sync-log-entry">
           <div class="sync-log-top">
-            <span class="sync-log-time">📅 ${item.istDate} ${item.istTime}</span>
+            <span class="sync-log-time">📅 ${displayTime}</span>
             <span class="sync-log-badge ${statusClass}">${badgeText}</span>
           </div>
           <div class="sync-log-msg">${item.message || 'Synchronization step completed'}</div>

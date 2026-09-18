@@ -1,8 +1,35 @@
 [
   {
-    "timestamp": "2026-09-18T17:39:30.995Z",
-    "istDate": "2026-09-18",
-    "istTime": "23:09:30 IST",
+    "timestampIST": "18 Sept 2026, 11:14:57 pm IST",
+    "epochMs": 1789753497254,
+    "istDate": "18 Sept 2026",
+    "istTime": "11:14:57 pm IST",
+    "status": "SUCCESS",
+    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
+    "details": {
+      "count": 24,
+      "anchorCount": 11,
+      "timeIST": "18 Sept 2026, 11:14:51 pm IST"
+    }
+  },
+  {
+    "timestampIST": "18 Sept 2026, 11:14:34 pm IST",
+    "epochMs": 1789753474842,
+    "istDate": "18 Sept 2026",
+    "istTime": "11:14:34 pm IST",
+    "status": "SUCCESS",
+    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
+    "details": {
+      "count": 24,
+      "anchorCount": 11,
+      "timeIST": "18 Sept 2026, 11:14:29 pm IST"
+    }
+  },
+  {
+    "timestampIST": "18 Sept 2026, 11:09:30 pm IST",
+    "epochMs": 1789753170995,
+    "istDate": "18 Sept 2026",
+    "istTime": "11:09:30 pm IST",
     "status": "SUCCESS",
     "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
     "details": {
@@ -11,9 +38,10 @@
     }
   },
   {
-    "timestamp": "2026-09-18T17:39:20.517Z",
-    "istDate": "2026-09-18",
-    "istTime": "23:09:20 IST",
+    "timestampIST": "18 Sept 2026, 11:09:20 pm IST",
+    "epochMs": 1789753160517,
+    "istDate": "18 Sept 2026",
+    "istTime": "11:09:20 pm IST",
     "status": "SKIPPED_WINDOW",
     "message": "Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: 23:09:20 IST.",
     "details": {
