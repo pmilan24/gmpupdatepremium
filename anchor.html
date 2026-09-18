@@ -113,6 +113,7 @@
 
       <div class="filter-chips">
         <button class="chip active" data-filter="all">All Issues</button>
+        <button class="chip chip-today" data-filter="today">🔔 Due Today (0)</button>
         <button class="chip" data-filter="anchor">✨ Anchor Available (0)</button>
         <button class="chip" data-filter="dual">Dual Listed (NSE+BSE)</button>
         <button class="chip" data-filter="mainboard">Mainboard (EQ)</button>
@@ -123,7 +124,8 @@
         <span style="font-size: 0.8rem; color: var(--text-muted);">Sort:</span>
         <select id="sortSelect" class="sort-select">
           <option value="default">Default (Order)</option>
-          <option value="anchor-first">Anchor Available First</option>
+          <option value="today-first">🔔 Due Today First</option>
+          <option value="anchor-first">✨ Anchor Available First</option>
           <option value="symbol-asc">Symbol (A–Z)</option>
           <option value="times-desc">Subscription (High to Low)</option>
         </select>

@@ -237,11 +237,13 @@
   function updateStats() {
     const total = ipoList.length;
     let anchorCount = 0;
+    let todayCount = 0;
     let dualCount = 0;
     let activeCount = 0;
 
     ipoList.forEach(i => {
       if (i.anchor && i.anchor.available) anchorCount++;
+      if (i.anchorEligibility && i.anchorEligibility.isToday) todayCount++;
       if (i.exchange && i.exchange.includes('BSE') && i.exchange.includes('NSE')) dualCount++;
       if (i.status && i.status.toLowerCase() === 'active') activeCount++;
     });
@@ -250,6 +252,14 @@
     if (els.statAnchorCount) els.statAnchorCount.textContent = anchorCount;
     if (els.statDual) els.statDual.textContent = dualCount;
     if (els.statActive) els.statActive.textContent = activeCount;
+
+    // Due today filter chip
+    const todayChip = document.querySelector('.chip[data-filter="today"]');
+    if (todayChip) {
+      todayChip.textContent = `🔔 Due Today (${todayCount})`;
+      if (todayCount > 0) todayChip.classList.add('chip-alert');
+      else todayChip.classList.remove('chip-alert');
+    }
 
     // Filter chip count
     const anchorChip = document.querySelector('.chip[data-filter="anchor"]');
@@ -282,7 +292,9 @@
   function getFilteredIpos() {
     let list = [...ipoList];
 
-    if (currentFilter === 'anchor') {
+    if (currentFilter === 'today') {
+      list = list.filter(i => i.anchorEligibility && i.anchorEligibility.isToday);
+    } else if (currentFilter === 'anchor') {
       list = list.filter(i => i.anchor && i.anchor.available);
     } else if (currentFilter === 'dual') {
       list = list.filter(i => i.exchange && i.exchange.includes('BSE') && i.exchange.includes('NSE'));
@@ -303,6 +315,13 @@
     }
 
     switch (currentSort) {
+      case 'today-first':
+        list.sort((a, b) => {
+          const aToday = (a.anchorEligibility && a.anchorEligibility.isToday) ? 1 : 0;
+          const bToday = (b.anchorEligibility && b.anchorEligibility.isToday) ? 1 : 0;
+          return bToday - aToday;
+        });
+        break;
       case 'anchor-first':
         list.sort((a, b) => {
           const aHas = a.anchor && a.anchor.available ? 1 : 0;
@@ -363,8 +382,21 @@
         exchangeBadge = `<span class="exchange-badge exchange-badge-nse">NSE</span>`;
       }
 
-      // Row highlight
-      const rowClass = isSurgeActive ? 'ipo-row anchor-active-highlight' : 'ipo-row';
+      const elig = ipo.anchorEligibility || {};
+      const isToday = !!elig.isToday;
+
+      // Row highlight:
+      // 1. Live surge (if newly released or simulating) -> anchor-active-highlight (bright pulsing green/amber)
+      // 2. Already allocated -> allocated row
+      // 3. Due today but not yet released -> anchor-today-pending (amber glow reminder)
+      let rowClass = 'ipo-row';
+      if (isSurgeActive) {
+        rowClass = 'ipo-row anchor-active-highlight';
+      } else if (isAnchorAvailable) {
+        rowClass = 'ipo-row anchor-allocated-row';
+      } else if (isToday) {
+        rowClass = 'ipo-row anchor-today-pending';
+      }
 
       // Anchor status & actions HTML
       let anchorHtml = '';
@@ -410,11 +442,11 @@
           </div>
         `;
       } else {
-        const elig = ipo.anchorEligibility || {};
-        const eligClass = elig.isUpcoming ? 'upcoming' : 'due';
+        const badgeClass = isToday ? 'anchor-badge today-pending' : 'anchor-badge pending';
+        const label = isToday ? '🔔 Due Today (Watch!)' : '⏳ Not Released';
         anchorHtml = `
           <div class="anchor-status-box">
-            <span class="anchor-badge pending">⏳ Not Released</span>
+            <span class="${badgeClass}">${label}</span>
             <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}')" title="Trigger on-demand check on NSE and BSE">
               🔍 Check Both Exchanges
             </button>
@@ -423,10 +455,14 @@
       }
 
       // Date eligibility snippet
-      const elig = ipo.anchorEligibility || {};
+      let tagClass = 'anchor-eligibility-tag';
+      if (isToday) tagClass += ' today';
+      else if (elig.isUpcoming) tagClass += ' upcoming';
+      else tagClass += ' due';
+
       const eligHtml = elig.message ? `
-        <div class="anchor-eligibility-tag ${elig.isUpcoming ? 'upcoming' : 'due'}">
-          <span>${elig.isUpcoming ? '🕒' : '🔔'}</span>
+        <div class="${tagClass}">
+          <span>${isToday ? '🔔' : (elig.isUpcoming ? '🕒' : '📋')}</span>
           <span>Anchor: ${elig.message}</span>
         </div>
       ` : '';

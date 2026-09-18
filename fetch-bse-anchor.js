@@ -111,25 +111,41 @@ async function extractAttachmentFromNoticePdf(noticePdfUrl) {
  * E.g. If issue opens Monday, Anchor releases Friday (or Saturday).
  * If issue opens Wednesday, Anchor releases Tuesday.
  */
-function checkAnchorDateEligibility(startDateStr) {
-  if (!startDateStr) return { eligible: false, message: 'Date unknown' };
-
-  let startDate = null;
-  // Parse standard formats: "2026-09-16T00:00:00", "2026-09-16", "16-Sep-2026", "16 Sep 2026"
-  if (startDateStr.includes('T') || (startDateStr.includes('-') && startDateStr.length === 10)) {
-    startDate = new Date(startDateStr.split('T')[0] + 'T00:00:00');
-  } else {
-    const cleaned = startDateStr.replace(/-/g, ' ');
-    startDate = new Date(cleaned);
+function parseLocalDate(str) {
+  if (!str) return null;
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    const parts = str.slice(0, 10).split('-');
+    return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
   }
+  const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+  const m = str.match(/(\d{1,2})[-\s]+([A-Za-z]{3})[-\s]+(\d{4})/);
+  if (m) {
+    const mon = months[m[2].toLowerCase()];
+    if (mon !== undefined) {
+      return new Date(parseInt(m[3], 10), mon, parseInt(m[1], 10));
+    }
+  }
+  const d = new Date(str);
+  return isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
 
-  if (isNaN(startDate.getTime())) {
-    return { eligible: true, message: 'Date pending' };
+/**
+ * Anchor Date Eligibility Logic:
+ * In India primary markets, Anchor investor bidding/allocation happens exactly 1 working day
+ * prior to the IPO opening date (Issue Start Date).
+ * E.g. If issue opens Monday, Anchor releases Friday (or Saturday).
+ * If issue opens Wednesday, Anchor releases Tuesday.
+ */
+function checkAnchorDateEligibility(startDateStr) {
+  if (!startDateStr) return { eligible: false, isToday: false, message: 'Date unknown' };
+
+  const issueDate = parseLocalDate(startDateStr);
+  if (!issueDate) {
+    return { eligible: true, isToday: false, message: 'Date pending' };
   }
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const issueDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
 
   // Calculate expected anchor date (1 business day before)
   const expectedAnchorDate = new Date(issueDate);
@@ -145,21 +161,34 @@ function checkAnchorDateEligibility(startDateStr) {
 
   const diffMs = today.getTime() - expectedAnchorDate.getTime();
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  const isToday = diffDays === 0;
 
-  if (diffDays < 0) {
+  const dateFormatted = expectedAnchorDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+  if (isToday) {
+    return {
+      eligible: true,
+      isToday: true,
+      isUpcoming: false,
+      expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
+      message: `Due Today (${dateFormatted})`
+    };
+  } else if (diffDays < 0) {
     const daysToGo = Math.abs(diffDays);
     return {
       eligible: false,
+      isToday: false,
       isUpcoming: true,
       expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
-      message: `Expected ${expectedAnchorDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${daysToGo} day${daysToGo > 1 ? 's' : ''} to go)`
+      message: `Expected ${dateFormatted} (${daysToGo} day${daysToGo > 1 ? 's' : ''} to go)`
     };
   } else {
     return {
       eligible: true,
+      isToday: false,
       isUpcoming: false,
       expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
-      message: `Due / Released since ${expectedAnchorDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
+      message: `Due / Released since ${dateFormatted}`
     };
   }
 }
