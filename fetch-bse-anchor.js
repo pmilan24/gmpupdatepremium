@@ -68,6 +68,151 @@ async function fetchBSEIpoDetail(ipoNo) {
 }
 
 /**
+ * Extract clean distinctive tokens from company name, ignoring common legal suffixes
+ */
+function cleanCompanyTokens(companyName) {
+  const stopWords = new Set([
+    'LIMITED', 'LTD', 'INDIA', 'PVT', 'PRIVATE', 'CORP', 'CORPORATION',
+    'THE', 'AND', '&', 'SERVICES', 'COMPANY', 'CO'
+  ]);
+  return (companyName || '')
+    .toUpperCase()
+    .split(/[\s.,\-_/()]+/)
+    .filter(t => t.length >= 2 && !stopWords.has(t));
+}
+
+/**
+ * Fetch latest BSE official notices from getCurrPreNextNoticesData_New API.
+ * @param {string} dateFlag - 'YYYYMMDD' (e.g. '20260918') or '' for today
+ */
+async function fetchBSELiveNotices(dateFlag = '') {
+  try {
+    const url = `https://api.bseindia.com/BseIndiaAPI/api/getCurrPreNextNoticesData_New/w?flag=${dateFlag}`;
+    const raw = await httpsGet(url);
+    const json = JSON.parse(raw);
+    return json.Table || [];
+  } catch (e) {
+    console.warn(`[BSE] fetchBSELiveNotices failed for flag='${dateFlag}':`, e.message);
+    return [];
+  }
+}
+
+/**
+ * Check if a remote PDF URL is valid and reachable (returns HTTP 200)
+ */
+function checkPdfLinkValid(pdfUrl) {
+  return new Promise((resolve) => {
+    if (!pdfUrl || !pdfUrl.startsWith('http')) return resolve(false);
+    try {
+      const urlObj = new URL(pdfUrl);
+      const req = https.request({
+        protocol: urlObj.protocol,
+        hostname: urlObj.hostname,
+        port: urlObj.port || 443,
+        path: urlObj.pathname + urlObj.search,
+        method: 'HEAD',
+        headers: BSE_HEADERS,
+        insecureHTTPParser: true
+      }, (res) => {
+        resolve(res.statusCode === 200 || res.statusCode === 302);
+      });
+      req.on('error', () => resolve(false));
+      req.end();
+    } catch (e) {
+      resolve(false);
+    }
+  });
+}
+
+/**
+ * Sequential Fallback Probe:
+ * When the JSON notice API is delayed or cached, test URLs:
+ * https://www.bseindia.com/downloads/UploadDocs/Notices/YYYYMMDD-{i}/YYYYMMDD-{i}.pdf
+ * and inspect the content or disp page for company tokens.
+ */
+async function probeSequentialBseNotices(companyName, targetDateStr, maxProbe = 50) {
+  if (!targetDateStr) return null;
+  const dateParts = targetDateStr.replace(/[^0-9]/g, '');
+  if (dateParts.length < 8) return null;
+  const dateFormatted = dateParts.slice(0, 8); // YYYYMMDD
+  const tokens = cleanCompanyTokens(companyName);
+  if (tokens.length === 0) return null;
+
+  console.log(`[BSE] Starting sequential notice probe for ${companyName} (${dateFormatted}-1..${maxProbe})...`);
+  for (let i = maxProbe; i >= 1; i--) {
+    const noticeNo = `${dateFormatted}-${i}`;
+    const pdfUrl = `https://www.bseindia.com/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
+    const isValid = await checkPdfLinkValid(pdfUrl);
+    if (!isValid) continue;
+
+    try {
+      const pdfBuf = await httpsGet(pdfUrl, BSE_HEADERS, true);
+      const pdfStr = pdfBuf.toString('latin1');
+      const pdfUpper = pdfStr.toUpperCase();
+
+      if (pdfUpper.includes('ANCHOR') && tokens.every(t => pdfUpper.includes(t))) {
+        console.log(`[BSE PROBE] Success! Found notice ${noticeNo} for ${companyName}!`);
+        const attachUrl = await extractAttachmentFromNoticePdf(pdfUrl);
+        return {
+          noticeNo,
+          noticeDate: targetDateStr,
+          noticePdfUrl: pdfUrl,
+          intimationPdfUrl: attachUrl || pdfUrl,
+          hasIntimationAttachment: !!attachUrl,
+          method: 'SEQUENTIAL_PROBE'
+        };
+      }
+    } catch (e) {
+      // Continue probing
+    }
+  }
+  return null;
+}
+
+/**
+ * Search the real-time BSE notice feed for Anchor Allocation notices matching company tokens
+ */
+async function findBSEAnchorInNotices(companyName, targetDates = []) {
+  const tokens = cleanCompanyTokens(companyName);
+  if (tokens.length === 0) return null;
+
+  // Always check empty flag (current live feed) plus any target dates
+  const flagsToTry = [...new Set(['', ...targetDates.filter(Boolean)])];
+
+  for (const flag of flagsToTry) {
+    const notices = await fetchBSELiveNotices(flag);
+    for (const notice of notices) {
+      const subject = (notice.Subject || '').toUpperCase();
+      if (subject.includes('ANCHOR')) {
+        const matchesAll = tokens.every(t => subject.includes(t));
+        if (matchesAll) {
+          const noticeNo = notice.Notice_no;
+          const noticePdfUrl = notice.FileName || `https://www.bseindia.com/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
+          const noticeDate = notice.Notice_date || '';
+
+          // Validate link
+          const isValid = await checkPdfLinkValid(noticePdfUrl);
+          if (isValid) {
+            const attachUrl = await extractAttachmentFromNoticePdf(noticePdfUrl);
+            return {
+              noticeNo,
+              noticeDate,
+              noticePdfUrl,
+              intimationPdfUrl: attachUrl || noticePdfUrl,
+              hasIntimationAttachment: !!attachUrl,
+              subject: notice.Subject,
+              method: 'LIVE_NOTICE_API'
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Extract attachment PDF link (/URI or file link) from BSE Notice PDF
  * Example: notice PDF contains /URI(https://www.bseindia.com/.../Attach/Anchor_Intimation_Letter$...pdf)
  */
@@ -254,8 +399,45 @@ async function getEnrichedBSEIpoList() {
             hasIntimationAttachment: !!anchorIntimationUrl
           };
         }
+
+        // Fallback 1: If not found in IPONO_4, check the BSE Live Notice feed (getCurrPreNextNoticesData_New)
+        if (!anchorNotice) {
+          const anchorDateCheck = checkAnchorDateEligibility(startDate);
+          const expectedFlag = anchorDateCheck.expectedDate ? anchorDateCheck.expectedDate.replace(/-/g, '') : '';
+          const foundInLive = await findBSEAnchorInNotices(scripName, [expectedFlag]);
+          if (foundInLive) {
+            anchorNotice = {
+              available: true,
+              noticeNo: foundInLive.noticeNo,
+              noticeDate: foundInLive.noticeDate,
+              noticePdfUrl: foundInLive.noticePdfUrl,
+              intimationPdfUrl: foundInLive.intimationPdfUrl,
+              hasIntimationAttachment: foundInLive.hasIntimationAttachment,
+              method: foundInLive.method
+            };
+          }
+        }
       } catch (err) {
         console.warn(`[BSE] Error getting detail for IPO_NO ${ipoNo} (${scripName}):`, err.message);
+      }
+    }
+
+    // Fallback 2: If still not found and anchor is due today or past, run sequential probe on target date
+    if (!anchorNotice) {
+      const anchorDateCheck = checkAnchorDateEligibility(startDate);
+      if (anchorDateCheck.isToday && anchorDateCheck.expectedDate) {
+        const probed = await probeSequentialBseNotices(scripName, anchorDateCheck.expectedDate, 48);
+        if (probed) {
+          anchorNotice = {
+            available: true,
+            noticeNo: probed.noticeNo,
+            noticeDate: probed.noticeDate,
+            noticePdfUrl: probed.noticePdfUrl,
+            intimationPdfUrl: probed.intimationPdfUrl,
+            hasIntimationAttachment: probed.hasIntimationAttachment,
+            method: probed.method
+          };
+        }
       }
     }
 
@@ -293,5 +475,10 @@ module.exports = {
   fetchBSEIpoDetail,
   extractAttachmentFromNoticePdf,
   checkAnchorDateEligibility,
-  getEnrichedBSEIpoList
+  getEnrichedBSEIpoList,
+  cleanCompanyTokens,
+  fetchBSELiveNotices,
+  checkPdfLinkValid,
+  findBSEAnchorInNotices,
+  probeSequentialBseNotices
 };

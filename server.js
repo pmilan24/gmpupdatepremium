@@ -14,7 +14,10 @@ const {
   fetchBSEIpoDetail,
   extractAttachmentFromNoticePdf,
   checkAnchorDateEligibility,
-  getEnrichedBSEIpoList
+  getEnrichedBSEIpoList,
+  findBSEAnchorInNotices,
+  probeSequentialBseNotices,
+  checkPdfLinkValid
 } = require('./fetch-bse-anchor');
 const {
   getUnifiedExchangeIpos,
@@ -178,13 +181,40 @@ const server = http.createServer(async (req, res) => {
           } else {
             bseAnchorFound = true;
             bseIntimationPdfUrl = bseNoticePdfUrl;
-            steps.push({ stage: 'bse_success', message: `BSE Notice PDF ready.` });
+            steps.push({ stage: 'bse_success', message: `BSE Notice PDF verified and ready.` });
           }
-        } else {
-          steps.push({ stage: 'bse_none', message: `BSE: No anchor investor notice posted yet.` });
         }
-      } else {
-        steps.push({ stage: 'bse_unmatched', message: `Issue not found on BSE Public Issue list.` });
+      }
+
+      // 3. Fallback: Check BSE Live General Notice API (getCurrPreNextNoticesData_New)
+      if (!bseAnchorFound) {
+        steps.push({ stage: 'bse_live_notices', message: `Scanning BSE real-time notice feed for newly uploaded Anchor filings...` });
+        const queryName = companyName || symbol;
+        const liveNotice = await findBSEAnchorInNotices(queryName);
+        if (liveNotice) {
+          bseAnchorFound = true;
+          bseNoticeNo = liveNotice.noticeNo;
+          bseNoticePdfUrl = liveNotice.noticePdfUrl;
+          bseIntimationPdfUrl = liveNotice.intimationPdfUrl;
+          steps.push({ stage: 'bse_success', message: `Discovered live notice #${bseNoticeNo}: ${liveNotice.subject || 'Anchor Allocation'}` });
+        }
+      }
+
+      // 4. Fallback: Sequential URL link validation probe (if unindexed)
+      if (!bseAnchorFound) {
+        const queryName = companyName || symbol;
+        const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        steps.push({ stage: 'bse_probe', message: `Probing active notice circular URLs for ${todayStr}...` });
+        const probed = await probeSequentialBseNotices(queryName, todayStr, 50);
+        if (probed) {
+          bseAnchorFound = true;
+          bseNoticeNo = probed.noticeNo;
+          bseNoticePdfUrl = probed.noticePdfUrl;
+          bseIntimationPdfUrl = probed.intimationPdfUrl;
+          steps.push({ stage: 'bse_success', message: `Found valid uploaded notice file via sequential probe: ${bseNoticeNo}.pdf` });
+        } else {
+          steps.push({ stage: 'bse_none', message: `BSE: No anchor filing detected across API, feeds, or direct document URLs.` });
+        }
       }
 
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });

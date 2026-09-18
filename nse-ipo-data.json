@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-18T14:34:07.378Z",
+  "lastUpdated": "2026-09-18T16:45:05.880Z",
   "count": 24,
   "anchorCount": 8,
   "ipos": [
@@ -41,7 +41,7 @@
         "scripCode": 4827,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_SONA",
@@ -81,7 +81,7 @@
         "scripCode": 4824,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_HEROMOTORS",
@@ -121,7 +121,7 @@
         "scripCode": 4823,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_JSIPL",
@@ -161,7 +161,7 @@
         "scripCode": 4826,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_SSRETAIL",
@@ -201,7 +201,7 @@
         "scripCode": 4828,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_AXIOMGAS",
@@ -236,7 +236,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_KHERIAAUTO",
@@ -271,7 +271,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "NSE_SPECTRAA",
@@ -306,7 +306,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_NCL-RE",
@@ -345,7 +345,7 @@
         "scripCode": 4791,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_JAYKAY-RE1",
@@ -384,7 +384,7 @@
         "scripCode": 4794,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_FXML",
@@ -423,7 +423,7 @@
         "scripCode": 4831,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_VIVEKANAND",
@@ -462,7 +462,7 @@
         "scripCode": 4832,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_ROBOKIDZ",
@@ -501,7 +501,7 @@
         "scripCode": 4833,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_SHANKARA",
@@ -540,7 +540,7 @@
         "scripCode": 540425,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_HNIL",
@@ -579,7 +579,7 @@
         "scripCode": 4834,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_VARMORA",
@@ -618,7 +618,7 @@
         "scripCode": 4837,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_SKOFFSET",
@@ -657,7 +657,7 @@
         "scripCode": 4836,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_SPANDANACM",
@@ -696,46 +696,7 @@
         "scripCode": 4815,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
-    },
-    {
-      "id": "BSE_SALEM-RE",
-      "symbol": "SALEM-RE",
-      "companyName": "SALEM ERODE INVESTMENTS LTD",
-      "exchange": "BSE",
-      "platforms": [
-        "BSE"
-      ],
-      "status": "Active",
-      "series": "EQ",
-      "issueStartDate": "2026-09-15",
-      "issueEndDate": "2026-09-25",
-      "issuePrice": "20.00",
-      "issueSize": "—",
-      "noOfTime": 0,
-      "registrar": "—",
-      "anchorEligibility": {
-        "eligible": true,
-        "isUpcoming": false,
-        "expectedDate": "2026-09-13",
-        "message": "Due / Released since 14 Sept"
-      },
-      "anchor": {
-        "available": false,
-        "source": "NONE",
-        "nseZipUrl": null,
-        "nsePdfUrl": null,
-        "bseNoticePdfUrl": null,
-        "bseIntimationPdfUrl": null,
-        "bseNoticeNo": null,
-        "hasBseAttachment": false
-      },
-      "bseData": {
-        "ipoNo": 7972,
-        "scripCode": 4821,
-        "platform": "MainBoard"
-      },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_CONTAIN-RE",
@@ -774,7 +735,7 @@
         "scripCode": 4778,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_MANOJ-RE",
@@ -813,7 +774,7 @@
         "scripCode": 4779,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_CUBI FIN SER",
@@ -852,7 +813,7 @@
         "scripCode": 511710,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_ECS",
@@ -891,7 +852,46 @@
         "scripCode": 540063,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
+    },
+    {
+      "id": "BSE_SALEM-RE",
+      "symbol": "SALEM-RE",
+      "companyName": "SALEM ERODE INVESTMENTS LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-15",
+      "issueEndDate": "2026-10-01",
+      "issuePrice": "20.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-13",
+        "message": "Due / Released since 14 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7972,
+        "scripCode": 4821,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     },
     {
       "id": "BSE_INDRA-RE",
@@ -930,7 +930,7 @@
         "scripCode": 4822,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T14:34:07.378Z"
+      "updatedAt": "2026-09-18T16:45:05.880Z"
     }
   ]
 }
