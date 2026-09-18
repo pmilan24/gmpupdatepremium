@@ -530,12 +530,20 @@
       if (unifiedList.length > 0) {
         ipoList = unifiedList;
       } else {
-        // Fallback to local snapshot file if both were empty
+        // Fallback to local snapshot file if both were empty (e.g. on GitHub Pages)
         try {
           const fbRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
           if (fbRes.ok) {
             const fbData = await fbRes.json();
             ipoList = fbData.ipos || fbData;
+            if (Array.isArray(ipoList)) {
+              if (nseList.length === 0) {
+                nseList = ipoList.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE')));
+              }
+              if (bseList.length === 0) {
+                bseList = ipoList.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE')));
+              }
+            }
           }
         } catch (fbErr) {
           console.warn('[ANCHOR] Snapshot fallback error:', fbErr.message);
