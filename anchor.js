@@ -44,6 +44,20 @@
     statAnchorCount: document.getElementById('statAnchorCount'),
     statDual: document.getElementById('statDual'),
     statActive: document.getElementById('statActive'),
+    // Progress Tracker (Top Side of List)
+    trackerContainer: document.getElementById('exchangeProgressTracker'),
+    trackerSpinner: document.getElementById('trackerSpinner'),
+    trackerStatusTitle: document.getElementById('trackerStatusTitle'),
+    trackerStatusDesc: document.getElementById('trackerStatusDesc'),
+    trackerStageBadge: document.getElementById('trackerStageBadge'),
+    trackerProgressBar: document.getElementById('trackerProgressBar'),
+    trackerTimeText: document.getElementById('trackerTimeText'),
+    stepNSE: document.getElementById('stepNSE'),
+    badgeNSE: document.getElementById('badgeNSE'),
+    stepBSE: document.getElementById('stepBSE'),
+    badgeBSE: document.getElementById('badgeBSE'),
+    stepUnified: document.getElementById('stepUnified'),
+    badgeUnified: document.getElementById('badgeUnified'),
     // Modal
     checkModal: document.getElementById('checkModal'),
     modalTitle: document.getElementById('modalTitle'),
@@ -96,55 +110,477 @@
     } catch (e) {}
   }
 
-  // Fetch Unified NSE + BSE IPO list and Anchor status
+  // Helper: Calculate Anchor Date Eligibility
+  function checkAnchorDateEligibility(startDateStr) {
+    if (!startDateStr || startDateStr === '—') {
+      return { eligible: false, isToday: false, isUpcoming: false, message: 'Date not announced' };
+    }
+    const cleanDate = startDateStr.split('T')[0].trim();
+    const d = new Date(cleanDate);
+    if (isNaN(d.getTime())) {
+      return { eligible: false, isToday: false, isUpcoming: false, message: 'Date not announced' };
+    }
+
+    // Anchor bid date is 1 trading day before IPO open date
+    const anchorDate = new Date(d);
+    if (anchorDate.getDay() === 1) { // Monday -> Friday
+      anchorDate.setDate(anchorDate.getDate() - 3);
+    } else if (anchorDate.getDay() === 0) { // Sunday -> Friday
+      anchorDate.setDate(anchorDate.getDate() - 2);
+    } else {
+      anchorDate.setDate(anchorDate.getDate() - 1);
+    }
+
+    const now = new Date();
+    const todayDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const anchorDateOnly = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate());
+
+    const diffMs = todayDateOnly - anchorDateOnly;
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedAnchorDate = `${anchorDate.getDate()} ${months[anchorDate.getMonth()]}`;
+
+    if (diffDays === 0) {
+      return {
+        eligible: true,
+        isToday: true,
+        isUpcoming: false,
+        diffDays: 0,
+        daysToGo: 0,
+        expectedDate: anchorDate.toISOString().slice(0, 10),
+        formattedDate: formattedAnchorDate,
+        message: `Due Today (${formattedAnchorDate})`
+      };
+    } else if (diffDays < 0) {
+      const daysToGo = Math.abs(diffDays);
+      return {
+        eligible: false,
+        isToday: false,
+        isUpcoming: true,
+        diffDays,
+        daysToGo,
+        expectedDate: anchorDate.toISOString().slice(0, 10),
+        formattedDate: formattedAnchorDate,
+        message: `Expected on ${formattedAnchorDate} (${daysToGo} day${daysToGo > 1 ? 's' : ''} to go)`
+      };
+    } else {
+      return {
+        eligible: true,
+        isToday: false,
+        isUpcoming: false,
+        diffDays,
+        daysToGo: 0,
+        expectedDate: anchorDate.toISOString().slice(0, 10),
+        formattedDate: formattedAnchorDate,
+        message: `Due / Released since ${formattedAnchorDate}`
+      };
+    }
+  }
+
+  // Cross-Exchange Matching Utilities
+  function normalizeName(name) {
+    if (!name) return '';
+    return name
+      .toLowerCase()
+      .replace(/\b(limited|ltd|pvt|private|india|corporation|corp|technologies|tech|services|llp)\b/gi, '')
+      .replace(/[^a-z0-9]/gi, '')
+      .trim();
+  }
+
+  function matchCompany(a, b) {
+    if (!a || !b) return false;
+    if (a.symbol && b.symbol && a.symbol.toUpperCase() === b.symbol.toUpperCase()) {
+      return true;
+    }
+    const normA = normalizeName(a.companyName || a.symbol);
+    const normB = normalizeName(b.companyName || b.symbol);
+    if (!normA || !normB) return false;
+    if (normA === normB) return true;
+    if (normA.length > 5 && normB.length > 5 && (normA.includes(normB) || normB.includes(normA))) {
+      return true;
+    }
+    return false;
+  }
+
+  function formatNseItem(nse) {
+    const symbol = nse.symbol || '';
+    const startDate = nse.issueStartDate || '—';
+    const anchorElig = nse.anchorEligibility || checkAnchorDateEligibility(startDate);
+    const isSme = (nse.series === 'SME') || (nse.exchange && nse.exchange.includes('SME'));
+
+    return {
+      id: `NSE_${symbol}`,
+      symbol,
+      companyName: nse.companyName || symbol,
+      exchange: isSme ? 'NSE SME' : 'NSE',
+      platforms: ['NSE'],
+      status: nse.status || 'Active',
+      series: nse.series || 'EQ',
+      issueStartDate: startDate,
+      issueEndDate: nse.issueEndDate || '—',
+      issuePrice: nse.issuePrice || '—',
+      issueSize: nse.issueSize || '—',
+      noOfTime: nse.noOfTime || 0,
+      registrar: nse.registrar || '—',
+      anchorEligibility: anchorElig,
+      anchor: {
+        available: !!(nse.anchor && nse.anchor.available),
+        source: 'NSE',
+        nseZipUrl: nse.anchor ? nse.anchor.zipUrl : null,
+        nsePdfUrl: nse.anchor ? nse.anchor.pdfUrl : null,
+        bseNoticePdfUrl: null,
+        bseIntimationPdfUrl: null,
+        bseNoticeNo: null,
+        hasBseAttachment: false
+      },
+      bseData: null,
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function formatBseItem(bse) {
+    const symbol = bse.symbol || bse.scripCode || '';
+    const startDate = bse.issueStartDate || '—';
+    const anchorElig = bse.anchorEligibility || checkAnchorDateEligibility(startDate);
+    const hasBseAnchor = !!(bse.anchor && bse.anchor.available);
+
+    return {
+      id: `BSE_${symbol || bse.bseIpoNo}`,
+      symbol,
+      companyName: bse.companyName || symbol,
+      exchange: bse.exchange || 'BSE',
+      platforms: ['BSE'],
+      status: bse.status || 'Active',
+      series: bse.platform === 'SME' ? 'SME' : 'EQ',
+      issueStartDate: startDate,
+      issueEndDate: bse.issueEndDate || '—',
+      issuePrice: bse.issuePrice || '—',
+      issueSize: '—',
+      noOfTime: 0,
+      registrar: '—',
+      anchorEligibility: anchorElig,
+      anchor: {
+        available: hasBseAnchor,
+        source: hasBseAnchor ? 'BSE' : 'NONE',
+        nseZipUrl: null,
+        nsePdfUrl: null,
+        bseNoticePdfUrl: hasBseAnchor ? bse.anchor.noticePdfUrl : null,
+        bseIntimationPdfUrl: hasBseAnchor ? bse.anchor.intimationPdfUrl : null,
+        bseNoticeNo: hasBseAnchor ? bse.anchor.noticeNo : null,
+        hasBseAttachment: hasBseAnchor ? bse.anchor.hasIntimationAttachment : false
+      },
+      bseData: {
+        ipoNo: bse.bseIpoNo,
+        scripCode: bse.scripCode,
+        platform: bse.platform
+      },
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  function mergeNseAndBse(nseList = [], bseList = []) {
+    const unified = [];
+    const matchedBseIndices = new Set();
+
+    // 1. Process NSE items and match with BSE
+    for (const nseItem of nseList) {
+      let matchedBse = null;
+      let matchedIdx = -1;
+
+      for (let i = 0; i < bseList.length; i++) {
+        if (!matchedBseIndices.has(i) && matchCompany(nseItem, bseList[i])) {
+          matchedBse = bseList[i];
+          matchedIdx = i;
+          matchedBseIndices.add(i);
+          break;
+        }
+      }
+
+      const hasNseAnchor = !!(nseItem.anchor && nseItem.anchor.available);
+      const hasBseAnchor = !!(matchedBse && matchedBse.anchor && matchedBse.anchor.available);
+      const anchorAvailable = hasNseAnchor || hasBseAnchor;
+
+      const startDate = nseItem.issueStartDate || (matchedBse ? matchedBse.issueStartDate : '—');
+      const anchorEligibility = nseItem.anchorEligibility || checkAnchorDateEligibility(startDate);
+
+      let exchangeBadge = 'NSE';
+      if (matchedBse) {
+        exchangeBadge = 'NSE | BSE';
+      } else if (nseItem.exchange && nseItem.exchange.includes('SME')) {
+        exchangeBadge = 'NSE SME';
+      }
+
+      unified.push({
+        id: `NSE_${nseItem.symbol}`,
+        symbol: nseItem.symbol,
+        companyName: nseItem.companyName,
+        exchange: exchangeBadge,
+        platforms: matchedBse ? ['NSE', 'BSE'] : ['NSE'],
+        status: nseItem.status || (matchedBse ? matchedBse.status : 'Active'),
+        series: nseItem.series || 'EQ',
+        issueStartDate: startDate,
+        issueEndDate: nseItem.issueEndDate || (matchedBse ? matchedBse.issueEndDate : '—'),
+        issuePrice: nseItem.issuePrice || (matchedBse ? matchedBse.issuePrice : '—'),
+        issueSize: nseItem.issueSize || '—',
+        noOfTime: nseItem.noOfTime || 0,
+        registrar: nseItem.registrar || '—',
+        anchorEligibility,
+        anchor: {
+          available: anchorAvailable,
+          source: hasNseAnchor && hasBseAnchor ? 'BOTH' : (hasNseAnchor ? 'NSE' : (hasBseAnchor ? 'BSE' : 'NONE')),
+          nseZipUrl: hasNseAnchor ? nseItem.anchor.zipUrl : null,
+          nsePdfUrl: hasNseAnchor ? nseItem.anchor.pdfUrl : null,
+          bseNoticePdfUrl: hasBseAnchor ? matchedBse.anchor.noticePdfUrl : null,
+          bseIntimationPdfUrl: hasBseAnchor ? matchedBse.anchor.intimationPdfUrl : null,
+          bseNoticeNo: hasBseAnchor ? matchedBse.anchor.noticeNo : null,
+          hasBseAttachment: hasBseAnchor ? matchedBse.anchor.hasIntimationAttachment : false
+        },
+        bseData: matchedBse ? {
+          ipoNo: matchedBse.bseIpoNo,
+          scripCode: matchedBse.scripCode,
+          platform: matchedBse.platform
+        } : null,
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    // 2. Add remaining BSE-only items
+    for (let i = 0; i < bseList.length; i++) {
+      if (matchedBseIndices.has(i)) continue;
+      unified.push(formatBseItem(bseList[i]));
+    }
+
+    return unified;
+  }
+
+  // Update Progress Tracker UI (Top Side of List)
+  function updateProgressTracker({
+    stageBadge,
+    title,
+    desc,
+    progressPercent,
+    step1Status, // 'pending' | 'loading' | 'done' | 'warning'
+    step1Text,
+    step2Status, // 'pending' | 'loading' | 'done' | 'warning'
+    step2Text,
+    step3Status, // 'pending' | 'loading' | 'done' | 'warning'
+    step3Text,
+    isComplete = false
+  }) {
+    if (els.trackerStageBadge && stageBadge) els.trackerStageBadge.textContent = stageBadge;
+    if (els.trackerStatusTitle && title) els.trackerStatusTitle.textContent = title;
+    if (els.trackerStatusDesc && desc) els.trackerStatusDesc.textContent = desc;
+    if (els.trackerProgressBar && progressPercent !== undefined) {
+      els.trackerProgressBar.style.width = `${Math.min(100, Math.max(5, progressPercent))}%`;
+    }
+
+    // Step 1: NSE
+    if (els.stepNSE && step1Status) {
+      els.stepNSE.className = `tracker-step ${step1Status === 'done' ? 'completed' : (step1Status === 'loading' ? 'active' : '')}`;
+      if (els.badgeNSE) {
+        els.badgeNSE.className = `step-badge ${step1Status === 'done' ? 'badge-success' : (step1Status === 'loading' ? 'badge-loading' : (step1Status === 'warning' ? 'badge-warning' : 'badge-pending'))}`;
+        if (step1Text) els.badgeNSE.textContent = step1Text;
+      }
+    }
+
+    // Step 2: BSE
+    if (els.stepBSE && step2Status) {
+      els.stepBSE.className = `tracker-step ${step2Status === 'done' ? 'completed' : (step2Status === 'loading' ? 'active' : '')}`;
+      if (els.badgeBSE) {
+        els.badgeBSE.className = `step-badge ${step2Status === 'done' ? 'badge-success' : (step2Status === 'loading' ? 'badge-loading' : (step2Status === 'warning' ? 'badge-warning' : 'badge-pending'))}`;
+        if (step2Text) els.badgeBSE.textContent = step2Text;
+      }
+    }
+
+    // Step 3: Unified
+    if (els.stepUnified && step3Status) {
+      els.stepUnified.className = `tracker-step ${step3Status === 'done' ? 'completed' : (step3Status === 'loading' ? 'active' : '')}`;
+      if (els.badgeUnified) {
+        els.badgeUnified.className = `step-badge ${step3Status === 'done' ? 'badge-success' : (step3Status === 'loading' ? 'badge-loading' : 'badge-pending')}`;
+        if (step3Text) els.badgeUnified.textContent = step3Text;
+      }
+    }
+
+    // Spinner
+    if (els.trackerSpinner) {
+      if (isComplete) {
+        els.trackerSpinner.classList.add('done');
+        els.trackerSpinner.textContent = '✅';
+      } else {
+        els.trackerSpinner.classList.remove('done');
+        els.trackerSpinner.textContent = '🔄';
+      }
+    }
+
+    // Live Sync Time Badge
+    if (els.trackerTimeText) {
+      const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      els.trackerTimeText.textContent = isComplete ? `Synced at ${nowStr}` : 'Live Sync Active';
+    }
+  }
+
+  // Progressive Multi-Exchange Fetch: Show NSE First, Then Merge BSE with Live Top Progress
   async function fetchExchangeData() {
     if (isFetching) return;
     isFetching = true;
     updateRefreshButton(true);
 
-    let rawData = null;
-    let source = '';
+    let nseList = [];
+    let bseList = [];
 
     try {
-      // 1. Try unified local API endpoint
+      // Step 1: Start Progress Tracker
+      updateProgressTracker({
+        stageBadge: 'Step 1 of 2: NSE India',
+        title: 'Fetching NSE India Issues & Anchor Reports...',
+        desc: 'Requesting current issues and anchor allocation reports from NSE...',
+        progressPercent: 20,
+        step1Status: 'loading',
+        step1Text: 'Fetching issues...',
+        step2Status: 'pending',
+        step2Text: 'Waiting for NSE...',
+        step3Status: 'pending',
+        step3Text: 'Pending',
+        isComplete: false
+      });
+
+      // 1. Fetch NSE India first
       try {
-        const res = await fetch(`${API_URL}?t=${Date.now()}`, { cache: 'no-cache' });
-        if (res.ok) {
-          const json = await res.json();
-          if (json && Array.isArray(json.ipos)) {
-            rawData = json.ipos;
-            source = 'Live (NSE + BSE India)';
+        const nseRes = await fetch(`/api/nse/ipo-list?t=${Date.now()}`, { cache: 'no-cache' });
+        if (nseRes.ok) {
+          const nseData = await nseRes.json();
+          if (nseData && Array.isArray(nseData.ipos)) {
+            nseList = nseData.ipos;
           }
         }
-      } catch (e) {
-        console.warn('Unified API fetch failed, falling back:', e.message);
+      } catch (nseErr) {
+        console.warn('[ANCHOR] NSE fetch error:', nseErr.message);
       }
 
-      // 2. Fallback to snapshot file
-      if (!rawData || rawData.length === 0) {
-        const resFallback = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
-        if (resFallback.ok) {
-          const json = await resFallback.json();
-          rawData = json.ipos || json;
-          source = 'Snapshot (nse-ipo-data.json)';
+      // If NSE returned items, SHOW THEM IMMEDIATELY IN THE TABLE!
+      if (nseList.length > 0) {
+        ipoList = nseList.map(formatNseItem);
+        processAnchorDiff(ipoList);
+        renderUI();
+
+        updateProgressTracker({
+          stageBadge: 'Step 2 of 2: BSE India',
+          title: `✅ NSE Loaded (${nseList.length} IPOs) · Now Fetching BSE India...`,
+          desc: `Displaying ${nseList.length} NSE issues. Indexing BSE live notices & public issues...`,
+          progressPercent: 55,
+          step1Status: 'done',
+          step1Text: `✅ ${nseList.length} Loaded`,
+          step2Status: 'loading',
+          step2Text: 'Fetching BSE...',
+          step3Status: 'pending',
+          step3Text: 'Waiting for BSE...'
+        });
+      } else {
+        updateProgressTracker({
+          stageBadge: 'Step 2 of 2: BSE India',
+          title: 'Fetching BSE India Issues & Anchor Notices...',
+          desc: 'Connecting to BSE India feed and indexing notices...',
+          progressPercent: 40,
+          step1Status: 'warning',
+          step1Text: 'NSE 0 Issues',
+          step2Status: 'loading',
+          step2Text: 'Fetching BSE...',
+          step3Status: 'pending',
+          step3Text: 'Pending'
+        });
+      }
+
+      // 2. Fetch BSE India
+      try {
+        const bseRes = await fetch(`/api/bse/ipo-list?t=${Date.now()}`, { cache: 'no-cache' });
+        if (bseRes.ok) {
+          const bseData = await bseRes.json();
+          if (bseData && Array.isArray(bseData.ipos)) {
+            bseList = bseData.ipos;
+          }
+        }
+      } catch (bseErr) {
+        console.warn('[ANCHOR] BSE fetch error:', bseErr.message);
+      }
+
+      // If NSE had failed but BSE succeeded, show BSE immediately before unifying
+      if (nseList.length === 0 && bseList.length > 0) {
+        ipoList = bseList.map(formatBseItem);
+        processAnchorDiff(ipoList);
+        renderUI();
+      }
+
+      updateProgressTracker({
+        stageBadge: 'Finalizing',
+        title: '🔗 Unifying Cross-Exchange IPOs & Sorting Timeline...',
+        desc: `Merging ${nseList.length} NSE issues and ${bseList.length} BSE issues...`,
+        progressPercent: 88,
+        step1Status: nseList.length > 0 ? 'done' : 'warning',
+        step1Text: nseList.length > 0 ? `✅ ${nseList.length} Loaded` : 'No NSE',
+        step2Status: bseList.length > 0 ? 'done' : 'warning',
+        step2Text: bseList.length > 0 ? `✅ ${bseList.length} Loaded` : 'No BSE',
+        step3Status: 'loading',
+        step3Text: 'Merging...'
+      });
+
+      // 3. Merge Both Exchanges
+      const unifiedList = mergeNseAndBse(nseList, bseList);
+
+      if (unifiedList.length > 0) {
+        ipoList = unifiedList;
+      } else {
+        // Fallback to local snapshot file if both were empty
+        try {
+          const fbRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
+          if (fbRes.ok) {
+            const fbData = await fbRes.json();
+            ipoList = fbData.ipos || fbData;
+          }
+        } catch (fbErr) {
+          console.warn('[ANCHOR] Snapshot fallback error:', fbErr.message);
         }
       }
 
-      if (!rawData || rawData.length === 0) {
-        throw new Error('Unable to retrieve IPO data from any source.');
-      }
-
-      processAnchorDiff(rawData);
+      processAnchorDiff(ipoList);
       renderUI();
+
+      const totalAnchors = ipoList.filter(i => i.anchor && i.anchor.available).length;
+      updateProgressTracker({
+        stageBadge: 'Live Sync Active',
+        title: `✅ All Exchanges Unified (${ipoList.length} IPOs · ${totalAnchors} Anchor Reports Released)`,
+        desc: `Synchronized: NSE (${nseList.length}) + BSE (${bseList.length}) with live notice attachments cross-linked.`,
+        progressPercent: 100,
+        step1Status: nseList.length > 0 ? 'done' : 'warning',
+        step1Text: `✅ ${nseList.length} NSE`,
+        step2Status: bseList.length > 0 ? 'done' : 'warning',
+        step2Text: `✅ ${bseList.length} BSE`,
+        step3Status: 'done',
+        step3Text: `✅ ${ipoList.length} Unified`,
+        isComplete: true
+      });
 
       if (els.lastUpdatedText) {
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        els.lastUpdatedText.textContent = `${timeStr} · ${source}`;
+        els.lastUpdatedText.textContent = `${timeStr} · Live (NSE + BSE India)`;
+        els.lastUpdatedText.style.color = '';
       }
 
     } catch (err) {
-      console.error('[ANCHOR] Fetch error:', err);
+      console.error('[ANCHOR] Progressive fetch error:', err);
+      updateProgressTracker({
+        stageBadge: 'Error',
+        title: '⚠️ Failed to synchronize all exchanges',
+        desc: err.message,
+        progressPercent: 100,
+        step1Status: 'warning',
+        step1Text: 'Error',
+        step2Status: 'warning',
+        step2Text: 'Error',
+        step3Status: 'warning',
+        step3Text: 'Failed'
+      });
       if (els.lastUpdatedText) {
         els.lastUpdatedText.textContent = `Error: ${err.message}. Retrying...`;
         els.lastUpdatedText.style.color = '#f87171';

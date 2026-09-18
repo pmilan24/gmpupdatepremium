@@ -104,6 +104,64 @@
       </button>
     </div>
 
+    <!-- Multi-Exchange Live Progress Tracker (Top Side of List) -->
+    <div id="exchangeProgressTracker" class="exchange-progress-tracker">
+      <div class="tracker-header">
+        <div class="tracker-status-left">
+          <span class="tracker-spinner" id="trackerSpinner">🔄</span>
+          <div class="tracker-text-group">
+            <div class="tracker-title-line">
+              <strong id="trackerStatusTitle">Synchronizing Exchange Feeds...</strong>
+              <span class="tracker-stage-badge" id="trackerStageBadge">Step 1 of 2</span>
+            </div>
+            <div class="tracker-desc" id="trackerStatusDesc">Connecting to NSE India & BSE India feeds...</div>
+          </div>
+        </div>
+        <div class="tracker-summary-right">
+          <span class="tracker-time-text" id="trackerTimeText">Live Sync Active</span>
+        </div>
+      </div>
+
+      <div class="tracker-progress-track">
+        <div class="tracker-progress-bar" id="trackerProgressBar" style="width: 15%;"></div>
+      </div>
+
+      <div class="tracker-steps">
+        <div class="tracker-step" id="stepNSE">
+          <div class="step-indicator">
+            <span class="step-num">1</span>
+            <span class="step-icon">🏛️</span>
+          </div>
+          <div class="step-info">
+            <div class="step-title">NSE India</div>
+            <span class="step-badge badge-loading" id="badgeNSE">Fetching issues...</span>
+          </div>
+        </div>
+
+        <div class="tracker-step" id="stepBSE">
+          <div class="step-indicator">
+            <span class="step-num">2</span>
+            <span class="step-icon">🏛️</span>
+          </div>
+          <div class="step-info">
+            <div class="step-title">BSE India</div>
+            <span class="step-badge badge-pending" id="badgeBSE">Waiting for NSE...</span>
+          </div>
+        </div>
+
+        <div class="tracker-step" id="stepUnified">
+          <div class="step-indicator">
+            <span class="step-num">3</span>
+            <span class="step-icon">⚡</span>
+          </div>
+          <div class="step-info">
+            <div class="step-title">Unified Merge</div>
+            <span class="step-badge badge-pending" id="badgeUnified">Pending</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Control Bar: Search, Filters & Sorting -->
     <div class="control-bar">
       <div class="search-box">

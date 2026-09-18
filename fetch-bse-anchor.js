@@ -348,13 +348,45 @@ function checkAnchorDateEligibility(startDateStr) {
  * Fetch and enrich active/upcoming BSE IPOs with anchor status
  */
 async function getEnrichedBSEIpoList() {
-  const issues = await fetchBSEPublicIssues();
+  // 1. Concurrently fetch BSE Public Issues list and live notice feeds for today + past few trading days
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+  
+  // Calculate prior business days to index
+  const pastDates = [];
+  for (let d = 1; d <= 4; d++) {
+    const p = new Date(now);
+    p.setDate(now.getDate() - d);
+    pastDates.push(p.toISOString().slice(0, 10).replace(/-/g, ''));
+  }
+  const dateFlagsToFetch = ['', todayStr, ...pastDates];
+
+  const [issues, ...noticeArrays] = await Promise.all([
+    fetchBSEPublicIssues().catch(() => []),
+    ...dateFlagsToFetch.map(flag => fetchBSELiveNotices(flag).catch(() => []))
+  ]);
+
+  // Combine and deduplicate notices by Notice_no
+  const allNoticesMap = new Map();
+  noticeArrays.flat().forEach(n => {
+    if (n && n.Notice_no && !allNoticesMap.has(n.Notice_no)) {
+      allNoticesMap.set(n.Notice_no, n);
+    }
+  });
+
+  const anchorNotices = Array.from(allNoticesMap.values()).filter(n => 
+    (n.Subject || '').toUpperCase().includes('ANCHOR')
+  );
+
   // Filter relevant issues (IPO or SME, not expired debt)
   const filtered = issues.filter(i => {
     const irFlag = (i.IR_flag || '').toUpperCase();
     const platform = (i.eXCHANGE_PLATFORM || '').toUpperCase();
     return irFlag.includes('IPO') || platform.includes('MAIN') || platform.includes('SME');
   });
+
+  // Pre-extract attachments for matched anchor notices to keep response times fast
+  const attachmentCache = new Map();
 
   const enriched = [];
 
@@ -366,78 +398,48 @@ async function getEnrichedBSEIpoList() {
     const priceBand = item.Price_Band || '';
     const platform = item.eXCHANGE_PLATFORM || 'MainBoard';
     const status = item.Status === 'L' ? 'Active' : (item.Status === 'F' ? 'Upcoming' : item.Status);
-
     let symbol = (item.short_name || '').toUpperCase().trim();
+
     let anchorNotice = null;
-    let anchorIntimationUrl = null;
-    let noticePdfUrl = null;
-    let noticeDate = null;
-    let noticeNo = null;
 
-    if (ipoNo) {
-      try {
-        const detail = await fetchBSEIpoDetail(ipoNo);
-        const meta = (detail.IPONO_0 && detail.IPONO_0[0]) || {};
-        if (!symbol && meta.Symbol) symbol = meta.Symbol.toUpperCase().trim();
+    // Fast Token Match against pre-indexed BSE live anchor notices
+    const tokens = cleanCompanyTokens(scripName);
+    if (tokens.length > 0) {
+      const matchedNotice = anchorNotices.find(n => {
+        const sub = (n.Subject || '').toUpperCase();
+        return tokens.every(t => sub.includes(t));
+      });
 
-        const notices = detail.IPONO_4 || [];
-        const foundNotice = notices.find(n => /anchor/i.test(n.SUBJECT || ''));
+      if (matchedNotice) {
+        const noticeNo = matchedNotice.Notice_no;
+        const noticePdfUrl = matchedNotice.FileName || `https://www.bseindia.com/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
+        const noticeDate = matchedNotice.Notice_date || '';
 
-        if (foundNotice) {
-          noticePdfUrl = foundNotice.FILENAME || `https://www.bseindia.com/downloads/UploadDocs/Notices/${foundNotice.NOTICE_NO}/${foundNotice.NOTICE_NO}.pdf`;
-          noticeDate = foundNotice.NOTICE_DATE || '';
-          noticeNo = foundNotice.NOTICE_NO || '';
+        // Check if attachment is already parsed/cached
+        let intimationPdfUrl = attachmentCache.get(noticeNo);
+        let hasAttachment = false;
 
-          // Extract the actual anchor intimation letter inside the notice PDF
-          anchorIntimationUrl = await extractAttachmentFromNoticePdf(noticePdfUrl);
-          anchorNotice = {
-            available: true,
-            noticeNo,
-            noticeDate,
-            noticePdfUrl,
-            intimationPdfUrl: anchorIntimationUrl || noticePdfUrl,
-            hasIntimationAttachment: !!anchorIntimationUrl
-          };
-        }
-
-        // Fallback 1: If not found in IPONO_4, check the BSE Live Notice feed (getCurrPreNextNoticesData_New)
-        if (!anchorNotice) {
-          const anchorDateCheck = checkAnchorDateEligibility(startDate);
-          const expectedFlag = anchorDateCheck.expectedDate ? anchorDateCheck.expectedDate.replace(/-/g, '') : '';
-          const foundInLive = await findBSEAnchorInNotices(scripName, [expectedFlag]);
-          if (foundInLive) {
-            anchorNotice = {
-              available: true,
-              noticeNo: foundInLive.noticeNo,
-              noticeDate: foundInLive.noticeDate,
-              noticePdfUrl: foundInLive.noticePdfUrl,
-              intimationPdfUrl: foundInLive.intimationPdfUrl,
-              hasIntimationAttachment: foundInLive.hasIntimationAttachment,
-              method: foundInLive.method
-            };
+        if (!intimationPdfUrl) {
+          intimationPdfUrl = await extractAttachmentFromNoticePdf(noticePdfUrl);
+          if (intimationPdfUrl) {
+            attachmentCache.set(noticeNo, intimationPdfUrl);
+            hasAttachment = true;
+          } else {
+            intimationPdfUrl = noticePdfUrl;
           }
+        } else {
+          hasAttachment = true;
         }
-      } catch (err) {
-        console.warn(`[BSE] Error getting detail for IPO_NO ${ipoNo} (${scripName}):`, err.message);
-      }
-    }
 
-    // Fallback 2: If still not found and anchor is due today or past, run sequential probe on target date
-    if (!anchorNotice) {
-      const anchorDateCheck = checkAnchorDateEligibility(startDate);
-      if (anchorDateCheck.isToday && anchorDateCheck.expectedDate) {
-        const probed = await probeSequentialBseNotices(scripName, anchorDateCheck.expectedDate, 48);
-        if (probed) {
-          anchorNotice = {
-            available: true,
-            noticeNo: probed.noticeNo,
-            noticeDate: probed.noticeDate,
-            noticePdfUrl: probed.noticePdfUrl,
-            intimationPdfUrl: probed.intimationPdfUrl,
-            hasIntimationAttachment: probed.hasIntimationAttachment,
-            method: probed.method
-          };
-        }
+        anchorNotice = {
+          available: true,
+          noticeNo,
+          noticeDate,
+          noticePdfUrl,
+          intimationPdfUrl,
+          hasIntimationAttachment: hasAttachment,
+          method: 'FAST_LIVE_FEED'
+        };
       }
     }
 

@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-18T16:45:05.880Z",
+  "lastUpdated": "2026-09-18T17:24:02.020Z",
   "count": 24,
-  "anchorCount": 8,
+  "anchorCount": 9,
   "ipos": [
     {
       "id": "NSE_NSE",
@@ -22,7 +22,10 @@
       "registrar": "MUFG Intime India Private Limited (formerly Link Intime India Private Limited)",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 2,
+        "daysToGo": 0,
         "expectedDate": "2026-09-15",
         "message": "Due / Released since 16 Sept"
       },
@@ -41,7 +44,7 @@
         "scripCode": 4827,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_SONA",
@@ -62,7 +65,10 @@
       "registrar": "KFin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 2,
+        "daysToGo": 0,
         "expectedDate": "2026-09-15",
         "message": "Due / Released since 16 Sept"
       },
@@ -81,7 +87,7 @@
         "scripCode": 4824,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_HEROMOTORS",
@@ -102,7 +108,10 @@
       "registrar": "KFin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 3,
+        "daysToGo": 0,
         "expectedDate": "2026-09-14",
         "message": "Due / Released since 15 Sept"
       },
@@ -121,7 +130,7 @@
         "scripCode": 4823,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_JSIPL",
@@ -142,7 +151,10 @@
       "registrar": "Bigshare Services Private Limited",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 3,
+        "daysToGo": 0,
         "expectedDate": "2026-09-14",
         "message": "Due / Released since 15 Sept"
       },
@@ -161,7 +173,7 @@
         "scripCode": 4826,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_SSRETAIL",
@@ -182,7 +194,10 @@
       "registrar": "KFin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 3,
+        "daysToGo": 0,
         "expectedDate": "2026-09-14",
         "message": "Due / Released since 15 Sept"
       },
@@ -201,7 +216,7 @@
         "scripCode": 4828,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_AXIOMGAS",
@@ -221,7 +236,10 @@
       "registrar": "KFin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 1,
+        "daysToGo": 0,
         "expectedDate": "2026-09-16",
         "message": "Due / Released since 17 Sept"
       },
@@ -236,7 +254,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_KHERIAAUTO",
@@ -253,25 +271,28 @@
       "issuePrice": "—",
       "issueSize": "—",
       "noOfTime": 0.45,
-      "registrar": "Kfin Technologies Limited",
+      "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 2,
+        "daysToGo": 0,
         "expectedDate": "2026-09-15",
         "message": "Due / Released since 16 Sept"
       },
       "anchor": {
-        "available": true,
-        "source": "NSE",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_KHERIAAUTO.zip",
-        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=KHERIAAUTO",
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.019Z"
     },
     {
       "id": "NSE_SPECTRAA",
@@ -288,29 +309,32 @@
       "issuePrice": "—",
       "issueSize": "—",
       "noOfTime": 18.43,
-      "registrar": "Maashitla Securities Private Limited",
+      "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 2,
+        "daysToGo": 0,
         "expectedDate": "2026-09-15",
         "message": "Due / Released since 16 Sept"
       },
       "anchor": {
-        "available": true,
-        "source": "NSE",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SPECTRAA.zip",
-        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=SPECTRAA",
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_NCL-RE",
-      "symbol": "NCL-RE",
+      "id": "BSE_NCLRESEARC",
+      "symbol": "NCLRESEARC",
       "companyName": "NCL RESEARCH  FINANCIAL SERVICES LTD",
       "exchange": "BSE",
       "platforms": [
@@ -326,7 +350,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 16,
+        "daysToGo": 0,
         "expectedDate": "2026-09-01",
         "message": "Due / Released since 2 Sept"
       },
@@ -345,11 +372,11 @@
         "scripCode": 4791,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_JAYKAY-RE1",
-      "symbol": "JAYKAY-RE1",
+      "id": "BSE_JAYKAYENTE",
+      "symbol": "JAYKAYENTE",
       "companyName": "JAYKAY ENTERPRISES LTD",
       "exchange": "BSE",
       "platforms": [
@@ -365,7 +392,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 14,
+        "daysToGo": 0,
         "expectedDate": "2026-09-03",
         "message": "Due / Released since 4 Sept"
       },
@@ -384,11 +414,11 @@
         "scripCode": 4794,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_FXML",
-      "symbol": "FXML",
+      "id": "BSE_FXMULTITEC",
+      "symbol": "FXMULTITEC",
       "companyName": "FX MULTITECH LIMITED",
       "exchange": "BSE SME",
       "platforms": [
@@ -404,26 +434,29 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": true,
         "isUpcoming": false,
+        "diffDays": 0,
+        "daysToGo": 0,
         "expectedDate": "2026-09-17",
-        "message": "Due / Released since 18 Sept"
+        "message": "Due Today (18 Sept)"
       },
       "anchor": {
-        "available": false,
-        "source": "NONE",
+        "available": true,
+        "source": "BSE",
         "nseZipUrl": null,
         "nsePdfUrl": null,
-        "bseNoticePdfUrl": null,
-        "bseIntimationPdfUrl": null,
-        "bseNoticeNo": null,
-        "hasBseAttachment": false
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-46/20260918-46.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation_letter$97dab3e1-402a-4744-b035-feeb89c87b3a.pdf",
+        "bseNoticeNo": "20260918-46",
+        "hasBseAttachment": true
       },
       "bseData": {
         "ipoNo": 7980,
         "scripCode": 4831,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
       "id": "BSE_VIVEKANAND",
@@ -443,30 +476,33 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": true,
         "isUpcoming": false,
+        "diffDays": 0,
+        "daysToGo": 0,
         "expectedDate": "2026-09-17",
-        "message": "Due / Released since 18 Sept"
+        "message": "Due Today (18 Sept)"
       },
       "anchor": {
-        "available": false,
-        "source": "NONE",
+        "available": true,
+        "source": "BSE",
         "nseZipUrl": null,
         "nsePdfUrl": null,
-        "bseNoticePdfUrl": null,
-        "bseIntimationPdfUrl": null,
-        "bseNoticeNo": null,
-        "hasBseAttachment": false
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-28/20260918-28.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Company$2f07ca52-e256-4c47-b9e9-f271b93fae34.pdf",
+        "bseNoticeNo": "20260918-28",
+        "hasBseAttachment": true
       },
       "bseData": {
         "ipoNo": 7981,
         "scripCode": 4832,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_ROBOKIDZ",
-      "symbol": "ROBOKIDZ",
+      "id": "BSE_ROBOKIDZED",
+      "symbol": "ROBOKIDZED",
       "companyName": "ROBOKIDZ EDUVENTURES LIMITED",
       "exchange": "BSE SME",
       "platforms": [
@@ -482,26 +518,29 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": true,
         "isUpcoming": false,
+        "diffDays": 0,
+        "daysToGo": 0,
         "expectedDate": "2026-09-17",
-        "message": "Due / Released since 18 Sept"
+        "message": "Due Today (18 Sept)"
       },
       "anchor": {
-        "available": false,
-        "source": "NONE",
+        "available": true,
+        "source": "BSE",
         "nseZipUrl": null,
         "nsePdfUrl": null,
-        "bseNoticePdfUrl": null,
-        "bseIntimationPdfUrl": null,
-        "bseNoticeNo": null,
-        "hasBseAttachment": false
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-29/20260918-29.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Intimation$bade89aa-7f1c-4061-85fe-664590198319.pdf",
+        "bseNoticeNo": "20260918-29",
+        "hasBseAttachment": true
       },
       "bseData": {
         "ipoNo": 7982,
         "scripCode": 4833,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
       "id": "BSE_SHANKARA",
@@ -521,7 +560,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 14,
+        "daysToGo": 0,
         "expectedDate": "2026-09-03",
         "message": "Due / Released since 4 Sept"
       },
@@ -540,11 +582,11 @@
         "scripCode": 540425,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_HNIL",
-      "symbol": "HNIL",
+      "id": "BSE_HIMALAYANU",
+      "symbol": "HIMALAYANU",
       "companyName": "Himalaya Nutravedics India Limited",
       "exchange": "BSE SME",
       "platforms": [
@@ -560,7 +602,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": false,
+        "isToday": false,
         "isUpcoming": true,
+        "diffDays": -3,
+        "daysToGo": 3,
         "expectedDate": "2026-09-20",
         "message": "Expected 21 Sept (3 days to go)"
       },
@@ -579,11 +624,11 @@
         "scripCode": 4834,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_VARMORA",
-      "symbol": "VARMORA",
+      "id": "BSE_VARMORAGRA",
+      "symbol": "VARMORAGRA",
       "companyName": "Varmora Granito Limited",
       "exchange": "BSE",
       "platforms": [
@@ -599,7 +644,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": false,
+        "isToday": false,
         "isUpcoming": true,
+        "diffDays": -3,
+        "daysToGo": 3,
         "expectedDate": "2026-09-20",
         "message": "Expected 21 Sept (3 days to go)"
       },
@@ -618,11 +666,11 @@
         "scripCode": 4837,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_SKOFFSET",
-      "symbol": "SKOFFSET",
+      "id": "BSE_SKOFFSETLI",
+      "symbol": "SKOFFSETLI",
       "companyName": "S. K. OFFSET LIMITED",
       "exchange": "BSE SME",
       "platforms": [
@@ -638,7 +686,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": false,
+        "isToday": false,
         "isUpcoming": true,
+        "diffDays": -4,
+        "daysToGo": 4,
         "expectedDate": "2026-09-21",
         "message": "Expected 22 Sept (4 days to go)"
       },
@@ -657,11 +708,11 @@
         "scripCode": 4836,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_SPANDANACM",
-      "symbol": "SPANDANACM",
+      "id": "BSE_SPANDANASP",
+      "symbol": "SPANDANASP",
       "companyName": "SPANDANA SPHOORTY FINANCIAL LTD",
       "exchange": "BSE",
       "platforms": [
@@ -677,7 +728,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 10,
+        "daysToGo": 0,
         "expectedDate": "2026-09-07",
         "message": "Due / Released since 8 Sept"
       },
@@ -696,11 +750,11 @@
         "scripCode": 4815,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_CONTAIN-RE",
-      "symbol": "CONTAIN-RE",
+      "id": "BSE_CONTAINETE",
+      "symbol": "CONTAINETE",
       "companyName": "CONTAINE TECHNOLOGIES LTD",
       "exchange": "BSE SME",
       "platforms": [
@@ -716,7 +770,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 21,
+        "daysToGo": 0,
         "expectedDate": "2026-08-27",
         "message": "Due / Released since 28 Aug"
       },
@@ -735,11 +792,11 @@
         "scripCode": 4778,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_MANOJ-RE",
-      "symbol": "MANOJ-RE",
+      "id": "BSE_MANOJJEWEL",
+      "symbol": "MANOJJEWEL",
       "companyName": "MANOJ JEWELLERS LTD",
       "exchange": "BSE SME",
       "platforms": [
@@ -755,7 +812,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 21,
+        "daysToGo": 0,
         "expectedDate": "2026-08-27",
         "message": "Due / Released since 28 Aug"
       },
@@ -774,7 +834,7 @@
         "scripCode": 4779,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
       "id": "BSE_CUBI FIN SER",
@@ -794,7 +854,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 2,
+        "daysToGo": 0,
         "expectedDate": "2026-09-15",
         "message": "Due / Released since 16 Sept"
       },
@@ -813,7 +876,7 @@
         "scripCode": 511710,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
       "id": "BSE_ECS",
@@ -833,7 +896,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 2,
+        "daysToGo": 0,
         "expectedDate": "2026-09-15",
         "message": "Due / Released since 16 Sept"
       },
@@ -852,11 +918,11 @@
         "scripCode": 540063,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_SALEM-RE",
-      "symbol": "SALEM-RE",
+      "id": "BSE_SALEMERODE",
+      "symbol": "SALEMERODE",
       "companyName": "SALEM ERODE INVESTMENTS LTD",
       "exchange": "BSE",
       "platforms": [
@@ -872,7 +938,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 4,
+        "daysToGo": 0,
         "expectedDate": "2026-09-13",
         "message": "Due / Released since 14 Sept"
       },
@@ -891,11 +960,11 @@
         "scripCode": 4821,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     },
     {
-      "id": "BSE_INDRA-RE",
-      "symbol": "INDRA-RE",
+      "id": "BSE_INDRAYANIB",
+      "symbol": "INDRAYANIB",
       "companyName": "INDRAYANI BIOTECH LTD",
       "exchange": "BSE",
       "platforms": [
@@ -911,7 +980,10 @@
       "registrar": "—",
       "anchorEligibility": {
         "eligible": true,
+        "isToday": false,
         "isUpcoming": false,
+        "diffDays": 4,
+        "daysToGo": 0,
         "expectedDate": "2026-09-13",
         "message": "Due / Released since 14 Sept"
       },
@@ -930,7 +1002,7 @@
         "scripCode": 4822,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T16:45:05.880Z"
+      "updatedAt": "2026-09-18T17:24:02.020Z"
     }
   ]
 }

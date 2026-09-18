@@ -19,16 +19,24 @@ async function getNSESession() {
   };
 
   console.log('[NSE] Fetching fresh session cookies from nseindia.com...');
-  const res = await fetch('https://www.nseindia.com/', { headers });
-  const rawCookie = res.headers.get('set-cookie') || '';
-  nseCookies = rawCookie
-    .split(/,\s*(?=[a-zA-Z0-9_]+=)/)
-    .map(c => c.split(';')[0])
-    .join('; ');
+  try {
+    const res = await fetch('https://www.nseindia.com/', {
+      headers,
+      signal: AbortSignal.timeout(8000)
+    });
+    const rawCookie = res.headers.get('set-cookie') || '';
+    nseCookies = rawCookie
+      .split(/,\s*(?=[a-zA-Z0-9_]+=)/)
+      .map(c => c.split(';')[0])
+      .join('; ');
 
-  // Cookies valid for 45 minutes
-  nseCookieExpiry = now + 45 * 60 * 1000;
-  return nseCookies;
+    // Cookies valid for 45 minutes
+    nseCookieExpiry = now + 45 * 60 * 1000;
+    return nseCookies;
+  } catch (err) {
+    console.warn('[NSE] Failed to obtain cookies:', err.message);
+    throw err;
+  }
 }
 
 async function fetchNSEIpoList() {
@@ -41,7 +49,7 @@ async function fetchNSEIpoList() {
   };
 
   const url = `https://www.nseindia.com/api/ipo-current-issue?_t=${Date.now()}`;
-  const res = await fetch(url, { headers: apiHeaders });
+  const res = await fetch(url, { headers: apiHeaders, signal: AbortSignal.timeout(8000) });
   if (!res.ok) {
     throw new Error(`Failed to fetch NSE IPO list: HTTP ${res.status}`);
   }
@@ -49,20 +57,24 @@ async function fetchNSEIpoList() {
 }
 
 async function fetchNSEIpoDetail(symbol, series = 'EQ') {
-  const cookies = await getNSESession();
-  const apiHeaders = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*',
-    'Referer': `https://www.nseindia.com/market-data/issue-information?symbol=${symbol}&series=${series}&type=Active`,
-    'Cookie': cookies
-  };
+  try {
+    const cookies = await getNSESession();
+    const apiHeaders = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json, text/plain, */*',
+      'Referer': `https://www.nseindia.com/market-data/issue-information?symbol=${symbol}&series=${series}&type=Active`,
+      'Cookie': cookies
+    };
 
-  const url = `https://www.nseindia.com/api/ipo-detail?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(series)}&_t=${Date.now()}`;
-  const res = await fetch(url, { headers: apiHeaders });
-  if (!res.ok) {
+    const url = `https://www.nseindia.com/api/ipo-detail?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(series)}&_t=${Date.now()}`;
+    const res = await fetch(url, { headers: apiHeaders, signal: AbortSignal.timeout(5000) });
+    if (!res.ok) {
+      return null;
+    }
+    return await res.json();
+  } catch (err) {
     return null;
   }
-  return await res.json();
 }
 
 async function downloadAnchorZip(zipUrl, symbol, isRetry = false) {
@@ -111,9 +123,8 @@ function extractPdfFromZipBuffer(zipBuffer) {
 
 async function getEnrichedIpoList() {
   const rawList = await fetchNSEIpoList();
-  const enriched = [];
 
-  for (const item of rawList) {
+  const enriched = await Promise.all(rawList.map(async (item) => {
     const symbol = item.symbol || '';
     const series = item.series || (item.isBse === '1' ? 'SME' : 'EQ');
     let anchorAvailable = false;
@@ -152,7 +163,7 @@ async function getEnrichedIpoList() {
     const noOfTimes = parseFloat(item.noOfTime) || 0;
     const isSme = series === 'SME' || item.isBse === '1';
 
-    enriched.push({
+    return {
       symbol,
       companyName: item.companyName || symbol,
       series,
@@ -175,8 +186,8 @@ async function getEnrichedIpoList() {
         detectedAt: anchorAvailable ? Date.now() : null
       },
       updatedAt: new Date().toISOString()
-    });
-  }
+    };
+  }));
 
   return enriched;
 }

@@ -29,20 +29,9 @@ function matchCompany(a, b) {
 }
 
 /**
- * Fetch and merge data from both NSE and BSE
+ * Pure function to merge NSE and BSE IPO data
  */
-async function getUnifiedExchangeIpos() {
-  const [nseList, bseList] = await Promise.all([
-    getNSEList().catch(err => {
-      console.warn('[MERGE] NSE fetch failed:', err.message);
-      return [];
-    }),
-    getEnrichedBSEIpoList().catch(err => {
-      console.warn('[MERGE] BSE fetch failed:', err.message);
-      return [];
-    })
-  ]);
-
+function mergeNseAndBse(nseList = [], bseList = []) {
   const unified = [];
   const matchedBseIndices = new Set();
 
@@ -154,8 +143,28 @@ async function getUnifiedExchangeIpos() {
   return unified;
 }
 
+/**
+ * Fetch and merge data from both NSE and BSE concurrently
+ */
+async function getUnifiedExchangeIpos() {
+  const [nseList, bseList] = await Promise.all([
+    getNSEList().catch(err => {
+      console.warn('[MERGE] NSE fetch failed:', err.message);
+      return [];
+    }),
+    getEnrichedBSEIpoList().catch(err => {
+      console.warn('[MERGE] BSE fetch failed:', err.message);
+      return [];
+    })
+  ]);
+
+  return mergeNseAndBse(nseList, bseList);
+}
+
 module.exports = {
   normalizeName,
   matchCompany,
+  mergeNseAndBse,
   getUnifiedExchangeIpos
 };
+

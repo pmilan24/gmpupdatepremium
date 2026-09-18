@@ -40,12 +40,123 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
-// In-memory cache for Unified IPO list (cache for 60 seconds)
+// In-memory caches with in-flight Promise deduplication
+let nseCacheData = null;
+let nseCacheExpiry = 0;
+let nseInFlightPromise = null;
+
+let bseCacheData = null;
+let bseCacheExpiry = 0;
+let bseInFlightPromise = null;
+
 let unifiedCacheData = null;
 let unifiedCacheExpiry = 0;
 
 const cacheDir = '/tmp/nse_cache';
 if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+// Pre-warm initial caches from existing snapshot
+try {
+  const initialSnapshotPath = path.join(ROOT, 'nse-ipo-data.json');
+  if (fs.existsSync(initialSnapshotPath)) {
+    const parsed = JSON.parse(fs.readFileSync(initialSnapshotPath, 'utf8'));
+    if (parsed && Array.isArray(parsed.ipos) && parsed.ipos.length > 0) {
+      unifiedCacheData = parsed;
+      unifiedCacheExpiry = Date.now() + 60 * 1000;
+
+      const nseItems = parsed.ipos.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE')));
+      if (nseItems.length > 0) {
+        nseCacheData = {
+          source: 'NSE India',
+          lastUpdated: parsed.lastUpdated || new Date().toISOString(),
+          count: nseItems.length,
+          anchorCount: nseItems.filter(i => i.anchor && i.anchor.available).length,
+          ipos: nseItems
+        };
+        nseCacheExpiry = Date.now() + 60 * 1000;
+      }
+
+      const bseItems = parsed.ipos.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE')));
+      if (bseItems.length > 0) {
+        bseCacheData = {
+          source: 'BSE India',
+          lastUpdated: parsed.lastUpdated || new Date().toISOString(),
+          count: bseItems.length,
+          anchorCount: bseItems.filter(i => i.anchor && i.anchor.available).length,
+          ipos: bseItems
+        };
+        bseCacheExpiry = Date.now() + 60 * 1000;
+      }
+      console.log(`[SERVER] Pre-warmed caches from snapshot: ${nseItems.length} NSE, ${bseItems.length} BSE, ${parsed.ipos.length} Unified.`);
+    }
+  }
+} catch (e) {
+  console.warn('[SERVER] Could not load initial snapshot:', e.message);
+}
+
+async function getCachedNSEList(force = false) {
+  const now = Date.now();
+  if (!force && nseCacheData && now < nseCacheExpiry) {
+    return nseCacheData;
+  }
+  if (nseInFlightPromise) {
+    return await nseInFlightPromise;
+  }
+  nseInFlightPromise = (async () => {
+    try {
+      console.log('[SERVER] Fetching fresh NSE IPO list...');
+      const list = await getEnrichedIpoList();
+      nseCacheData = {
+        source: 'NSE India',
+        lastUpdated: new Date().toISOString(),
+        count: list.length,
+        anchorCount: list.filter(i => i.anchor && i.anchor.available).length,
+        ipos: list
+      };
+      nseCacheExpiry = Date.now() + 120 * 1000; // 2 min cache
+      return nseCacheData;
+    } catch (err) {
+      console.warn('[SERVER] NSE fetch error:', err.message);
+      if (nseCacheData) return nseCacheData;
+      throw err;
+    } finally {
+      nseInFlightPromise = null;
+    }
+  })();
+  return await nseInFlightPromise;
+}
+
+async function getCachedBSEList(force = false) {
+  const now = Date.now();
+  if (!force && bseCacheData && now < bseCacheExpiry) {
+    return bseCacheData;
+  }
+  if (bseInFlightPromise) {
+    return await bseInFlightPromise;
+  }
+  bseInFlightPromise = (async () => {
+    try {
+      console.log('[SERVER] Fetching fresh BSE IPO list...');
+      const list = await getEnrichedBSEIpoList();
+      bseCacheData = {
+        source: 'BSE India',
+        lastUpdated: new Date().toISOString(),
+        count: list.length,
+        anchorCount: list.filter(i => i.anchor && i.anchor.available).length,
+        ipos: list
+      };
+      bseCacheExpiry = Date.now() + 120 * 1000; // 2 min cache
+      return bseCacheData;
+    } catch (err) {
+      console.warn('[SERVER] BSE fetch error:', err.message);
+      if (bseCacheData) return bseCacheData;
+      throw err;
+    } finally {
+      bseInFlightPromise = null;
+    }
+  })();
+  return await bseInFlightPromise;
+}
 
 const server = http.createServer(async (req, res) => {
   // CORS headers
@@ -62,21 +173,52 @@ const server = http.createServer(async (req, res) => {
   // Parse URL
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = parsedUrl.pathname;
+  const force = parsedUrl.searchParams.get('force') === '1';
+
+  // --- API ROUTE: GET /api/nse/ipo-list (NSE India Only) ---
+  if (pathname === '/api/nse/ipo-list') {
+    try {
+      const data = await getCachedNSEList(force);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message, ipos: [] }));
+    }
+    return;
+  }
+
+  // --- API ROUTE: GET /api/bse/ipo-list (BSE India Only) ---
+  if (pathname === '/api/bse/ipo-list') {
+    try {
+      const data = await getCachedBSEList(force);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message, ipos: [] }));
+    }
+    return;
+  }
 
   // --- API ROUTE: GET /api/exchange/ipo-list (Unified NSE + BSE) ---
-  if (pathname === '/api/exchange/ipo-list' || pathname === '/api/nse/ipo-list') {
+  if (pathname === '/api/exchange/ipo-list') {
     const now = Date.now();
     try {
-      if (!unifiedCacheData || now > unifiedCacheExpiry) {
+      if (force || !unifiedCacheData || now > unifiedCacheExpiry) {
         console.log('[SERVER] Refreshing unified exchange IPO cache (NSE + BSE)...');
-        const ipos = await getUnifiedExchangeIpos();
+        const [nseData, bseData] = await Promise.all([
+          getCachedNSEList(force).catch(() => ({ ipos: [] })),
+          getCachedBSEList(force).catch(() => ({ ipos: [] }))
+        ]);
+        const ipos = require('./merge-exchanges').mergeNseAndBse(nseData.ipos || [], bseData.ipos || []);
         unifiedCacheData = {
           lastUpdated: new Date().toISOString(),
           count: ipos.length,
           anchorCount: ipos.filter(i => i.anchor && i.anchor.available).length,
           ipos
         };
-        unifiedCacheExpiry = now + 60 * 1000; // 60s cache
+        unifiedCacheExpiry = now + 90 * 1000;
         // Save snapshot to local file
         fs.writeFileSync(path.join(ROOT, 'nse-ipo-data.json'), JSON.stringify(unifiedCacheData, null, 2));
       }
@@ -96,24 +238,6 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: err.message }));
       }
-    }
-    return;
-  }
-
-  // --- API ROUTE: GET /api/bse/ipo-list ---
-  if (pathname === '/api/bse/ipo-list') {
-    try {
-      const bseList = await getEnrichedBSEIpoList();
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({
-        lastUpdated: new Date().toISOString(),
-        count: bseList.length,
-        anchorCount: bseList.filter(i => i.anchor && i.anchor.available).length,
-        ipos: bseList
-      }));
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
     }
     return;
   }
