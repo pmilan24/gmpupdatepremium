@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPO Live Subscription – Company-Wise Tracker & Webhook</title>
+  <meta name="description" content="Live company-wise IPO subscription tracker from BSE/NSE and ipopremium with instant change detection and API webhook dispatcher.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="container header-content">
+      <div class="logo-section">
+        <div class="logo-badge" style="background: linear-gradient(135deg, #10b981, #3b82f6);">📊</div>
+        <div class="title-group">
+          <h1>
+            IPO Subscription Tracker
+            <span class="live-pill">LIVE BSE/NSE</span>
+          </h1>
+          <p>
+            Company-wise live subscription from <a href="https://dash.ipopremium.in/view/subscription?inapp=true" target="_blank" rel="noopener noreferrer">dash.ipopremium.in</a> · 
+            <span id="lastUpdatedText">Connecting...</span>
+          </p>
+          <nav class="nav-tabs">
+            <a href="index.html" class="nav-tab">📈 GMP Tracker</a>
+            <a href="subscription.html" class="nav-tab active">📊 Live Subscription</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Auto Refresh Countdown Box -->
+        <div class="timer-box" title="Auto-refresh timer (fast updates for live market)">
+          <span>Auto-refresh:</span>
+          <strong id="countdownText">1:00</strong>
+          <div class="countdown-bar">
+            <div id="countdownFill" class="countdown-fill" style="background: #10b981;"></div>
+          </div>
+          <select id="intervalSelect" class="sort-select" style="padding: 2px 6px; font-size: 0.78rem;">
+            <option value="30">30 sec</option>
+            <option value="60" selected>1 min</option>
+            <option value="180">3 min</option>
+            <option value="300">5 min</option>
+          </select>
+        </div>
+
+        <!-- Refresh Button -->
+        <button id="refreshBtn" class="btn btn-primary" style="background: #10b981;" title="Refresh subscription numbers">
+          <span id="refreshIcon">🔄</span> Refresh
+        </button>
+
+        <!-- Sound Notification Toggle -->
+        <button id="soundToggleBtn" class="btn btn-outline" title="Sound alerts on changes">
+          <span id="soundIcon">🔔</span>
+        </button>
+
+        <!-- Webhook / API Dispatcher Config Button -->
+        <button id="apiSettingsBtn" class="btn btn-outline" title="Configure your API endpoint to receive change events">
+          ⚙️ API Integration
+        </button>
+
+        <!-- Simulate Change Button -->
+        <button id="simulateBtn" class="btn btn-outline btn-sm" title="Simulate a subscription surge to test highlight and webhook call">
+          ⚡ Test Surge
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Quick Statistics Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total IPOs Bidding</span>
+        <span id="statTotal" class="stat-val">—</span>
+        <span class="stat-sub">Mainboard & SME</span>
+      </div>
+
+      <div class="stat-card highlight-card">
+        <span class="stat-label">Subscription Changes</span>
+        <span id="statChanged" class="stat-val">0</span>
+        <span class="stat-sub">Surges detected</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Highest Subscribed</span>
+        <span id="statHighest" class="stat-val" style="color: #34d399;">—</span>
+        <span class="stat-sub">Top bidding multiple</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Total Applications</span>
+        <span id="statTotalApps" class="stat-val">—</span>
+        <span class="stat-sub">Across all active IPOs</span>
+      </div>
+    </div>
+
+    <!-- Alert Banner (shown only when changes occur) -->
+    <div id="alertBanner" class="alert-banner" style="display: none;">
+      <div class="alert-banner-text">
+        <span>⚡ <strong><span id="alertBannerCount">0</span> IPO(s)</strong> have new subscription bids received! Cards highlighted in amber.</span>
+      </div>
+      <button onclick="window.location.reload()" class="btn btn-outline btn-sm">
+        Acknowledge ✓
+      </button>
+    </div>
+
+    <!-- Control Bar: Search, Filters & Sorting -->
+    <div class="control-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search company name, date, price...">
+      </div>
+
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all">All Bidding</button>
+        <button class="chip" data-filter="changed">🔥 Changed (0)</button>
+        <button class="chip" data-filter="mainboard">Mainboard</button>
+        <button class="chip" data-filter="sme">SME</button>
+        <button class="chip" data-filter="oversubscribed">Oversubscribed (&gt;1x)</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Sort:</span>
+        <select id="sortSelect" class="sort-select">
+          <option value="default">Default</option>
+          <option value="times-desc">Total Times (High to Low)</option>
+          <option value="times-asc">Total Times (Low to High)</option>
+          <option value="apps-desc">Total Applications (High to Low)</option>
+          <option value="name-asc">Company Name (A–Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Company Subscription Cards Grid -->
+    <div id="subsGrid" class="subs-grid">
+      <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--text-muted);">
+        <div class="loading-spinner"></div>
+        <p>Loading live company-wise subscription data...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Webhook / API Dispatcher Configuration Modal -->
+  <div id="apiModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ External API Webhook Dispatcher</h2>
+        <button id="closeModalBtn" class="modal-close">&times;</button>
+      </div>
+
+      <form id="apiForm">
+        <div class="form-group">
+          <label for="apiUrlInput">Your Target API URL (POST Endpoint):</label>
+          <input type="url" id="apiUrlInput" class="form-input" placeholder="https://api.yourdomain.com/v1/subscription-webhook">
+          <p class="form-help">Whenever subscription numbers change, an instant HTTP POST is sent to this URL with the updated company data.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="apiHeadersInput">Custom Headers (JSON format):</label>
+          <textarea id="apiHeadersInput" class="form-input" rows="3" style="font-family: monospace; font-size: 0.8rem;"></textarea>
+          <p class="form-help">Example: <code>{ "Authorization": "Bearer YOUR_TOKEN", "Content-Type": "application/json" }</code></p>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="apiAutoSendCheckbox" checked style="width: 18px; height: 18px; cursor: pointer;">
+          <label for="apiAutoSendCheckbox" style="margin: 0; cursor: pointer;">
+            Instantly dispatch to API whenever any company subscription changes
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Sample Payload Preview:</label>
+          <pre id="payloadPreview" class="payload-preview"></pre>
+        </div>
+
+        <div id="apiStatusMsg" style="font-size: 0.85rem; font-weight: 600; min-height: 20px; margin-bottom: 12px;"></div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" id="testApiBtn" class="btn btn-outline">
+            🚀 Test Send
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Save Configuration
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="app-footer container">
+    <p>
+      Data extracted directly from <a href="https://dash.ipopremium.in/view/subscription?inapp=true" target="_blank" rel="noopener noreferrer">dash.ipopremium.in</a>.
+      Official NSE & BSE subscription feed. Educational and informational purposes only.
+    </p>
+    <p style="margin-top: 6px; font-size: 0.75rem; color: #6b7280;">
+      Instant second-by-second diffing engine · Webhook dispatcher ready · Zero server setup required
+    </p>
+  </footer>
+
+  <script src="subscription.js"></script>
+</body>
+</html>
