@@ -10,7 +10,7 @@
   let ipoList = [];
   let storageState = loadStorage();
   let currentFilter = 'all';
-  let currentSort = 'default';
+  let currentSort = 'today-timeline';
   let searchQuery = '';
   let refreshIntervalSeconds = 60; // 1 min auto-refresh
   let secondsRemaining = refreshIntervalSeconds;
@@ -314,12 +314,36 @@
       );
     }
 
+    function getSortTier(item) {
+      const elig = item.anchorEligibility || {};
+      if (elig.isToday) return 1; // 1. Today list first
+      if (elig.isUpcoming) return 2; // 2. Next coming after
+      return 3; // 3. Live IPO list (active bidding / open)
+    }
+
     switch (currentSort) {
-      case 'today-first':
+      case 'today-timeline':
+      default:
         list.sort((a, b) => {
-          const aToday = (a.anchorEligibility && a.anchorEligibility.isToday) ? 1 : 0;
-          const bToday = (b.anchorEligibility && b.anchorEligibility.isToday) ? 1 : 0;
-          return bToday - aToday;
+          const tierA = getSortTier(a);
+          const tierB = getSortTier(b);
+          if (tierA !== tierB) return tierA - tierB;
+
+          // Inside upcoming tier, sort by daysToGo ascending (soonest first)
+          if (tierA === 2) {
+            const aDays = (a.anchorEligibility && a.anchorEligibility.daysToGo) || 99;
+            const bDays = (b.anchorEligibility && b.anchorEligibility.daysToGo) || 99;
+            if (aDays !== bDays) return aDays - bDays;
+          }
+
+          // Inside live tier, anchor available first
+          if (tierA === 3) {
+            const aHas = a.anchor && a.anchor.available ? 1 : 0;
+            const bHas = b.anchor && b.anchor.available ? 1 : 0;
+            if (aHas !== bHas) return bHas - aHas;
+          }
+
+          return (a.symbol || '').localeCompare(b.symbol || '');
         });
         break;
       case 'anchor-first':
@@ -334,8 +358,6 @@
         break;
       case 'times-desc':
         list.sort((a, b) => (b.noOfTime || 0) - (a.noOfTime || 0));
-        break;
-      default:
         break;
     }
 
@@ -442,8 +464,16 @@
           </div>
         `;
       } else {
-        const badgeClass = isToday ? 'anchor-badge today-pending' : 'anchor-badge pending';
-        const label = isToday ? '🔔 Due Today (Watch!)' : '⏳ Not Released';
+        let badgeClass = 'anchor-badge pending';
+        let label = '⏳ Not Released';
+        if (isToday) {
+          badgeClass = 'anchor-badge today-pending';
+          label = '🔔 Due Today (Watch!)';
+        } else if (elig.isUpcoming) {
+          badgeClass = 'anchor-badge upcoming-notice';
+          label = `🕒 Upcoming (${elig.daysToGo || ''}d to go)`;
+        }
+
         anchorHtml = `
           <div class="anchor-status-box">
             <span class="${badgeClass}">${label}</span>

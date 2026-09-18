@@ -1458,3 +1458,10 @@ body {
   color: #000;
   font-weight: 700;
 }
+
+/* Upcoming Anchor Badge */
+.anchor-badge.upcoming-notice {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}

@@ -170,6 +170,8 @@ function checkAnchorDateEligibility(startDateStr) {
       eligible: true,
       isToday: true,
       isUpcoming: false,
+      diffDays: 0,
+      daysToGo: 0,
       expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
       message: `Due Today (${dateFormatted})`
     };
@@ -179,6 +181,8 @@ function checkAnchorDateEligibility(startDateStr) {
       eligible: false,
       isToday: false,
       isUpcoming: true,
+      diffDays,
+      daysToGo,
       expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
       message: `Expected ${dateFormatted} (${daysToGo} day${daysToGo > 1 ? 's' : ''} to go)`
     };
@@ -187,6 +191,8 @@ function checkAnchorDateEligibility(startDateStr) {
       eligible: true,
       isToday: false,
       isUpcoming: false,
+      diffDays,
+      daysToGo: 0,
       expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
       message: `Due / Released since ${dateFormatted}`
     };
