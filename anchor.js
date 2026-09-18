@@ -398,7 +398,7 @@
                   📑 BSE Intimation
                 </a>
               ` : ''}
-              ${ipo.anchor.bseNoticePdfUrl && ip.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl ? `
+              ${ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl ? `
                 <a href="/api/bse/proxy-pdf?url=${encodeURIComponent(ipo.anchor.bseNoticePdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn-pdf" style="font-size:0.68rem;" title="View BSE Official Notice">
                   Notice
                 </a>
