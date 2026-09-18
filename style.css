@@ -1785,9 +1785,63 @@ body {
   box-shadow: none;
 }
 
+.schedule-dot.weekend {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+}
+
+.schedule-dot.manual {
+  background: #8b5cf6;
+  box-shadow: 0 0 6px #8b5cf6;
+  animation: pulse-dot 1.5s infinite;
+}
+
 .schedule-dot.done {
   background: #3b82f6;
   box-shadow: 0 0 6px #3b82f6;
+}
+
+/* Auto-Sync Start / Stop Toggle Button */
+.sync-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: rgba(31, 41, 55, 0.8);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.sync-toggle-btn:hover {
+  transform: translateY(-1px);
+}
+
+.sync-toggle-btn.running {
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.sync-toggle-btn.running:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fff;
+}
+
+.sync-toggle-btn.stopped {
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.sync-toggle-btn.stopped:hover {
+  background: rgba(16, 185, 129, 0.25);
+  color: #fff;
 }
 
 /* Sync Activity Log Modal */

@@ -179,30 +179,42 @@ async function main() {
 
   console.log(`[SCHEDULE] Current IST: ${ist.formattedDateTimeIST} (Day ${ist.day})`);
 
+  let activeCadence = 'Manual / Forced Run';
+
   if (!isForce) {
     // 1. Check Weekend (Saturday & Sunday OFF)
     if (ist.isWeekend) {
-      const msg = `Weekend detected (Saturday/Sunday). Market is closed. Sync is OFF. Next scheduled run: Monday at 3:00 PM IST.`;
-      console.log(`[SCHEDULE] ⏸️ ${msg}`);
-      recordSyncLog('SKIPPED_WEEKEND', msg, { day: ist.day, timeIST: ist.formattedDateTimeIST });
+      const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][ist.day];
+      const msg = `Weekend detected (${dayName}). Market is closed. Saturday & Sunday sync is OFF. Next scheduled run: Monday at 3:00 PM IST.`;
+      console.log(`[SCHEDULE] 🛑 ${msg}`);
+      recordSyncLog('SKIPPED_WEEKEND', msg, { day: ist.day, timeIST: ist.formattedDateTimeIST, cadence: 'OFF (Weekend)' });
       process.exit(0);
     }
 
     // 2. Check Time Window (Monday - Friday: 3:00 PM to 11:00 PM IST)
     if (!ist.isWithinWindow) {
-      const msg = `Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: ${ist.timeStr}.`;
+      const msg = `Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: ${ist.timeStr}. Sync is OFF. Window opens at 3:00 PM IST.`;
       console.log(`[SCHEDULE] 🌙 ${msg}`);
-      recordSyncLog('SKIPPED_WINDOW', msg, { day: ist.day, timeIST: ist.formattedDateTimeIST });
+      recordSyncLog('SKIPPED_WINDOW', msg, { day: ist.day, timeIST: ist.formattedDateTimeIST, cadence: 'OFF (Outside Window)' });
       process.exit(0);
+    }
+
+    // Determine Cadence (5 min vs 15 min)
+    if (ist.isEvening5Min) {
+      activeCadence = '5 min Peak Cadence (6:00 PM - 10:00 PM IST)';
+    } else if (ist.isAfternoon15Min) {
+      activeCadence = '15 min Afternoon Cadence (3:00 PM - 6:00 PM IST)';
+    } else if (ist.isNight15Min) {
+      activeCadence = '15 min Night Cadence (10:00 PM - 11:00 PM IST)';
     }
 
     // 3. Cadence check for 15-minute windows (3pm-6pm and 10pm-11pm)
     if ((ist.isAfternoon15Min || ist.isNight15Min) && !ist.isEvening5Min) {
       const minMod15 = ist.minutes % 15;
       if (minMod15 > 3 && minMod15 < 12) {
-        const msg = `15-minute cadence active for this hour (${ist.timeStr}). Skipping off-cadence trigger.`;
+        const msg = `15-minute cadence active (${activeCadence}). Current minute: ${ist.minutes}. Skipping intermediate off-cadence trigger.`;
         console.log(`[SCHEDULE] ⏳ ${msg}`);
-        recordSyncLog('SKIPPED_CADENCE', msg, { timeIST: ist.formattedDateTimeIST });
+        recordSyncLog('SKIPPED_CADENCE', msg, { timeIST: ist.formattedDateTimeIST, cadence: '15 min' });
         process.exit(0);
       }
     }
@@ -212,7 +224,7 @@ async function main() {
     if (anchorCheck.shouldStop) {
       console.log(`[SCHEDULE] ✨ ${anchorCheck.reason}`);
       console.log(`[SCHEDULE] All required anchor files for today have arrived. Stopping further refreshes for today.`);
-      recordSyncLog('SKIPPED_ALL_RECEIVED', anchorCheck.reason, { todayCount: anchorCheck.todayCount, timeIST: ist.formattedDateTimeIST });
+      recordSyncLog('SKIPPED_ALL_RECEIVED', anchorCheck.reason, { todayCount: anchorCheck.todayCount, timeIST: ist.formattedDateTimeIST, cadence: 'STOPPED (All Received)' });
       process.exit(0);
     } else {
       console.log(`[SCHEDULE] 🎯 Active check: ${anchorCheck.reason}`);
@@ -221,6 +233,7 @@ async function main() {
     console.log(`[SCHEDULE] ⚡ Force flag detected. Bypassing schedule checks.`);
   }
 
+  console.log(`[SCHEDULE] 🚀 Starting sync with cadence: ${activeCadence}`);
   console.log('[CRON] Starting automated NSE & BSE IPO and Anchor synchronization...');
   try {
     const ipos = await getUnifiedExchangeIpos();
@@ -229,9 +242,10 @@ async function main() {
     console.log(`[CRON] Found ${anchorCount} IPOs with released Anchor Allocation reports.`);
 
     // Record successful sync log
-    const recentLogs = recordSyncLog('SUCCESS', `Synchronized ${ipos.length} unified IPOs (${anchorCount} Anchor Reports Released).`, {
+    const recentLogs = recordSyncLog('SUCCESS', `Synchronized ${ipos.length} unified IPOs (${anchorCount} Anchor Reports Released) [${activeCadence}].`, {
       count: ipos.length,
       anchorCount,
+      activeCadence,
       timeIST: ist.formattedDateTimeIST
     });
 
@@ -239,7 +253,9 @@ async function main() {
       lastUpdated: formatIndiaDateTime(new Date()),
       scheduleStatus: {
         lastRunIST: formatIndiaDateTime(new Date()),
-        activeWindow: 'Mon-Fri 3:00 PM - 11:00 PM IST'
+        activeCadence,
+        activeWindow: 'Mon-Fri 3:00 PM - 11:00 PM IST (Saturday & Sunday OFF)',
+        isWeekend: ist.isWeekend
       },
       count: ipos.length,
       anchorCount,

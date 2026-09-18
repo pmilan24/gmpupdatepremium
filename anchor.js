@@ -62,6 +62,9 @@
     scheduleBadge: document.getElementById('marketScheduleBadge'),
     scheduleDot: document.getElementById('scheduleDot'),
     scheduleStatusText: document.getElementById('scheduleStatusText'),
+    syncToggleBtn: document.getElementById('syncToggleBtn'),
+    syncToggleIcon: document.getElementById('syncToggleIcon'),
+    syncToggleText: document.getElementById('syncToggleText'),
     viewSyncLogsBtn: document.getElementById('viewSyncLogsBtn'),
     syncLogsModal: document.getElementById('syncLogsModal'),
     syncLogsContainer: document.getElementById('syncLogsContainer'),
@@ -1216,23 +1219,23 @@
 
     if (isWeekend) {
       activeIntervalSeconds = 0;
-      statusText = 'Weekend Off (Mon 3 PM)';
-      statusType = 'off';
+      statusText = '🛑 Weekend Off (Sat & Sun)';
+      statusType = 'weekend';
     } else if (!isWithinWindow) {
       activeIntervalSeconds = 0;
-      statusText = 'Closed (Mon-Fri 3-11 PM)';
+      statusText = '🌙 Closed (Mon-Fri 3-11 PM IST)';
       statusType = 'off';
     } else if (allTodayAnchorsReceived) {
       activeIntervalSeconds = 0;
-      statusText = 'All Today Anchors In ✓';
+      statusText = '✅ All Today Anchors In';
       statusType = 'done';
     } else if (isEvening5Min) {
       activeIntervalSeconds = 300; // 5 min
-      statusText = 'Peak Sync (5m Active)';
+      statusText = '⚡ 5m Peak Sync (6–10 PM)';
       statusType = 'peak';
     } else {
       activeIntervalSeconds = 900; // 15 min
-      statusText = 'Active Sync (15m Active)';
+      statusText = '⏳ 15m Cadence (3-6 PM & 10-11 PM)';
       statusType = 'live';
     }
 
@@ -1247,46 +1250,77 @@
     };
   }
 
+  function updateSyncToggleButton(isRunning, label, icon) {
+    if (!els.syncToggleBtn) return;
+    if (isRunning) {
+      els.syncToggleBtn.className = 'sync-toggle-btn running';
+      if (els.syncToggleIcon) els.syncToggleIcon.textContent = icon || '⏸️';
+      if (els.syncToggleText) els.syncToggleText.textContent = label || 'Stop';
+      els.syncToggleBtn.title = 'Auto-sync is running. Click to stop.';
+    } else {
+      els.syncToggleBtn.className = 'sync-toggle-btn stopped';
+      if (els.syncToggleIcon) els.syncToggleIcon.textContent = icon || '▶️';
+      if (els.syncToggleText) els.syncToggleText.textContent = label || 'Start';
+      els.syncToggleBtn.title = 'Auto-sync is stopped. Click to start manually.';
+    }
+  }
+
   function applyScheduleRules() {
     const schedule = getISTScheduleState();
-
-    if (els.scheduleDot) {
-      els.scheduleDot.className = `schedule-dot ${schedule.statusType}`;
-    }
-    if (els.scheduleStatusText) {
-      els.scheduleStatusText.textContent = schedule.statusText;
-    }
-
     const mode = els.intervalSelect ? els.intervalSelect.value : 'auto';
 
     if (mode === 'auto') {
+      if (els.scheduleDot) {
+        els.scheduleDot.className = `schedule-dot ${schedule.statusType}`;
+      }
+      if (els.scheduleStatusText) {
+        els.scheduleStatusText.textContent = schedule.statusText;
+      }
+
       if (schedule.activeIntervalSeconds === 0) {
-        // Paused / Off
+        // Paused / Off by schedule (Weekend, Closed, or Done)
         if (countdownTimer) {
           clearInterval(countdownTimer);
           countdownTimer = null;
         }
         if (els.countdownText) {
-          els.countdownText.textContent = schedule.statusType === 'done' ? 'Done ✓' : 'Paused';
+          if (schedule.isWeekend) {
+            els.countdownText.textContent = 'Weekend Off';
+          } else if (schedule.allTodayAnchorsReceived) {
+            els.countdownText.textContent = 'Done ✓';
+          } else {
+            els.countdownText.textContent = 'Closed';
+          }
         }
         if (els.countdownFill) {
           els.countdownFill.style.width = '0%';
         }
+        updateSyncToggleButton(false, 'Start Manually', '▶️');
         return false;
       } else {
         refreshIntervalSeconds = schedule.activeIntervalSeconds;
+        updateSyncToggleButton(true, 'Stop', '⏸️');
         return true;
       }
     } else if (mode === '0') {
+      // User explicitly stopped / paused sync
       if (countdownTimer) {
         clearInterval(countdownTimer);
         countdownTimer = null;
       }
       if (els.countdownText) els.countdownText.textContent = 'Off';
       if (els.countdownFill) els.countdownFill.style.width = '0%';
+      if (els.scheduleDot) els.scheduleDot.className = 'schedule-dot off';
+      if (els.scheduleStatusText) els.scheduleStatusText.textContent = '⏸️ Stopped Manually';
+      updateSyncToggleButton(false, 'Start', '▶️');
       return false;
     } else {
+      // Manual interval chosen: 300 (5m), 900 (15m), or 60 (1m)
       refreshIntervalSeconds = parseInt(mode, 10) || 300;
+      const intervalLabel = mode === '300' ? '5 min' : mode === '900' ? '15 min' : '1 min';
+      if (els.scheduleDot) els.scheduleDot.className = 'schedule-dot manual';
+      if (els.scheduleStatusText) els.scheduleStatusText.textContent = `▶️ Manual (${intervalLabel})`;
+      updateSyncToggleButton(true, 'Stop', '⏸️');
       return true;
     }
   }
@@ -1361,6 +1395,36 @@
         const shouldRun = applyScheduleRules();
         if (shouldRun) {
           startCountdown();
+        }
+      });
+    }
+
+    if (els.syncToggleBtn) {
+      els.syncToggleBtn.addEventListener('click', () => {
+        const currentMode = els.intervalSelect ? els.intervalSelect.value : 'auto';
+        const schedule = getISTScheduleState();
+
+        if (currentMode === '0') {
+          // Was manually paused/stopped -> user clicked Start
+          if (schedule.activeIntervalSeconds > 0) {
+            els.intervalSelect.value = 'auto';
+          } else {
+            // Weekend or outside window -> start manual 5 min sync!
+            els.intervalSelect.value = '300';
+          }
+          const shouldRun = applyScheduleRules();
+          if (shouldRun) startCountdown();
+          fetchExchangeData();
+        } else if (currentMode === 'auto' && schedule.activeIntervalSeconds === 0) {
+          // Off by schedule (weekend or closed) -> user wants manual override!
+          els.intervalSelect.value = '300'; // Start manual 5 min sync
+          const shouldRun = applyScheduleRules();
+          if (shouldRun) startCountdown();
+          fetchExchangeData();
+        } else {
+          // Currently running -> stop/pause it!
+          els.intervalSelect.value = '0';
+          applyScheduleRules();
         }
       });
     }
