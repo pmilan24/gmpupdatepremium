@@ -34,17 +34,25 @@
       </div>
 
       <div class="header-actions">
+        <!-- Market Schedule & Status Pill -->
+        <div id="marketScheduleBadge" class="market-schedule-badge" title="Automated Sync Window: Mon–Fri 3:00 PM – 11:00 PM IST">
+          <span id="scheduleDot" class="schedule-dot off"></span>
+          <span id="scheduleStatusText">Mon–Fri 3–11 PM IST</span>
+        </div>
+
         <!-- Auto Refresh Countdown Box -->
         <div class="timer-box" title="Auto-refresh countdown">
           <span>Auto-refresh:</span>
-          <strong id="countdownText">1:00</strong>
+          <strong id="countdownText">Auto</strong>
           <div class="countdown-bar">
             <div id="countdownFill" class="countdown-fill" style="background: #ef4444;"></div>
           </div>
           <select id="intervalSelect" class="sort-select" style="padding: 2px 6px; font-size: 0.78rem;">
-            <option value="30">30 sec</option>
-            <option value="60" selected>1 min</option>
-            <option value="180">3 min</option>
+            <option value="auto" selected>Auto (IST)</option>
+            <option value="300">5 min</option>
+            <option value="900">15 min</option>
+            <option value="60">1 min</option>
+            <option value="0">Pause / Off</option>
           </select>
         </div>
 

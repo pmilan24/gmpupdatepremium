@@ -1,5 +1,9 @@
 {
-  "lastUpdated": "2026-09-18T17:28:25.739Z",
+  "lastUpdated": "2026-09-18T17:36:47.050Z",
+  "scheduleStatus": {
+    "lastRunIST": "2026-09-18 23:06:41",
+    "activeWindow": "Mon-Fri 3:00 PM - 11:00 PM IST"
+  },
   "count": 24,
   "anchorCount": 11,
   "ipos": [
@@ -44,7 +48,7 @@
         "scripCode": 4827,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_SONA",
@@ -87,7 +91,7 @@
         "scripCode": 4824,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_HEROMOTORS",
@@ -130,7 +134,7 @@
         "scripCode": 4823,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_JSIPL",
@@ -173,7 +177,7 @@
         "scripCode": 4826,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_SSRETAIL",
@@ -216,7 +220,7 @@
         "scripCode": 4828,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_AXIOMGAS",
@@ -254,7 +258,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_KHERIAAUTO",
@@ -292,7 +296,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "NSE_SPECTRAA",
@@ -330,7 +334,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_NCLRESEARC",
@@ -372,7 +376,7 @@
         "scripCode": 4791,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_JAYKAYENTE",
@@ -414,7 +418,7 @@
         "scripCode": 4794,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_FXMULTITEC",
@@ -456,7 +460,7 @@
         "scripCode": 4831,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_VIVEKANAND",
@@ -498,7 +502,7 @@
         "scripCode": 4832,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_ROBOKIDZED",
@@ -540,7 +544,7 @@
         "scripCode": 4833,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_SHANKARA",
@@ -582,7 +586,7 @@
         "scripCode": 540425,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_HIMALAYANU",
@@ -624,7 +628,7 @@
         "scripCode": 4834,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_VARMORAGRA",
@@ -666,7 +670,7 @@
         "scripCode": 4837,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_SKOFFSETLI",
@@ -708,7 +712,7 @@
         "scripCode": 4836,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_SPANDANASP",
@@ -750,7 +754,7 @@
         "scripCode": 4815,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_CONTAINETE",
@@ -792,7 +796,7 @@
         "scripCode": 4778,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_MANOJJEWEL",
@@ -834,7 +838,7 @@
         "scripCode": 4779,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_CUBI FIN SER",
@@ -876,7 +880,7 @@
         "scripCode": 511710,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_ECS",
@@ -918,7 +922,7 @@
         "scripCode": 540063,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_SALEMERODE",
@@ -960,7 +964,7 @@
         "scripCode": 4821,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     },
     {
       "id": "BSE_INDRAYANIB",
@@ -1002,7 +1006,7 @@
         "scripCode": 4822,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-18T17:28:25.739Z"
+      "updatedAt": "2026-09-18T17:36:47.050Z"
     }
   ]
 }

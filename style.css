@@ -1746,3 +1746,48 @@ body {
   to { opacity: 1; }
 }
 
+/* Market Monitoring Schedule Badge */
+.market-schedule-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(17, 24, 39, 0.75);
+  border: 1px solid var(--border-color);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.schedule-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.schedule-dot.live {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulse-dot 1.5s infinite;
+}
+
+.schedule-dot.peak {
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+  animation: pulse-dot 1s infinite;
+}
+
+.schedule-dot.off {
+  background: #6b7280;
+  box-shadow: none;
+}
+
+.schedule-dot.done {
+  background: #3b82f6;
+  box-shadow: 0 0 6px #3b82f6;
+}
+
+

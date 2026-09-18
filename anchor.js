@@ -58,6 +58,10 @@
     badgeBSE: document.getElementById('badgeBSE'),
     stepUnified: document.getElementById('stepUnified'),
     badgeUnified: document.getElementById('badgeUnified'),
+    // Market Schedule & Countdown
+    scheduleBadge: document.getElementById('marketScheduleBadge'),
+    scheduleDot: document.getElementById('scheduleDot'),
+    scheduleStatusText: document.getElementById('scheduleStatusText'),
     // Modal
     checkModal: document.getElementById('checkModal'),
     modalTitle: document.getElementById('modalTitle'),
@@ -676,6 +680,7 @@
   function renderUI() {
     updateStats();
     renderTable();
+    applyScheduleRules();
   }
 
   function updateStats() {
@@ -1110,13 +1115,128 @@
     }, 100);
   }
 
+  // IST Schedule & Monitoring Window Rules
+  function getISTScheduleState() {
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const istDate = new Date(utc + (3600000 * 5.5));
+    const day = istDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const hours = istDate.getHours();
+    const minutes = istDate.getMinutes();
+    const totalMinutes = hours * 60 + minutes;
+
+    const isWeekend = day === 0 || day === 6;
+    // Window: Monday to Friday 3:00 PM (900m) to 11:00 PM (1380m) IST
+    const isWithinWindow = day >= 1 && day <= 5 && totalMinutes >= 900 && totalMinutes <= 1380;
+    const isAfternoon15Min = totalMinutes >= 900 && totalMinutes < 1080; // 3:00 PM - 6:00 PM
+    const isEvening5Min = totalMinutes >= 1080 && totalMinutes < 1320;   // 6:00 PM - 10:00 PM
+    const isNight15Min = totalMinutes >= 1320 && totalMinutes <= 1380;   // 10:00 PM - 11:00 PM
+
+    // Check if all today's IPOs have anchor reports
+    let allTodayAnchorsReceived = false;
+    const todayIpos = ipoList.filter(i => i.anchorEligibility && i.anchorEligibility.isToday);
+    if (todayIpos.length > 0) {
+      const pending = todayIpos.filter(i => !i.anchor || !i.anchor.available);
+      if (pending.length === 0) {
+        allTodayAnchorsReceived = true;
+      }
+    }
+
+    let activeIntervalSeconds = 0; // 0 = paused
+    let statusText = '';
+    let statusType = 'off'; // 'off' | 'live' | 'peak' | 'done'
+
+    if (isWeekend) {
+      activeIntervalSeconds = 0;
+      statusText = 'Weekend Off (Mon 3 PM)';
+      statusType = 'off';
+    } else if (!isWithinWindow) {
+      activeIntervalSeconds = 0;
+      statusText = 'Closed (Mon-Fri 3-11 PM)';
+      statusType = 'off';
+    } else if (allTodayAnchorsReceived) {
+      activeIntervalSeconds = 0;
+      statusText = 'All Today Anchors In ✓';
+      statusType = 'done';
+    } else if (isEvening5Min) {
+      activeIntervalSeconds = 300; // 5 min
+      statusText = 'Peak Sync (5m Active)';
+      statusType = 'peak';
+    } else {
+      activeIntervalSeconds = 900; // 15 min
+      statusText = 'Active Sync (15m Active)';
+      statusType = 'live';
+    }
+
+    return {
+      isWeekend,
+      isWithinWindow,
+      allTodayAnchorsReceived,
+      activeIntervalSeconds,
+      statusText,
+      statusType,
+      timeStr: `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} IST`
+    };
+  }
+
+  function applyScheduleRules() {
+    const schedule = getISTScheduleState();
+
+    if (els.scheduleDot) {
+      els.scheduleDot.className = `schedule-dot ${schedule.statusType}`;
+    }
+    if (els.scheduleStatusText) {
+      els.scheduleStatusText.textContent = schedule.statusText;
+    }
+
+    const mode = els.intervalSelect ? els.intervalSelect.value : 'auto';
+
+    if (mode === 'auto') {
+      if (schedule.activeIntervalSeconds === 0) {
+        // Paused / Off
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+        }
+        if (els.countdownText) {
+          els.countdownText.textContent = schedule.statusType === 'done' ? 'Done ✓' : 'Paused';
+        }
+        if (els.countdownFill) {
+          els.countdownFill.style.width = '0%';
+        }
+        return false;
+      } else {
+        refreshIntervalSeconds = schedule.activeIntervalSeconds;
+        return true;
+      }
+    } else if (mode === '0') {
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      if (els.countdownText) els.countdownText.textContent = 'Off';
+      if (els.countdownFill) els.countdownFill.style.width = '0%';
+      return false;
+    } else {
+      refreshIntervalSeconds = parseInt(mode, 10) || 300;
+      return true;
+    }
+  }
+
   // Countdown & Timer Handling
   function startCountdown() {
     if (countdownTimer) clearInterval(countdownTimer);
+    const shouldRun = applyScheduleRules();
+    if (!shouldRun) return;
+
     secondsRemaining = refreshIntervalSeconds;
     updateCountdownUI();
 
     countdownTimer = setInterval(() => {
+      // Re-check schedule status each tick
+      const active = applyScheduleRules();
+      if (!active) return;
+
       secondsRemaining--;
       if (secondsRemaining <= 0) {
         fetchExchangeData();
@@ -1127,8 +1247,12 @@
   }
 
   function resetCountdown() {
-    secondsRemaining = refreshIntervalSeconds;
-    updateCountdownUI();
+    const shouldRun = applyScheduleRules();
+    if (shouldRun) {
+      secondsRemaining = refreshIntervalSeconds;
+      updateCountdownUI();
+      if (!countdownTimer) startCountdown();
+    }
   }
 
   function updateCountdownUI() {
@@ -1138,7 +1262,9 @@
       els.countdownText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
     if (els.countdownFill) {
-      const pct = ((refreshIntervalSeconds - secondsRemaining) / refreshIntervalSeconds) * 100;
+      const pct = refreshIntervalSeconds > 0 
+        ? ((refreshIntervalSeconds - secondsRemaining) / refreshIntervalSeconds) * 100 
+        : 0;
       els.countdownFill.style.width = `${pct}%`;
     }
   }
@@ -1163,9 +1289,11 @@
     }
 
     if (els.intervalSelect) {
-      els.intervalSelect.addEventListener('change', (e) => {
-        refreshIntervalSeconds = parseInt(e.target.value, 10) || 60;
-        resetCountdown();
+      els.intervalSelect.addEventListener('change', () => {
+        const shouldRun = applyScheduleRules();
+        if (shouldRun) {
+          startCountdown();
+        }
       });
     }
 
