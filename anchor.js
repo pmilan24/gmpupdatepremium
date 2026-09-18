@@ -1,9 +1,9 @@
-// anchor.js - NSE IPO List & Anchor Allocation Tracker with 1-Minute Highlight Engine
+// anchor.js - Unified NSE & BSE IPO List & Anchor Allocation Tracker with 1-Minute Highlight Engine
 (function () {
   'use strict';
 
-  const ANCHOR_STORAGE_KEY = 'nse_anchor_history_v2';
-  const API_URL = '/api/nse/ipo-list';
+  const ANCHOR_STORAGE_KEY = 'unified_anchor_history_v1';
+  const API_URL = '/api/exchange/ipo-list';
   const FALLBACK_URL = './nse-ipo-data.json';
 
   // State
@@ -19,7 +19,7 @@
   let isFetching = false;
   let soundEnabled = true;
 
-  // Active 1-minute highlights: { [symbol]: expiryTimestamp }
+  // Active 1-minute highlights: { [id_or_symbol]: expiryTimestamp }
   let activeSurges = {};
 
   // DOM Elements
@@ -42,8 +42,15 @@
     alertBannerCount: document.getElementById('alertBannerCount'),
     statTotal: document.getElementById('statTotal'),
     statAnchorCount: document.getElementById('statAnchorCount'),
+    statDual: document.getElementById('statDual'),
     statActive: document.getElementById('statActive'),
-    statSme: document.getElementById('statSme')
+    // Modal
+    checkModal: document.getElementById('checkModal'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalSub: document.getElementById('modalSub'),
+    modalStepsList: document.getElementById('modalStepsList'),
+    modalCloseBtn: document.getElementById('modalCloseBtn'),
+    modalDoneBtn: document.getElementById('modalDoneBtn')
   };
 
   function loadStorage() {
@@ -89,8 +96,8 @@
     } catch (e) {}
   }
 
-  // Fetch NSE IPO list and Anchor status
-  async function fetchNSEData() {
+  // Fetch Unified NSE + BSE IPO list and Anchor status
+  async function fetchExchangeData() {
     if (isFetching) return;
     isFetching = true;
     updateRefreshButton(true);
@@ -99,18 +106,18 @@
     let source = '';
 
     try {
-      // 1. Try local server API route
+      // 1. Try unified local API endpoint
       try {
         const res = await fetch(`${API_URL}?t=${Date.now()}`, { cache: 'no-cache' });
         if (res.ok) {
           const json = await res.json();
           if (json && Array.isArray(json.ipos)) {
             rawData = json.ipos;
-            source = 'Live (NSE India)';
+            source = 'Live (NSE + BSE India)';
           }
         }
       } catch (e) {
-        console.warn('Local API failed, falling back to nse-ipo-data.json:', e.message);
+        console.warn('Unified API fetch failed, falling back:', e.message);
       }
 
       // 2. Fallback to snapshot file
@@ -124,7 +131,7 @@
       }
 
       if (!rawData || rawData.length === 0) {
-        throw new Error('Unable to retrieve NSE IPO data from any source.');
+        throw new Error('Unable to retrieve IPO data from any source.');
       }
 
       processAnchorDiff(rawData);
@@ -155,28 +162,28 @@
     let newAnchorDetected = false;
 
     items.forEach(ipo => {
-      const symbol = ipo.symbol;
+      const key = ipo.symbol || ipo.id;
       const isAvailable = ipo.anchor && ipo.anchor.available;
-      const stored = storageState[symbol];
+      const stored = storageState[key];
 
       if (!stored) {
-        storageState[symbol] = {
+        storageState[key] = {
           anchorAvailable: isAvailable,
           firstSeenAt: Date.now(),
           acknowledged: true
         };
         // If first ever run, don't trigger alerts for existing data
         if (!isFirstTime && isAvailable) {
-          triggerOneMinuteSurge(symbol);
+          triggerOneMinuteSurge(key);
           newAnchorDetected = true;
         }
       } else {
-        // If anchor wasn't available before and now IS available: SURGE!
+        // If anchor was not available before and now IS available: SURGE!
         if (!stored.anchorAvailable && isAvailable) {
           stored.anchorAvailable = true;
           stored.acknowledged = false;
           stored.firstSeenAt = Date.now();
-          triggerOneMinuteSurge(symbol);
+          triggerOneMinuteSurge(key);
           newAnchorDetected = true;
         }
       }
@@ -191,9 +198,9 @@
   }
 
   // Trigger 1-Minute Live Highlight
-  function triggerOneMinuteSurge(symbol) {
+  function triggerOneMinuteSurge(key) {
     const ONE_MINUTE_MS = 60 * 1000;
-    activeSurges[symbol] = Date.now() + ONE_MINUTE_MS;
+    activeSurges[key] = Date.now() + ONE_MINUTE_MS;
     startHighlightTicker();
   }
 
@@ -204,9 +211,9 @@
       const now = Date.now();
       let hasActive = false;
 
-      Object.keys(activeSurges).forEach(sym => {
-        if (activeSurges[sym] <= now) {
-          delete activeSurges[sym];
+      Object.keys(activeSurges).forEach(key => {
+        if (activeSurges[key] <= now) {
+          delete activeSurges[key];
         } else {
           hasActive = true;
         }
@@ -230,19 +237,19 @@
   function updateStats() {
     const total = ipoList.length;
     let anchorCount = 0;
+    let dualCount = 0;
     let activeCount = 0;
-    let smeCount = 0;
 
     ipoList.forEach(i => {
       if (i.anchor && i.anchor.available) anchorCount++;
+      if (i.exchange && i.exchange.includes('BSE') && i.exchange.includes('NSE')) dualCount++;
       if (i.status && i.status.toLowerCase() === 'active') activeCount++;
-      if (i.series === 'SME' || (i.exchange && i.exchange.includes('SME'))) smeCount++;
     });
 
     if (els.statTotal) els.statTotal.textContent = total;
     if (els.statAnchorCount) els.statAnchorCount.textContent = anchorCount;
+    if (els.statDual) els.statDual.textContent = dualCount;
     if (els.statActive) els.statActive.textContent = activeCount;
-    if (els.statSme) els.statSme.textContent = smeCount;
 
     // Filter chip count
     const anchorChip = document.querySelector('.chip[data-filter="anchor"]');
@@ -253,6 +260,11 @@
       } else {
         anchorChip.classList.remove('chip-alert');
       }
+    }
+
+    const dualChip = document.querySelector('.chip[data-filter="dual"]');
+    if (dualChip) {
+      dualChip.textContent = `Dual Listed (${dualCount})`;
     }
 
     // Alert Banner
@@ -272,8 +284,10 @@
 
     if (currentFilter === 'anchor') {
       list = list.filter(i => i.anchor && i.anchor.available);
+    } else if (currentFilter === 'dual') {
+      list = list.filter(i => i.exchange && i.exchange.includes('BSE') && i.exchange.includes('NSE'));
     } else if (currentFilter === 'mainboard') {
-      list = list.filter(i => i.series === 'EQ');
+      list = list.filter(i => i.series === 'EQ' || (i.platforms && i.platforms.includes('MainBoard')));
     } else if (currentFilter === 'sme') {
       list = list.filter(i => i.series === 'SME' || (i.exchange && i.exchange.includes('SME')));
     }
@@ -281,9 +295,9 @@
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(i =>
-        i.symbol.toLowerCase().includes(q) ||
-        i.companyName.toLowerCase().includes(q) ||
-        i.series.toLowerCase().includes(q) ||
+        (i.symbol && i.symbol.toLowerCase().includes(q)) ||
+        (i.companyName && i.companyName.toLowerCase().includes(q)) ||
+        (i.exchange && i.exchange.toLowerCase().includes(q)) ||
         (i.issuePrice && i.issuePrice.toLowerCase().includes(q))
       );
     }
@@ -297,7 +311,7 @@
         });
         break;
       case 'symbol-asc':
-        list.sort((a, b) => a.symbol.localeCompare(b.symbol));
+        list.sort((a, b) => (a.symbol || '').localeCompare(b.symbol || ''));
         break;
       case 'times-desc':
         list.sort((a, b) => (b.noOfTime || 0) - (a.noOfTime || 0));
@@ -330,16 +344,24 @@
     let html = '';
 
     items.forEach(ipo => {
-      const symbol = ipo.symbol;
+      const key = ipo.symbol || ipo.id;
       const isAnchorAvailable = ipo.anchor && ipo.anchor.available;
-      const surgeExpiry = activeSurges[symbol];
+      const surgeExpiry = activeSurges[key];
       const isSurgeActive = surgeExpiry && surgeExpiry > now;
       const remainingSeconds = isSurgeActive ? Math.ceil((surgeExpiry - now) / 1000) : 0;
 
+      const isDual = ipo.exchange && ipo.exchange.includes('BSE') && ipo.exchange.includes('NSE');
+      const isBseOnly = ipo.exchange && ipo.exchange.includes('BSE') && !ipo.exchange.includes('NSE');
       const isSme = ipo.series === 'SME' || (ipo.exchange && ipo.exchange.includes('SME'));
-      const exchangeBadge = isSme 
-        ? `<span class="exchange-badge exchange-badge-both">NSE SME / BSE</span>` 
-        : `<span class="exchange-badge exchange-badge-nse">NSE</span>`;
+
+      let exchangeBadge = '';
+      if (isDual) {
+        exchangeBadge = `<span class="exchange-badge exchange-badge-both">NSE | BSE DUAL</span>`;
+      } else if (isBseOnly) {
+        exchangeBadge = `<span class="exchange-badge exchange-badge-bse">BSE</span>`;
+      } else {
+        exchangeBadge = `<span class="exchange-badge exchange-badge-nse">NSE</span>`;
+      }
 
       // Row highlight
       const rowClass = isSurgeActive ? 'ipo-row anchor-active-highlight' : 'ipo-row';
@@ -352,43 +374,76 @@
           ? `<span class="anchor-timer-tag">⏱ Live Surge: ${remainingSeconds}s</span>` 
           : '';
 
+        const sourceLabel = ipo.anchor.source === 'BOTH' ? '✨ NSE & BSE' : (ipo.anchor.source === 'BSE' ? '🏛️ BSE Notice' : '🏛️ NSE Archive');
+
         anchorHtml = `
           <div class="anchor-status-box">
             <div class="${badgeClass}" title="Anchor Allocation Report Available">
-              <span>✨ ANCHOR ALLOCATED</span>
+              <span>${sourceLabel} ALLOCATED</span>
               ${timerHtml}
             </div>
             <div class="anchor-actions">
-              <a href="/api/nse/anchor-pdf?symbol=${encodeURIComponent(symbol)}" target="_blank" rel="noopener noreferrer" class="btn-pdf" title="View Anchor PDF directly in browser">
-                📄 View PDF
-              </a>
-              <a href="/api/nse/anchor-zip?symbol=${encodeURIComponent(symbol)}" class="btn-zip" title="Download original NSE ZIP file">
-                💾 Download ZIP
-              </a>
+              ${ipo.anchor.nsePdfUrl ? `
+                <a href="${ipo.anchor.nsePdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-pdf" title="View NSE Anchor PDF in browser">
+                  📄 NSE PDF
+                </a>
+              ` : ''}
+              ${ipo.anchor.nseZipUrl ? `
+                <a href="/api/nse/anchor-zip?symbol=${encodeURIComponent(ipo.symbol)}" class="btn-zip" title="Download original NSE ZIP file">
+                  💾 NSE ZIP
+                </a>
+              ` : ''}
+              ${ipo.anchor.bseIntimationPdfUrl ? `
+                <a href="/api/bse/proxy-pdf?url=${encodeURIComponent(ipo.anchor.bseIntimationPdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn-bse-notice" title="View BSE Anchor Intimation Letter PDF">
+                  📑 BSE Intimation
+                </a>
+              ` : ''}
+              ${ipo.anchor.bseNoticePdfUrl && ip.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl ? `
+                <a href="/api/bse/proxy-pdf?url=${encodeURIComponent(ipo.anchor.bseNoticePdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn-pdf" style="font-size:0.68rem;" title="View BSE Official Notice">
+                  Notice
+                </a>
+              ` : ''}
             </div>
+            <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}')" title="Deep check both exchanges live">
+              🔍 Re-check Exchanges
+            </button>
           </div>
         `;
       } else {
+        const elig = ipo.anchorEligibility || {};
+        const eligClass = elig.isUpcoming ? 'upcoming' : 'due';
         anchorHtml = `
           <div class="anchor-status-box">
             <span class="anchor-badge pending">⏳ Not Released</span>
+            <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}')" title="Trigger on-demand check on NSE and BSE">
+              🔍 Check Both Exchanges
+            </button>
           </div>
         `;
       }
 
+      // Date eligibility snippet
+      const elig = ipo.anchorEligibility || {};
+      const eligHtml = elig.message ? `
+        <div class="anchor-eligibility-tag ${elig.isUpcoming ? 'upcoming' : 'due'}">
+          <span>${elig.isUpcoming ? '🕒' : '🔔'}</span>
+          <span>Anchor: ${elig.message}</span>
+        </div>
+      ` : '';
+
       html += `
-        <tr class="${rowClass}" data-symbol="${symbol}">
+        <tr class="${rowClass}" data-key="${key}">
           <td class="company-cell">
             <div class="company-title">
-              <span style="color: #60a5fa; font-weight: 700;">${symbol}</span>
+              <span style="color: #60a5fa; font-weight: 700;">${ipo.symbol}</span>
               ${exchangeBadge}
-              <span class="badge-tag ${isSme ? 'badge-sme' : 'badge-mainboard'}">${ipo.series}</span>
+              <span class="badge-tag ${isSme ? 'badge-sme' : 'badge-mainboard'}">${ipo.series || 'EQ'}</span>
             </div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-top: 3px;">
               ${ipo.companyName}
             </div>
             <div class="dates-meta">
-              ${ipo.registrar ? `Registrar: ${ipo.registrar}` : ''}
+              ${ipo.registrar && ipo.registrar !== '—' ? `Registrar: ${ipo.registrar}` : ''}
             </div>
           </td>
 
@@ -396,6 +451,7 @@
             <div style="font-size: 0.82rem; font-weight: 600;">
               <div>📅 Start: ${ipo.issueStartDate || '—'}</div>
               <div style="color: var(--text-muted); margin-top: 2px;">🏁 End: ${ipo.issueEndDate || '—'}</div>
+              ${eligHtml}
             </div>
           </td>
 
@@ -404,7 +460,7 @@
               ${ipo.issuePrice || '—'}
             </div>
             <div style="font-size: 0.72rem; color: var(--text-muted);">
-              ${ipo.issueType || 'Book Building'}
+              ${ipo.series === 'SME' ? 'SME Platform' : 'MainBoard Book Building'}
             </div>
           </td>
 
@@ -413,7 +469,7 @@
               <strong>${ipo.noOfTime ? `${ipo.noOfTime}x` : '—'}</strong>
             </div>
             <div style="font-size: 0.72rem; color: var(--text-secondary);">
-              Bids: ${ipo.noOfsharesBid ? parseInt(ipo.noOfsharesBid, 10).toLocaleString('en-IN') : '—'}
+              ${ipo.issueSize && ipo.issueSize !== '—' ? `Shares: ${Number(ipo.issueSize).toLocaleString('en-IN')}` : 'Active on Exchange'}
             </div>
           </td>
 
@@ -427,28 +483,119 @@
     els.tableBody.innerHTML = html;
   }
 
+  function escapeQuotes(str) {
+    return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+
+  // On-demand Deep Cross-Check Modal
+  window.checkIpoLive = async function (symbol, companyName) {
+    if (!els.checkModal) return;
+    els.checkModal.style.display = 'flex';
+    els.modalTitle.textContent = `Checking: ${symbol || companyName}`;
+    els.modalSub.textContent = 'Performing live real-time query across NSE & BSE India...';
+    els.modalStepsList.innerHTML = `
+      <div class="modal-step-item">
+        <div class="modal-step-icon">⏳</div>
+        <div>Contacting NSE India & BSE India API servers...</div>
+      </div>
+    `;
+
+    try {
+      const query = `symbol=${encodeURIComponent(symbol)}&companyName=${encodeURIComponent(companyName)}`;
+      const res = await fetch(`/api/exchange/check-ipo?${query}`);
+      const data = await res.json();
+
+      if (data && Array.isArray(data.steps)) {
+        let stepHtml = '';
+        data.steps.forEach(st => {
+          let icon = 'ℹ️';
+          let cls = '';
+          if (st.stage.includes('success')) {
+            icon = '✅';
+            cls = 'success';
+          } else if (st.stage.includes('notice_found') || st.stage.includes('matched')) {
+            icon = '✨';
+            cls = 'found';
+          } else if (st.stage.includes('none') || st.stage.includes('unmatched')) {
+            icon = '⚪';
+            cls = 'none';
+          } else if (st.stage.includes('extract')) {
+            icon = '⚙️';
+            cls = 'found';
+          }
+
+          stepHtml += `
+            <div class="modal-step-item ${cls}">
+              <div class="modal-step-icon">${icon}</div>
+              <div>${st.message}</div>
+            </div>
+          `;
+        });
+
+        // Add final verdict
+        if (data.anchorAvailable) {
+          stepHtml += `
+            <div class="modal-step-item success" style="margin-top: 10px; font-weight: 700;">
+              <div class="modal-step-icon">🎉</div>
+              <div>Anchor Allocation Report is available! Refreshing list...</div>
+            </div>
+          `;
+          triggerOneMinuteSurge(symbol);
+          playAnchorChime();
+          // Trigger refresh of main list
+          setTimeout(fetchExchangeData, 1000);
+        } else {
+          stepHtml += `
+            <div class="modal-step-item none" style="margin-top: 10px;">
+              <div class="modal-step-icon">🕒</div>
+              <div>No Anchor Allocation filing detected on either exchange yet.</div>
+            </div>
+          `;
+        }
+
+        els.modalStepsList.innerHTML = stepHtml;
+      }
+    } catch (err) {
+      els.modalStepsList.innerHTML = `
+        <div class="modal-step-item" style="border-left-color: #ef4444; color: #f87171;">
+          <div class="modal-step-icon">❌</div>
+          <div>Error checking exchanges: ${err.message}</div>
+        </div>
+      `;
+    }
+  };
+
+  // Close modal
+  if (els.modalCloseBtn) els.modalCloseBtn.onclick = () => { els.checkModal.style.display = 'none'; };
+  if (els.modalDoneBtn) els.modalDoneBtn.onclick = () => { els.checkModal.style.display = 'none'; };
+  if (els.checkModal) {
+    els.checkModal.onclick = (e) => {
+      if (e.target === els.checkModal) els.checkModal.style.display = 'none';
+    };
+  }
+
   // Simulation: Test 1-Minute Live Surge
   function simulateAnchorRelease() {
     if (ipoList.length === 0) return;
-    // Pick first or random IPO
     const target = ipoList[Math.floor(Math.random() * ipoList.length)];
-    console.log(`[SIMULATE] Triggering 1-minute Anchor surge for ${target.symbol}`);
+    const key = target.symbol || target.id;
+    console.log(`[SIMULATE] Triggering 1-minute Anchor surge for ${key}`);
 
     target.anchor = {
       available: true,
-      title: 'Anchor Allocation Report',
-      zipUrl: `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${target.symbol}.zip`,
-      pdfUrl: `/api/nse/anchor-pdf?symbol=${target.symbol}`,
-      detectedAt: Date.now()
+      source: 'BOTH',
+      nsePdfUrl: `/api/nse/anchor-pdf?symbol=${target.symbol}`,
+      nseZipUrl: `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${target.symbol}.zip`,
+      bseIntimationPdfUrl: 'https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/notice$51eae30a-bfb1-426c-b90f-e499a917e521.pdf',
+      bseNoticePdfUrl: 'https://www.bseindia.com/downloads/UploadDocs/Notices/20260915-44/20260915-44.pdf'
     };
 
-    triggerOneMinuteSurge(target.symbol);
+    triggerOneMinuteSurge(key);
     playAnchorChime();
     renderUI();
 
-    // Scroll to row
     setTimeout(() => {
-      const row = document.querySelector(`tr[data-symbol="${target.symbol}"]`);
+      const row = document.querySelector(`tr[data-key="${key}"]`);
       if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
   }
@@ -462,7 +609,7 @@
     countdownTimer = setInterval(() => {
       secondsRemaining--;
       if (secondsRemaining <= 0) {
-        fetchNSEData();
+        fetchExchangeData();
       } else {
         updateCountdownUI();
       }
@@ -481,29 +628,33 @@
       els.countdownText.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
     if (els.countdownFill) {
-      const percent = (secondsRemaining / refreshIntervalSeconds) * 100;
-      els.countdownFill.style.width = `${percent}%`;
+      const pct = ((refreshIntervalSeconds - secondsRemaining) / refreshIntervalSeconds) * 100;
+      els.countdownFill.style.width = `${pct}%`;
     }
   }
 
   function updateRefreshButton(loading) {
     if (!els.refreshBtn) return;
-    els.refreshBtn.disabled = loading;
-    if (els.refreshIcon) {
-      if (loading) els.refreshIcon.classList.add('icon-spin');
-      else els.refreshIcon.classList.remove('icon-spin');
+    if (loading) {
+      els.refreshBtn.disabled = true;
+      if (els.refreshIcon) els.refreshIcon.classList.add('spin-icon');
+    } else {
+      els.refreshBtn.disabled = false;
+      if (els.refreshIcon) els.refreshIcon.classList.remove('spin-icon');
     }
   }
 
-  // Event Listeners
-  function setupEventListeners() {
+  // Setup Event Listeners
+  function setupListeners() {
     if (els.refreshBtn) {
-      els.refreshBtn.addEventListener('click', () => fetchNSEData());
+      els.refreshBtn.addEventListener('click', () => {
+        fetchExchangeData();
+      });
     }
 
     if (els.intervalSelect) {
       els.intervalSelect.addEventListener('change', (e) => {
-        refreshIntervalSeconds = parseInt(e.target.value, 10);
+        refreshIntervalSeconds = parseInt(e.target.value, 10) || 60;
         resetCountdown();
       });
     }
@@ -511,23 +662,25 @@
     if (els.searchInput) {
       els.searchInput.addEventListener('input', (e) => {
         searchQuery = e.target.value.trim();
-        renderTable();
+        renderUI();
       });
     }
 
-    els.filterChips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        els.filterChips.forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentFilter = chip.getAttribute('data-filter');
-        renderTable();
+    if (els.filterChips) {
+      els.filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          els.filterChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentFilter = chip.getAttribute('data-filter');
+          renderUI();
+        });
       });
-    });
+    }
 
     if (els.sortSelect) {
       els.sortSelect.addEventListener('change', (e) => {
         currentSort = e.target.value;
-        renderTable();
+        renderUI();
       });
     }
 
@@ -535,7 +688,7 @@
       els.soundToggleBtn.addEventListener('click', () => {
         soundEnabled = !soundEnabled;
         if (els.soundIcon) els.soundIcon.textContent = soundEnabled ? '🔔' : '🔕';
-        if (soundEnabled) playAnchorChime();
+        els.soundToggleBtn.title = soundEnabled ? 'Sound alerts enabled' : 'Sound alerts muted';
       });
     }
 
@@ -546,18 +699,23 @@
     if (els.dismissAlertBtn) {
       els.dismissAlertBtn.addEventListener('click', () => {
         activeSurges = {};
-        if (highlightTimer) {
-          clearInterval(highlightTimer);
-          highlightTimer = null;
-        }
+        if (els.alertBanner) els.alertBanner.style.display = 'none';
         renderUI();
       });
     }
   }
 
-  // Init
-  setupEventListeners();
-  fetchNSEData();
-  startCountdown();
+  // Initialization
+  function init() {
+    setupListeners();
+    fetchExchangeData();
+    startCountdown();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
 })();

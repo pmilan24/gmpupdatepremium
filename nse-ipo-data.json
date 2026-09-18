@@ -1,199 +1,936 @@
 {
-  "lastUpdated": "2026-09-18T14:18:55.618Z",
-  "count": 8,
+  "lastUpdated": "2026-09-18T14:34:07.378Z",
+  "count": 24,
   "anchorCount": 8,
   "ipos": [
     {
+      "id": "NSE_NSE",
       "symbol": "NSE",
       "companyName": "National Stock Exchange of India Limited",
-      "series": "EQ",
-      "exchange": "NSE",
+      "exchange": "NSE | BSE",
+      "platforms": [
+        "NSE",
+        "BSE"
+      ],
       "status": "Active",
+      "series": "EQ",
       "issueStartDate": "17-Sep-2026",
       "issueEndDate": "21-Sep-2026",
       "issuePrice": "Rs.1700 to Rs.1785",
       "issueSize": "88642911",
       "noOfTime": 0.6040483034227069,
-      "noOfsharesBid": "5.35446E7",
-      "noOfSharesOffered": "8.8642911E7",
       "registrar": "MUFG Intime India Private Limited (formerly Link Intime India Private Limited)",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-15",
+        "message": "Due / Released since 16 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_NSE.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=NSE",
-        "detectedAt": 1789741103835
+        "source": "BOTH",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_NSE.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=NSE",
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260916-50/20260916-50.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$812a2503-49a0-46c8-a3c0-17e605684592.pdf",
+        "bseNoticeNo": "20260916-50",
+        "hasBseAttachment": true
       },
-      "updatedAt": "2026-09-18T14:18:23.835Z"
+      "bseData": {
+        "ipoNo": 7977,
+        "scripCode": 4827,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_SONA",
       "symbol": "SONA",
       "companyName": "Sonaselection India Limited",
-      "series": "EQ",
-      "exchange": "NSE",
+      "exchange": "NSE | BSE",
+      "platforms": [
+        "NSE",
+        "BSE"
+      ],
       "status": "Active",
+      "series": "EQ",
       "issueStartDate": "17-Sep-2026",
       "issueEndDate": "21-Sep-2026",
       "issuePrice": "Rs.94 to Rs.99",
       "issueSize": "10010000",
       "noOfTime": 0.6866133866133867,
-      "noOfsharesBid": "6873000.0",
-      "noOfSharesOffered": "1.001E7",
       "registrar": "KFin Technologies Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-15",
+        "message": "Due / Released since 16 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SONA.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=SONA",
-        "detectedAt": 1789741108397
+        "source": "BOTH",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SONA.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=SONA",
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260916-23/20260916-23.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Sonaselection_India_Limited_Anchor_Allocation_Letter$06519b81-70d4-49c6-ad42-ec9eb7dc539d.pdf",
+        "bseNoticeNo": "20260916-23",
+        "hasBseAttachment": true
       },
-      "updatedAt": "2026-09-18T14:18:28.397Z"
+      "bseData": {
+        "ipoNo": 7973,
+        "scripCode": 4824,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_HEROMOTORS",
       "symbol": "HEROMOTORS",
       "companyName": "Hero Motors Limited",
-      "series": "EQ",
-      "exchange": "NSE",
+      "exchange": "NSE | BSE",
+      "platforms": [
+        "NSE",
+        "BSE"
+      ],
       "status": "Active",
+      "series": "EQ",
       "issueStartDate": "16-Sep-2026",
       "issueEndDate": "18-Sep-2026",
       "issuePrice": "Rs.79 to Rs.84",
       "issueSize": "88607596",
       "noOfTime": 4.008565902182924,
-      "noOfsharesBid": "3.55189388E8",
-      "noOfSharesOffered": "8.8607596E7",
       "registrar": "KFin Technologies Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-14",
+        "message": "Due / Released since 15 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_HEROMOTORS.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=HEROMOTORS",
-        "detectedAt": 1789741112916
+        "source": "BOTH",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_HEROMOTORS.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=HEROMOTORS",
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260915-44/20260915-44.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/notice$51eae30a-bfb1-426c-b90f-e499a917e521.pdf",
+        "bseNoticeNo": "20260915-44",
+        "hasBseAttachment": true
       },
-      "updatedAt": "2026-09-18T14:18:32.916Z"
+      "bseData": {
+        "ipoNo": 7971,
+        "scripCode": 4823,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_JSIPL",
       "symbol": "JSIPL",
       "companyName": "Jindal Supreme (India) Limited",
-      "series": "EQ",
-      "exchange": "NSE",
+      "exchange": "NSE | BSE",
+      "platforms": [
+        "NSE",
+        "BSE"
+      ],
       "status": "Active",
+      "series": "EQ",
       "issueStartDate": "16-Sep-2026",
       "issueEndDate": "18-Sep-2026",
       "issuePrice": "Rs.88 to Rs.93",
       "issueSize": "9399600",
       "noOfTime": 125.10088471849866,
-      "noOfsharesBid": "1.175898276E9",
-      "noOfSharesOffered": "9399600.0",
       "registrar": "Bigshare Services Private Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-14",
+        "message": "Due / Released since 15 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_JSIPL.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=JSIPL",
-        "detectedAt": 1789741117415
+        "source": "BOTH",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_JSIPL.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=JSIPL",
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260915-14/20260915-14.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation$65077e28-00b2-4291-aa76-06ca2725b693.pdf",
+        "bseNoticeNo": "20260915-14",
+        "hasBseAttachment": true
       },
-      "updatedAt": "2026-09-18T14:18:37.415Z"
+      "bseData": {
+        "ipoNo": 7976,
+        "scripCode": 4826,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_SSRETAIL",
       "symbol": "SSRETAIL",
       "companyName": "SS Retail Limited",
-      "series": "EQ",
-      "exchange": "NSE",
+      "exchange": "NSE | BSE",
+      "platforms": [
+        "NSE",
+        "BSE"
+      ],
       "status": "Active",
+      "series": "EQ",
       "issueStartDate": "16-Sep-2026",
       "issueEndDate": "18-Sep-2026",
       "issuePrice": "Rs.403 to Rs.424",
       "issueSize": "8793884",
       "noOfTime": 71.33152597873703,
-      "noOfsharesBid": "6.27281165E8",
-      "noOfSharesOffered": "8793884.0",
       "registrar": "KFin Technologies Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-14",
+        "message": "Due / Released since 15 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SSRETAIL.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=SSRETAIL",
-        "detectedAt": 1789741121956
+        "source": "BOTH",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SSRETAIL.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=SSRETAIL",
+        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260915-45/20260915-45.pdf",
+        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchornotice$4ecdae2f-3c05-494d-942d-5abe0dc30e0a.pdf",
+        "bseNoticeNo": "20260915-45",
+        "hasBseAttachment": true
       },
-      "updatedAt": "2026-09-18T14:18:41.956Z"
+      "bseData": {
+        "ipoNo": 7975,
+        "scripCode": 4828,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_AXIOMGAS",
       "symbol": "AXIOMGAS",
       "companyName": "Axiom Gas Engineering Limited",
-      "series": "SME",
-      "exchange": "NSE SME / BSE",
+      "exchange": "NSE SME",
+      "platforms": [
+        "NSE"
+      ],
       "status": "Active",
+      "series": "SME",
       "issueStartDate": "18-Sep-2026",
       "issueEndDate": "22-Sep-2026",
-      "issuePrice": "",
+      "issuePrice": "—",
       "issueSize": "—",
       "noOfTime": 0.58,
-      "noOfsharesBid": "4808000",
-      "noOfSharesOffered": "8328000",
       "registrar": "KFin Technologies Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-16",
+        "message": "Due / Released since 17 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_AXIOMGAS.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=AXIOMGAS",
-        "detectedAt": 1789741126497
+        "source": "NSE",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_AXIOMGAS.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=AXIOMGAS",
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
       },
-      "updatedAt": "2026-09-18T14:18:46.497Z"
+      "bseData": null,
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_KHERIAAUTO",
       "symbol": "KHERIAAUTO",
       "companyName": "Kheria Autocomp Limited",
-      "series": "SME",
-      "exchange": "NSE SME / BSE",
+      "exchange": "NSE SME",
+      "platforms": [
+        "NSE"
+      ],
       "status": "Active",
+      "series": "SME",
       "issueStartDate": "17-Sep-2026",
       "issueEndDate": "21-Sep-2026",
-      "issuePrice": "",
+      "issuePrice": "—",
       "issueSize": "—",
       "noOfTime": 0.45,
-      "noOfsharesBid": "1478400",
-      "noOfSharesOffered": "3288000",
       "registrar": "Kfin Technologies Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-15",
+        "message": "Due / Released since 16 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_KHERIAAUTO.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=KHERIAAUTO",
-        "detectedAt": 1789741130995
+        "source": "NSE",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_KHERIAAUTO.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=KHERIAAUTO",
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
       },
-      "updatedAt": "2026-09-18T14:18:50.995Z"
+      "bseData": null,
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     },
     {
+      "id": "NSE_SPECTRAA",
       "symbol": "SPECTRAA",
       "companyName": "SpectraA Technology Solutions Limited",
-      "series": "SME",
-      "exchange": "NSE SME / BSE",
+      "exchange": "NSE SME",
+      "platforms": [
+        "NSE"
+      ],
       "status": "Active",
+      "series": "SME",
       "issueStartDate": "17-Sep-2026",
       "issueEndDate": "21-Sep-2026",
-      "issuePrice": "",
+      "issuePrice": "—",
       "issueSize": "—",
       "noOfTime": 18.43,
-      "noOfsharesBid": "47528400",
-      "noOfSharesOffered": "2578800",
       "registrar": "Maashitla Securities Private Limited",
-      "issueType": "Book Building",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-15",
+        "message": "Due / Released since 16 Sept"
+      },
       "anchor": {
         "available": true,
-        "title": "Anchor Allocation Report",
-        "zipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SPECTRAA.zip",
-        "pdfUrl": "/api/nse/anchor-pdf?symbol=SPECTRAA",
-        "detectedAt": 1789741135618
+        "source": "NSE",
+        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SPECTRAA.zip",
+        "nsePdfUrl": "/api/nse/anchor-pdf?symbol=SPECTRAA",
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
       },
-      "updatedAt": "2026-09-18T14:18:55.618Z"
+      "bseData": null,
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_NCL-RE",
+      "symbol": "NCL-RE",
+      "companyName": "NCL RESEARCH  FINANCIAL SERVICES LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-03",
+      "issueEndDate": "2026-09-18",
+      "issuePrice": "1.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-01",
+        "message": "Due / Released since 2 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7940,
+        "scripCode": 4791,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_JAYKAY-RE1",
+      "symbol": "JAYKAY-RE1",
+      "companyName": "JAYKAY ENTERPRISES LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-07",
+      "issueEndDate": "2026-09-18",
+      "issuePrice": "75.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-03",
+        "message": "Due / Released since 4 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7945,
+        "scripCode": 4794,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_FXML",
+      "symbol": "FXML",
+      "companyName": "FX MULTITECH LIMITED",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "SME",
+      "issueStartDate": "2026-09-21",
+      "issueEndDate": "2026-09-23",
+      "issuePrice": "110.00 - 116.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-17",
+        "message": "Due / Released since 18 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7980,
+        "scripCode": 4831,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_VIVEKANAND",
+      "symbol": "VIVEKANAND",
+      "companyName": "Vivekanand Cotspin Limited",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "SME",
+      "issueStartDate": "2026-09-21",
+      "issueEndDate": "2026-09-23",
+      "issuePrice": "32.00 - 37.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-17",
+        "message": "Due / Released since 18 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7981,
+        "scripCode": 4832,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_ROBOKIDZ",
+      "symbol": "ROBOKIDZ",
+      "companyName": "ROBOKIDZ EDUVENTURES LIMITED",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "SME",
+      "issueStartDate": "2026-09-21",
+      "issueEndDate": "2026-09-23",
+      "issuePrice": "100.00 - 106.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-17",
+        "message": "Due / Released since 18 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7982,
+        "scripCode": 4833,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_SHANKARA",
+      "symbol": "SHANKARA",
+      "companyName": "SHANKARA BUILDING PRODUCTS LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-07",
+      "issueEndDate": "2026-09-21",
+      "issuePrice": "150.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-03",
+        "message": "Due / Released since 4 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7944,
+        "scripCode": 540425,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_HNIL",
+      "symbol": "HNIL",
+      "companyName": "Himalaya Nutravedics India Limited",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "SME",
+      "issueStartDate": "2026-09-22",
+      "issueEndDate": "2026-09-24",
+      "issuePrice": "100.00 - 106.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": false,
+        "isUpcoming": true,
+        "expectedDate": "2026-09-20",
+        "message": "Expected 21 Sept (3 days to go)"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7983,
+        "scripCode": 4834,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_VARMORA",
+      "symbol": "VARMORA",
+      "companyName": "Varmora Granito Limited",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "EQ",
+      "issueStartDate": "2026-09-22",
+      "issueEndDate": "2026-09-24",
+      "issuePrice": "140.00 - 148.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": false,
+        "isUpcoming": true,
+        "expectedDate": "2026-09-20",
+        "message": "Expected 21 Sept (3 days to go)"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7986,
+        "scripCode": 4837,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_SKOFFSET",
+      "symbol": "SKOFFSET",
+      "companyName": "S. K. OFFSET LIMITED",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "SME",
+      "issueStartDate": "2026-09-23",
+      "issueEndDate": "2026-09-25",
+      "issuePrice": "119.00 - 125.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": false,
+        "isUpcoming": true,
+        "expectedDate": "2026-09-21",
+        "message": "Expected 22 Sept (4 days to go)"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7984,
+        "scripCode": 4836,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_SPANDANACM",
+      "symbol": "SPANDANACM",
+      "companyName": "SPANDANA SPHOORTY FINANCIAL LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-09",
+      "issueEndDate": "2026-09-23",
+      "issuePrice": "",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-07",
+        "message": "Due / Released since 8 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7964,
+        "scripCode": 4815,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_SALEM-RE",
+      "symbol": "SALEM-RE",
+      "companyName": "SALEM ERODE INVESTMENTS LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-15",
+      "issueEndDate": "2026-09-25",
+      "issuePrice": "20.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-13",
+        "message": "Due / Released since 14 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7972,
+        "scripCode": 4821,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_CONTAIN-RE",
+      "symbol": "CONTAIN-RE",
+      "companyName": "CONTAINE TECHNOLOGIES LTD",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "SME",
+      "issueStartDate": "2026-08-31",
+      "issueEndDate": "2026-09-25",
+      "issuePrice": "15.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-08-27",
+        "message": "Due / Released since 28 Aug"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7923,
+        "scripCode": 4778,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_MANOJ-RE",
+      "symbol": "MANOJ-RE",
+      "companyName": "MANOJ JEWELLERS LTD",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "SME",
+      "issueStartDate": "2026-08-31",
+      "issueEndDate": "2026-09-29",
+      "issuePrice": "20.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-08-27",
+        "message": "Due / Released since 28 Aug"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7924,
+        "scripCode": 4779,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_CUBI FIN SER",
+      "symbol": "CUBI FIN SER",
+      "companyName": "CUBICAL FINANCIAL SERVICES LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-17",
+      "issueEndDate": "2026-09-30",
+      "issuePrice": "2.50",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-15",
+        "message": "Due / Released since 16 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7979,
+        "scripCode": 511710,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_ECS",
+      "symbol": "ECS",
+      "companyName": "ECS BIZTECH LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-17",
+      "issueEndDate": "2026-09-30",
+      "issuePrice": "10.50",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-15",
+        "message": "Due / Released since 16 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7978,
+        "scripCode": 540063,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
+    },
+    {
+      "id": "BSE_INDRA-RE",
+      "symbol": "INDRA-RE",
+      "companyName": "INDRAYANI BIOTECH LTD",
+      "exchange": "BSE",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Active",
+      "series": "EQ",
+      "issueStartDate": "2026-09-15",
+      "issueEndDate": "2026-10-14",
+      "issuePrice": "15.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isUpcoming": false,
+        "expectedDate": "2026-09-13",
+        "message": "Due / Released since 14 Sept"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7970,
+        "scripCode": 4822,
+        "platform": "MainBoard"
+      },
+      "updatedAt": "2026-09-18T14:34:07.378Z"
     }
   ]
 }

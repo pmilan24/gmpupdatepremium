@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSE IPO List & Anchor Allocation Tracker</title>
-  <meta name="description" content="Official NSE India live IPO list with Anchor Allocation Report monitoring, direct PDF viewer, and 1-minute surge highlights.">
+  <title>NSE & BSE IPO List & Anchor Allocation Tracker</title>
+  <meta name="description" content="Unified NSE and BSE India live IPO tracker with Anchor Allocation Notice monitoring, direct PDF extraction, and 1-minute surge highlights.">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
 </head>
@@ -17,17 +17,18 @@
         <div class="logo-badge" style="background: linear-gradient(135deg, #ef4444, #f59e0b);">🏛️</div>
         <div class="title-group">
           <h1>
-            NSE IPO & Anchor Tracker
-            <span class="live-pill">LIVE NSE</span>
+            NSE & BSE Anchor Tracker
+            <span class="live-pill" style="background: linear-gradient(135deg, #ef4444, #3b82f6);">NSE + BSE</span>
           </h1>
           <p>
-            Official issues from <a href="https://www.nseindia.com/market-data/all-upcoming-issues-ipo" target="_blank" rel="noopener noreferrer">nseindia.com</a> · 
+            Unified issues from <a href="https://www.nseindia.com" target="_blank" rel="noopener noreferrer">NSE</a> & 
+            <a href="https://www.bseindia.com/publicissue" target="_blank" rel="noopener noreferrer">BSE India</a> · 
             <span id="lastUpdatedText">Connecting...</span>
           </p>
           <nav class="nav-tabs">
             <a href="index.html" class="nav-tab">📈 GMP Tracker</a>
             <a href="subscription.html" class="nav-tab">📊 Live Subscription</a>
-            <a href="anchor.html" class="nav-tab active">🏛️ NSE & Anchor Tracker</a>
+            <a href="anchor.html" class="nav-tab active">🏛️ NSE & BSE Anchor Tracker</a>
           </nav>
         </div>
       </div>
@@ -48,7 +49,7 @@
         </div>
 
         <!-- Refresh Button -->
-        <button id="refreshBtn" class="btn btn-primary" style="background: #dc2626;" title="Refresh NSE IPO list & anchor status">
+        <button id="refreshBtn" class="btn btn-primary" style="background: #dc2626;" title="Refresh unified exchange IPO list & anchor status">
           <span id="refreshIcon">🔄</span> Refresh
         </button>
 
@@ -69,27 +70,27 @@
     <!-- Quick Statistics Overview -->
     <div class="stats-grid">
       <div class="stat-card">
-        <span class="stat-label">Total NSE Issues</span>
+        <span class="stat-label">Total Unified Issues</span>
         <span id="statTotal" class="stat-val">—</span>
-        <span class="stat-sub">Active & Upcoming</span>
+        <span class="stat-sub">NSE & BSE Active/Upcoming</span>
       </div>
 
       <div class="stat-card highlight-card">
         <span class="stat-label">Anchor Reports Released</span>
         <span id="statAnchorCount" class="stat-val" style="color: #34d399;">0</span>
-        <span class="stat-sub">With PDF & ZIP available</span>
+        <span class="stat-sub">NSE Archives & BSE Notices</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Dual Listed (NSE + BSE)</span>
+        <span id="statDual" class="stat-val">—</span>
+        <span class="stat-sub">Cross-Exchange Matched</span>
       </div>
 
       <div class="stat-card">
         <span class="stat-label">Active Bidding</span>
         <span id="statActive" class="stat-val">—</span>
         <span class="stat-sub">Currently open</span>
-      </div>
-
-      <div class="stat-card">
-        <span class="stat-label">SME Issues</span>
-        <span id="statSme" class="stat-val">—</span>
-        <span class="stat-sub">NSE SME / BSE Dual</span>
       </div>
     </div>
 
@@ -107,12 +108,13 @@
     <div class="control-bar">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search company name, symbol (e.g. SONA, NSE)...">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search company name, symbol (e.g. SONA, NSE, HERO)...">
       </div>
 
       <div class="filter-chips">
         <button class="chip active" data-filter="all">All Issues</button>
         <button class="chip" data-filter="anchor">✨ Anchor Available (0)</button>
+        <button class="chip" data-filter="dual">Dual Listed (NSE+BSE)</button>
         <button class="chip" data-filter="mainboard">Mainboard (EQ)</button>
         <button class="chip" data-filter="sme">SME</button>
       </div>
@@ -128,16 +130,16 @@
       </div>
     </div>
 
-    <!-- Main IPO & Anchor Table -->
+    <!-- Main Unified IPO & Anchor Table -->
     <div class="table-container">
       <table class="ipo-table">
         <thead>
           <tr>
-            <th>Symbol & Company Name</th>
-            <th>Issue Dates</th>
+            <th>Symbol & Exchange</th>
+            <th>Issue Dates & Anchor Window</th>
             <th>Price Band</th>
-            <th>Issue Size / Multiple</th>
-            <th style="text-align: right;">Anchor Allocation Report</th>
+            <th>Issue Details / Subscription</th>
+            <th style="text-align: right;">Anchor Report & Cross-Check</th>
           </tr>
         </thead>
         <tbody id="anchorTableBody">
@@ -145,7 +147,7 @@
             <td colspan="5">
               <div class="loading-box">
                 <div class="loading-spinner"></div>
-                <p>Loading live issues from NSE India API...</p>
+                <p>Aggregating live IPO & Anchor reports from NSE & BSE...</p>
               </div>
             </td>
           </tr>
@@ -154,13 +156,38 @@
     </div>
   </main>
 
+  <!-- Live On-Demand Deep Cross-Check Modal -->
+  <div id="checkModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>
+          <span>🔍</span>
+          <span id="modalTitle">Cross-Exchange Anchor Check</span>
+        </h3>
+        <button id="modalCloseBtn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="modalSub" style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 14px;">
+          Inspecting real-time feeds on both NSE India and BSE India for Anchor allocation filings...
+        </p>
+        <div id="modalStepsList" class="modal-steps-list">
+          <!-- Step items rendered dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="modalDoneBtn" class="btn btn-primary btn-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="app-footer container">
     <p>
-      Official IPO issue data sourced from <a href="https://www.nseindia.com" target="_blank" rel="noopener noreferrer">NSE India</a>.
-      Anchor Allocation Reports are extracted directly from official NSE archives. Ready for BSE integration.
+      Multi-Exchange IPO & Anchor Allocation Report Engine. Unified data sourced from 
+      <a href="https://www.nseindia.com" target="_blank" rel="noopener noreferrer">NSE India</a> & 
+      <a href="https://www.bseindia.com" target="_blank" rel="noopener noreferrer">BSE India</a>.
     </p>
     <p style="margin-top: 6px; font-size: 0.75rem; color: #6b7280;">
-      Instant ZIP to PDF decompression engine · 1-minute live surge highlights · Multi-exchange architecture
+      Instant ZIP decompression · BSE PDF Notice attachment extraction · 1-minute live surge highlights · Date prior logic
     </p>
   </footer>
 
