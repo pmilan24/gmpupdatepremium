@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSE IPO List & Anchor Allocation Tracker</title>
+  <meta name="description" content="Official NSE India live IPO list with Anchor Allocation Report monitoring, direct PDF viewer, and 1-minute surge highlights.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="container header-content">
+      <div class="logo-section">
+        <div class="logo-badge" style="background: linear-gradient(135deg, #ef4444, #f59e0b);">🏛️</div>
+        <div class="title-group">
+          <h1>
+            NSE IPO & Anchor Tracker
+            <span class="live-pill">LIVE NSE</span>
+          </h1>
+          <p>
+            Official issues from <a href="https://www.nseindia.com/market-data/all-upcoming-issues-ipo" target="_blank" rel="noopener noreferrer">nseindia.com</a> · 
+            <span id="lastUpdatedText">Connecting...</span>
+          </p>
+          <nav class="nav-tabs">
+            <a href="index.html" class="nav-tab">📈 GMP Tracker</a>
+            <a href="subscription.html" class="nav-tab">📊 Live Subscription</a>
+            <a href="anchor.html" class="nav-tab active">🏛️ NSE & Anchor Tracker</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Auto Refresh Countdown Box -->
+        <div class="timer-box" title="Auto-refresh countdown">
+          <span>Auto-refresh:</span>
+          <strong id="countdownText">1:00</strong>
+          <div class="countdown-bar">
+            <div id="countdownFill" class="countdown-fill" style="background: #ef4444;"></div>
+          </div>
+          <select id="intervalSelect" class="sort-select" style="padding: 2px 6px; font-size: 0.78rem;">
+            <option value="30">30 sec</option>
+            <option value="60" selected>1 min</option>
+            <option value="180">3 min</option>
+          </select>
+        </div>
+
+        <!-- Refresh Button -->
+        <button id="refreshBtn" class="btn btn-primary" style="background: #dc2626;" title="Refresh NSE IPO list & anchor status">
+          <span id="refreshIcon">🔄</span> Refresh
+        </button>
+
+        <!-- Sound Notification Toggle -->
+        <button id="soundToggleBtn" class="btn btn-outline" title="Sound alerts on new anchor release">
+          <span id="soundIcon">🔔</span>
+        </button>
+
+        <!-- Simulate Anchor Release Button -->
+        <button id="simulateBtn" class="btn btn-outline btn-sm" title="Simulate a new Anchor Allocation Report release with 1-min countdown highlight">
+          ⚡ Test Anchor (1 Min)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Quick Statistics Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Total NSE Issues</span>
+        <span id="statTotal" class="stat-val">—</span>
+        <span class="stat-sub">Active & Upcoming</span>
+      </div>
+
+      <div class="stat-card highlight-card">
+        <span class="stat-label">Anchor Reports Released</span>
+        <span id="statAnchorCount" class="stat-val" style="color: #34d399;">0</span>
+        <span class="stat-sub">With PDF & ZIP available</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">Active Bidding</span>
+        <span id="statActive" class="stat-val">—</span>
+        <span class="stat-sub">Currently open</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-label">SME Issues</span>
+        <span id="statSme" class="stat-val">—</span>
+        <span class="stat-sub">NSE SME / BSE Dual</span>
+      </div>
+    </div>
+
+    <!-- Alert Banner (shown when anchor is newly released or during 1-min highlight) -->
+    <div id="alertBanner" class="alert-banner" style="display: none;">
+      <div class="alert-banner-text">
+        <span>✨ <strong><span id="alertBannerCount">0</span> IPO(s)</strong> have Anchor Allocation Report available! Highlighted with 1-minute live countdown timer.</span>
+      </div>
+      <button id="dismissAlertBtn" class="btn btn-outline btn-sm">
+        Acknowledge ✓
+      </button>
+    </div>
+
+    <!-- Control Bar: Search, Filters & Sorting -->
+    <div class="control-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search company name, symbol (e.g. SONA, NSE)...">
+      </div>
+
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all">All Issues</button>
+        <button class="chip" data-filter="anchor">✨ Anchor Available (0)</button>
+        <button class="chip" data-filter="mainboard">Mainboard (EQ)</button>
+        <button class="chip" data-filter="sme">SME</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Sort:</span>
+        <select id="sortSelect" class="sort-select">
+          <option value="default">Default (Order)</option>
+          <option value="anchor-first">Anchor Available First</option>
+          <option value="symbol-asc">Symbol (A–Z)</option>
+          <option value="times-desc">Subscription (High to Low)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Main IPO & Anchor Table -->
+    <div class="table-container">
+      <table class="ipo-table">
+        <thead>
+          <tr>
+            <th>Symbol & Company Name</th>
+            <th>Issue Dates</th>
+            <th>Price Band</th>
+            <th>Issue Size / Multiple</th>
+            <th style="text-align: right;">Anchor Allocation Report</th>
+          </tr>
+        </thead>
+        <tbody id="anchorTableBody">
+          <tr>
+            <td colspan="5">
+              <div class="loading-box">
+                <div class="loading-spinner"></div>
+                <p>Loading live issues from NSE India API...</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="app-footer container">
+    <p>
+      Official IPO issue data sourced from <a href="https://www.nseindia.com" target="_blank" rel="noopener noreferrer">NSE India</a>.
+      Anchor Allocation Reports are extracted directly from official NSE archives. Ready for BSE integration.
+    </p>
+    <p style="margin-top: 6px; font-size: 0.75rem; color: #6b7280;">
+      Instant ZIP to PDF decompression engine · 1-minute live surge highlights · Multi-exchange architecture
+    </p>
+  </footer>
+
+  <script src="anchor.js"></script>
+</body>
+</html>
