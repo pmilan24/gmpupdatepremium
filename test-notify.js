@@ -1,6 +1,6 @@
+// test-notify.js - 100% Free Telegram Bot Alert & PDF Delivery Tester
 const fs = require("fs");
-// test-notify.js - CLI testing tool for Telegram Bot & NTFY Push
-const { sendTelegramAlert, sendNtfyAlert } = require("./notifications");
+const { sendTelegramAlert } = require("./notifications");
 
 // Load .env if present
 if (fs.existsSync(".env")) {
@@ -26,65 +26,63 @@ function getArg(flag) {
 
 const token = getArg("--token") || process.env.TELEGRAM_BOT_TOKEN;
 const chatId = getArg("--chat") || process.env.TELEGRAM_CHAT_ID;
-const topic = getArg("--topic") || process.env.NTFY_TOPIC;
 
 async function runTest() {
   console.log("=================================================");
-  console.log("🔔 Instant Anchor Notification System Test");
+  console.log("🔔 100% Free Telegram Anchor Alert & PDF Tester");
   console.log("=================================================");
 
   const sampleIpo = {
     symbol: "TESTIPO",
-    companyName: "Test IPO Innovations Limited",
+    companyName: "Test Innovations India Limited",
     exchange: "NSE | BSE",
     issuePrice: "Rs. 250 to Rs. 265",
     issueStartDate: "22-Sep-2026",
     issueEndDate: "24-Sep-2026"
   };
+  // Sample test PDF file
   const samplePdfUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
-  // 1. Test Telegram
-  console.log("\n[1/2] Testing Telegram Bot Alert (Option 1)...");
   if (!token || !chatId) {
-    console.log("⚠️  Skipped Telegram: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not provided.");
-    console.log("   Usage: node test-notify.js --token <BOT_TOKEN> --chat <CHAT_ID>");
-  } else {
-    console.log("   Token: " + token.slice(0, 6) + "..." + token.slice(-4));
-    console.log("   Chat ID: " + chatId);
-    const caption = "🏛️ <b>TEST ANCHOR REPORT ALERT</b>\n\n" +
-      "🏢 <b>Company:</b> " + sampleIpo.companyName + " (" + sampleIpo.symbol + ")\n" +
-      "📊 <b>Exchange:</b> " + sampleIpo.exchange + "\n" +
-      "💰 <b>Issue Price:</b> " + sampleIpo.issuePrice + "\n\n" +
-      "✅ <i>If you received this message and the PDF file, your Telegram Bot is 100% WORKING!</i>";
-
-    const res = await sendTelegramAlert({
-      token,
-      chatId,
-      ipo: sampleIpo,
-      pdfUrl: samplePdfUrl,
-      caption
-    });
-    console.log("   Telegram Result:", res);
+    console.log("\n⚠️  Telegram Credentials Missing!");
+    console.log("   Please provide your Telegram Bot Token and Chat ID:\n");
+    console.log("   👉 Command: node test-notify.js --token <BOT_TOKEN> --chat <CHAT_ID>");
+    console.log("   👉 Or add them to a .env file:\n      TELEGRAM_BOT_TOKEN=...\n      TELEGRAM_CHAT_ID=...\n");
+    console.log("-------------------------------------------------");
+    console.log("Quick 2-minute setup:");
+    console.log("1. Message @BotFather on Telegram -> /newbot -> copy Token.");
+    console.log("2. Message @userinfobot on Telegram -> copy your numeric Id.");
+    console.log("3. Send /start to your new bot once, then run this command.");
+    console.log("=================================================");
+    return;
   }
 
-  // 2. Test NTFY
-  console.log("\n[2/2] Testing NTFY Mobile Push Alert (Option 2)...");
-  if (!topic) {
-    console.log("⚠️  Skipped NTFY: NTFY_TOPIC not provided.");
-    console.log("   Usage: node test-notify.js --topic <YOUR_TOPIC_NAME>");
-  } else {
-    console.log("   Topic: " + topic);
-    const res = await sendNtfyAlert({
-      topic,
-      ipo: sampleIpo,
-      title: "Test Anchor Alert: " + sampleIpo.symbol,
-      message: "Test IPO Innovations Limited\nPrice: Rs. 250-265\nTap to test PDF download."
-    });
-    console.log("   NTFY Result:", res);
-  }
+  console.log("   Token: " + token.slice(0, 6) + "..." + token.slice(-4));
+  console.log("   Chat ID: " + chatId);
+  console.log("\n🚀 Dispatching test alert with sample PDF to your Telegram...");
 
-  console.log("\n=================================================");
-  console.log("Test finished.");
+  const caption = "🏛️ <b>TEST ANCHOR REPORT ALERT</b>\n\n" +
+    "🏢 <b>Company:</b> " + sampleIpo.companyName + " (" + sampleIpo.symbol + ")\n" +
+    "📊 <b>Exchange:</b> " + sampleIpo.exchange + "\n" +
+    "💰 <b>Issue Price:</b> " + sampleIpo.issuePrice + "\n" +
+    "📅 <b>IPO Dates:</b> " + sampleIpo.issueStartDate + " to " + sampleIpo.issueEndDate + "\n\n" +
+    "✅ <i>If you received this message and the PDF file, your 100% Free Telegram Bot is WORKING!</i>";
+
+  const res = await sendTelegramAlert({
+    token,
+    chatId,
+    ipo: sampleIpo,
+    pdfUrl: samplePdfUrl,
+    caption
+  });
+
+  console.log("\nTelegram API Result:", res);
+  if (res.success) {
+    console.log("🎉 SUCCESS! Check your Telegram app — the message and PDF document have arrived!");
+  } else {
+    console.log("❌ Failed to deliver. Please verify that you started your bot in Telegram by clicking /start.");
+  }
+  console.log("=================================================");
 }
 
 runTest();
