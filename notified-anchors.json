@@ -1,0 +1,57 @@
+{
+  "NSE_NSE": {
+    "symbol": "NSE",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_SONA": {
+    "symbol": "SONA",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_HEROMOTORS": {
+    "symbol": "HEROMOTORS",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_JSIPL": {
+    "symbol": "JSIPL",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_SSRETAIL": {
+    "symbol": "SSRETAIL",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_AXIOMGAS": {
+    "symbol": "AXIOMGAS",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_KHERIAAUTO": {
+    "symbol": "KHERIAAUTO",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "NSE_SPECTRAA": {
+    "symbol": "SPECTRAA",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "BSE_FXMULTITEC": {
+    "symbol": "FXMULTITEC",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "BSE_VIVEKANAND": {
+    "symbol": "VIVEKANAND",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  },
+  "BSE_ROBOKIDZED": {
+    "symbol": "ROBOKIDZED",
+    "notifiedAtIST": "Initial Baseline",
+    "notifiedAtEpoch": 1789795623706
+  }
+}

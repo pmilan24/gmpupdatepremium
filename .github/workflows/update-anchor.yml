@@ -32,6 +32,10 @@ jobs:
           node-version: '20'
 
       - name: Fetch and Sync NSE & BSE Anchor Data
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: |
           node update-anchor-data.js
 
@@ -39,7 +43,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add nse-ipo-data.json anchor-sync-log.json
+          git add nse-ipo-data.json anchor-sync-log.json notified-anchors.json
           if git diff --staged --quiet; then
             echo "No changes detected in Anchor data or sync logs."
           else
