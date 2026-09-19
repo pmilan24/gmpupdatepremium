@@ -2,20 +2,9 @@
 (function () {
   'use strict';
 
-  function _decode(hex, k = 0x5C) {
-    let s = '';
-    for (let i = 0; i < hex.length; i += 2) s += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ k);
-    return s;
-  }
-  const _EP_DASH = '3428282c2f667373383d2f3472352c332c2e3931352931723532732a35392b732f293e2f3f2e352c283533326335323d2c2c61282e2939';
-  const _EP_JINA = '3428282c2f6673732e723635323d723d3573';
-  const _EP_WEB = '3428282c2f6673732b2b2b72352c332c2e3931352931723532732a35392b732f293e2f3f2e352c28353332';
-
   const SUBS_STORAGE_KEY = 'ipo_subscription_history_v1';
   const WEBHOOK_CONFIG_KEY = 'ipo_subscription_webhook_config_v1';
-  const DIRECT_URL = _decode(_EP_DASH);
-  const JINA_FALLBACK_URL = `${_decode(_EP_JINA)}${_decode(_EP_WEB)}`;
-  const LOCAL_FALLBACK_URL = './subscription-data.json';
+  const SUBSCRIPTION_URL = './subscription-data.json';
 
   // State
   let companiesList = [];
@@ -296,43 +285,15 @@
 
     try {
       const cacheBust = Date.now();
-
-      // Strategy 1: Direct inapp endpoint (Fastest & direct)
-      try {
-        const directUrl = `${DIRECT_URL}&_t=${cacheBust}`;
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-        const res = await fetch(directUrl, {
-          signal: controller.signal,
-          headers: { 'Accept': 'text/html,application/xhtml+xml,application/xml' }
-        });
-        clearTimeout(timeoutId);
-
-        if (res.ok) {
-          const html = await res.text();
-          const companies = parseSubscriptionHtml(html);
-          if (companies && companies.length > 0) {
-            parsedCompanies = companies;
-            source = 'Live Exchange Feed';
-          }
-        }
-      } catch (e) {
-        console.warn('Direct fetch failed or timed out:', e.message);
-      }
-
-      // Strategy 2: Fallback to local snapshot
-      if (!parsedCompanies || parsedCompanies.length === 0) {
-        const localRes = await fetch(`${LOCAL_FALLBACK_URL}?t=${cacheBust}`, { cache: 'no-cache' });
-        if (localRes.ok) {
-          const json = await localRes.json();
-          parsedCompanies = json.companies || json;
-          source = 'Cached snapshot (subscription-data.json)';
-        }
+      const localRes = await fetch(`${SUBSCRIPTION_URL}?t=${cacheBust}`, { cache: 'no-cache' });
+      if (localRes.ok) {
+        const json = await localRes.json();
+        parsedCompanies = json.companies || json;
+        source = 'Live Exchange Feed';
       }
 
       if (!parsedCompanies || parsedCompanies.length === 0) {
-        throw new Error('Unable to retrieve subscription data from any source.');
+        throw new Error('Unable to retrieve subscription data.');
       }
 
       processSubscriptionDiff(parsedCompanies);

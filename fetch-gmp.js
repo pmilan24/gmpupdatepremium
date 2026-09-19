@@ -146,6 +146,11 @@ async function main() {
   try {
     const data = await fetchFromWeb();
 
+    if (!data || data.length === 0) {
+      console.warn('⚠️ No IPOs parsed from feed. Preserving existing data.json snapshot.');
+      return;
+    }
+
     console.log(`Successfully parsed ${data.length} IPOs!`);
     console.log('Sample item:', JSON.stringify(data[0], null, 2));
 

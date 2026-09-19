@@ -2,27 +2,16 @@
 (function () {
   'use strict';
 
-  function _decode(hex, k = 0x5C) {
-    let s = '';
-    for (let i = 0; i < hex.length; i += 2) s += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ k);
-    return s;
-  }
-  const _EP_NSE_ARCHIVE = '3428282c2f667373322f393d2e3f34352a392f72322f39353238353d723f3331';
-  const _EP_BSE = '3428282c2f6673732b2b2b723e2f39353238353d723f3331';
-
   function resolveAnchorLink(rawUrl, type) {
     if (!rawUrl) return '#';
     if (rawUrl.startsWith('http')) return rawUrl;
-    const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (isLocal) {
-      if (type === 'bse') return `/api/bse/proxy-pdf?url=${encodeURIComponent(rawUrl)}`;
-      if (type === 'nse-zip') return `/api/nse/anchor-zip?symbol=${encodeURIComponent(rawUrl)}`;
-    }
     if (type === 'bse' || rawUrl.startsWith('/downloads/')) {
-      return `${_decode(_EP_BSE)}${rawUrl}`;
+      return `/api/bse/proxy-pdf?url=${encodeURIComponent(rawUrl)}`;
     }
     if (type === 'nse-zip' || rawUrl.startsWith('/content/')) {
-      return `${_decode(_EP_NSE_ARCHIVE)}${rawUrl}`;
+      const match = rawUrl.match(/ANCHOR_([A-Za-z0-9_\-]+)\.zip/i);
+      const symbol = match ? match[1] : '';
+      return `/api/nse/anchor-zip?symbol=${encodeURIComponent(symbol)}`;
     }
     return rawUrl;
   }

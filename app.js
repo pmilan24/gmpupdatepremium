@@ -2,18 +2,9 @@
 (function () {
   'use strict';
 
-  function _decode(hex, k = 0x5C) {
-    let s = '';
-    for (let i = 0; i < hex.length; i += 2) s += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ k);
-    return s;
-  }
-  const _EP_JINA = '3428282c2f6673732e723635323d723d3573';
-  const _EP_GMP = '3428282c2f6673732b2b2b72352c332c2e3931352931723532';
-
   const STORAGE_KEY = 'gmp_tracker_storage_v2';
   const CONFIG_KEY = 'gmp_tracker_config_v1';
-  const PRIMARY_URL = `${_decode(_EP_JINA)}${_decode(_EP_GMP)}`;
-  const FALLBACK_URL = './data.json';
+  const DATA_URL = './data.json';
 
   // State
   let ipoList = [];
@@ -215,66 +206,41 @@
           allotmentDate,
           listingDate,
           estimatedProfit,
-          url: url ? (url.startsWith('http') ? url : `${_decode(_EP_GMP)}${url}`) : ''
+          url: url || ''
         });
       }
     }
     return ipos;
   }
 
-  // Fetch Data (tries live proxy, falls back to ./data.json)
+  // Fetch Data (reads ./data.json updated continuously by GitHub Actions)
   async function fetchData() {
     if (isFetching) return;
     isFetching = true;
     updateRefreshButton(true);
 
     let rawData = null;
-    let fetchSource = '';
+    let fetchSource = 'Live Market Feed';
 
     try {
-      // 1. Try Live Proxy with cache-busting
-      try {
-        const liveUrl = `${PRIMARY_URL}?t=${Date.now()}`;
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-        const response = await fetch(liveUrl, {
-          cache: 'no-cache',
-          signal: controller.signal,
-          headers: {
-            'Accept': 'text/plain',
-            'x-no-cache': 'true'
-          }
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          const text = await response.text();
-          const parsed = parseMarkdown(text);
-          if (parsed && parsed.length > 0) {
-            rawData = parsed;
-            fetchSource = 'Live Market Feed';
-          }
-        }
-      } catch (err) {
-        console.warn('Live proxy fetch failed, falling back to data.json:', err);
-      }
-
-      // 2. Fallback to data.json
-      if (!rawData || rawData.length === 0) {
-        const fallbackRes = await fetch(FALLBACK_URL + '?t=' + Date.now(), { cache: 'no-cache' });
-        if (fallbackRes.ok) {
-          const json = await fallbackRes.json();
-          rawData = json.ipos || json;
-          fetchSource = 'Cached snapshot (data.json)';
+      const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-cache' });
+      if (response.ok) {
+        const json = await response.json();
+        rawData = json.ipos || json;
+        if (json.source) fetchSource = json.source;
+        if (json.lastUpdated) {
+          updateLastUpdatedTimestamp(json.lastUpdated);
         }
       }
+    } catch (err) {
+      console.warn('Failed to fetch data.json:', err);
+    }
 
-      if (!rawData || rawData.length === 0) {
-        throw new Error('Unable to retrieve IPO data from any source.');
-      }
+    if (!rawData || rawData.length === 0) {
+      throw new Error('Unable to retrieve IPO data.');
+    }
 
-      processNewIpoData(rawData);
+    processNewIpoData(rawData);
       renderUI();
 
       if (els.lastUpdatedText) {
