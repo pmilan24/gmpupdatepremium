@@ -23,15 +23,27 @@ function getSecret(name, fallback = '') {
   return fallback;
 }
 
+function decodeCipher(b64) {
+  try {
+    return Buffer.from(b64, 'base64').toString('utf8');
+  } catch (e) {
+    return '';
+  }
+}
+
+const defaultGmp = decodeCipher('aHR0cHM6Ly93d3cuaXBvcHJlbWl1bS5pbg==');
+const defaultNse = decodeCipher('aHR0cHM6Ly93d3cubnNlaW5kaWEuY29t');
+const defaultBse = decodeCipher('aHR0cHM6Ly93d3cuYnNlaW5kaWEuY29t');
+
 const SOURCES = {
-  GMP_SOURCE_URL: getSecret('GMP_SOURCE_URL'),
+  GMP_SOURCE_URL: getSecret('GMP_SOURCE_URL', defaultGmp),
   JINA_PREFIX_URL: (getSecret('JINA_PREFIX_URL', 'https://r.jina.ai') || 'https://r.jina.ai') + '/',
   SUB_DASH_URL: getSecret('SUB_DASH_URL'),
   SUB_WEB_URL: getSecret('SUB_WEB_URL'),
-  NSE_BASE_URL: getSecret('NSE_BASE_URL'),
-  NSE_ARCHIVE_URL: getSecret('NSE_ARCHIVE_URL', getSecret('NSE_BASE_URL') ? getSecret('NSE_BASE_URL').replace('//www.', '//nsearchives.') : ''),
-  BSE_BASE_URL: getSecret('BSE_BASE_URL'),
-  BSE_API_URL: getSecret('BSE_API_URL', getSecret('BSE_BASE_URL') ? getSecret('BSE_BASE_URL').replace('//www.', '//api.') + '/BseIndiaAPI' : '')
+  NSE_BASE_URL: getSecret('NSE_BASE_URL', defaultNse),
+  NSE_ARCHIVE_URL: getSecret('NSE_ARCHIVE_URL', (getSecret('NSE_BASE_URL', defaultNse)).replace('//www.', '//nsearchives.')),
+  BSE_BASE_URL: getSecret('BSE_BASE_URL', defaultBse),
+  BSE_API_URL: getSecret('BSE_API_URL', (getSecret('BSE_BASE_URL', defaultBse)).replace('//www.', '//api.') + '/BseIndiaAPI')
 };
 
 module.exports = SOURCES;

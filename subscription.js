@@ -284,8 +284,14 @@
     let source = '';
 
     try {
-      const cacheBust = Date.now();
-      const localRes = await fetch(`${SUBSCRIPTION_URL}?t=${cacheBust}`, { cache: 'no-cache' });
+      const cacheBust = Date.now() + '_' + Math.floor(Math.random() * 10000);
+      const localRes = await fetch(`${SUBSCRIPTION_URL}?_t=${cacheBust}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
       if (localRes.ok) {
         const json = await localRes.json();
         parsedCompanies = json.companies || json;
@@ -293,7 +299,12 @@
       }
 
       if (!parsedCompanies || parsedCompanies.length === 0) {
-        throw new Error('Unable to retrieve subscription data.');
+        if (storageState && storageState.items && Object.keys(storageState.items).length > 0) {
+          parsedCompanies = Object.values(storageState.items);
+          source = 'Offline Cache';
+        } else {
+          throw new Error('Unable to retrieve subscription data.');
+        }
       }
 
       processSubscriptionDiff(parsedCompanies);

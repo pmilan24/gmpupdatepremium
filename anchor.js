@@ -1519,7 +1519,10 @@
 
     let logs = [];
     try {
-      const res = await fetch(`./anchor-sync-log.json?t=${Date.now()}`, { cache: 'no-cache' });
+      const res = await fetch(`./anchor-sync-log.json?_t=${Date.now()}_${Math.floor(Math.random()*10000)}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+      });
       if (res.ok) {
         logs = await res.json();
       }
@@ -1529,7 +1532,10 @@
 
     if (!Array.isArray(logs) || logs.length === 0) {
       try {
-        const snapRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
+        const snapRes = await fetch(`${FALLBACK_URL}?_t=${Date.now()}_${Math.floor(Math.random()*10000)}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+        });
         if (snapRes.ok) {
           const snapData = await snapRes.json();
           if (Array.isArray(snapData.recentLogs)) {

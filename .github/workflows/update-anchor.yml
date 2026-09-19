@@ -56,6 +56,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes detected in Anchor data or sync logs."
           else
-            git commit -m "chore(anchor): auto-update exchange anchor reports and sync logs [skip ci]"
+            git commit -m "chore(anchor): auto-update exchange anchor reports and sync logs"
             git push
           fi

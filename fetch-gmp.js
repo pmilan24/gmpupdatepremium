@@ -124,22 +124,107 @@ function parseMarkdownTable(markdown) {
   return ipos;
 }
 
-async function fetchFromWeb() {
-  const cacheBustUrl = `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}?t=${Date.now()}`;
-  console.log('Fetching live data from feed...');
-  const response = await fetch(cacheBustUrl, {
-    headers: {
-      'Accept': 'text/plain',
-      'x-no-cache': 'true'
-    }
-  });
+const USER_AGENTS = [
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.6367.82 Mobile Safari/537.36',
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15'
+];
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch from endpoint: ${response.status} ${response.statusText}`);
+function getRandomUserAgent() {
+  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (e) {
+    clearTimeout(id);
+    throw e;
+  }
+}
+
+async function fetchFromWeb() {
+  if (!TARGET_URL) {
+    console.error('TARGET_URL is not configured.');
+    return [];
   }
 
-  const markdown = await response.text();
-  return parseMarkdownTable(markdown);
+  // Strategy list for rotating proxies and edge IP routing
+  const strategies = [
+    {
+      name: 'Jina Reader Primary (Edge IP Rotation & Cache-Bust)',
+      url: `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}?_t=${Date.now()}`,
+      headers: {
+        'Accept': 'text/plain',
+        'x-no-cache': 'true'
+      }
+    },
+    {
+      name: 'Jina Reader Direct Clean Route',
+      url: `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}`,
+      headers: {
+        'Accept': 'text/plain',
+        'x-no-cache': 'true'
+      }
+    },
+    {
+      name: 'Jina Reader Protocol Alternate Route',
+      url: `${SOURCES.JINA_PREFIX_URL}${TARGET_URL.replace(/^https:\/\//, 'http://')}`,
+      headers: {
+        'Accept': 'text/plain',
+        'x-no-cache': 'true'
+      }
+    },
+    {
+      name: 'Jina Reader Encoded Routing',
+      url: `${SOURCES.JINA_PREFIX_URL}${encodeURIComponent(TARGET_URL)}?_nocache=${Date.now()}`,
+      headers: {
+        'Accept': 'text/plain',
+        'x-no-cache': 'true'
+      }
+    }
+  ];
+
+  for (let i = 0; i < strategies.length; i++) {
+    const strat = strategies[i];
+    console.log(`[Attempt ${i + 1}/${strategies.length}] Trying proxy strategy: ${strat.name}...`);
+    try {
+      const response = await fetchWithTimeout(strat.url, { headers: strat.headers }, 15000);
+      if (!response.ok) {
+        console.warn(`⚠️ Strategy ${strat.name} responded with status: ${response.status} ${response.statusText}`);
+        continue;
+      }
+      const text = await response.text();
+      if (!text || text.length < 200) {
+        console.warn(`⚠️ Strategy ${strat.name} returned insufficient content (${text ? text.length : 0} bytes)`);
+        continue;
+      }
+
+      const ipos = parseMarkdownTable(text);
+      if (ipos && ipos.length > 0) {
+        console.log(`✅ Strategy ${strat.name} successfully parsed ${ipos.length} IPOs!`);
+        return ipos;
+      } else {
+        console.warn(`⚠️ Strategy ${strat.name} returned content, but 0 IPOs were parsed.`);
+      }
+    } catch (err) {
+      console.warn(`❌ Strategy ${strat.name} failed: ${err.message}`);
+    }
+
+    // Brief cooldown before trying next proxy strategy
+    if (i < strategies.length - 1) {
+      await new Promise(r => setTimeout(r, 1200));
+    }
+  }
+
+  console.error('All proxy fetch strategies exhausted.');
+  return [];
 }
 
 async function main() {
@@ -147,7 +232,7 @@ async function main() {
     const data = await fetchFromWeb();
 
     if (!data || data.length === 0) {
-      console.warn('⚠️ No IPOs parsed from feed. Preserving existing data.json snapshot.');
+      console.warn('⚠️ No fresh IPOs parsed from feed. Preserving existing data.json snapshot.');
       return;
     }
 
@@ -165,8 +250,7 @@ async function main() {
     fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
     console.log(`Saved ${data.length} IPOs to ${outputPath}`);
   } catch (err) {
-    console.error('Error:', err);
-    process.exit(1);
+    console.error('Unexpected error in main():', err);
   }
 }
 

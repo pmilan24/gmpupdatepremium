@@ -43,6 +43,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes detected in GMP data."
           else
-            git commit -m "chore(data): auto-update GMP data [skip ci]"
+            git commit -m "chore(data): auto-update GMP data"
             git push
           fi

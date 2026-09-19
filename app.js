@@ -223,7 +223,16 @@
     let fetchSource = 'Live Market Feed';
 
     try {
-      const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: 'no-cache' });
+      // Aggressive cache busting for mobile browsers (Safari/Chrome)
+      const cacheBust = Date.now() + '_' + Math.floor(Math.random() * 10000);
+      const response = await fetch(`${DATA_URL}?_t=${cacheBust}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (response.ok) {
         const json = await response.json();
         rawData = json.ipos || json;
@@ -233,14 +242,22 @@
         }
       }
     } catch (err) {
-      console.warn('Failed to fetch data.json:', err);
+      console.warn('Network fetch of data.json failed:', err);
     }
 
-    if (!rawData || rawData.length === 0) {
-      throw new Error('Unable to retrieve IPO data.');
-    }
+    try {
+      if (!rawData || !Array.isArray(rawData) || rawData.length === 0) {
+        // Mobile offline resilience: load from previously stored state if available
+        if (storageState && storageState.items && Object.keys(storageState.items).length > 0) {
+          console.warn('Using cached storage items as offline fallback on mobile');
+          rawData = Object.values(storageState.items);
+          fetchSource = 'Offline Cache';
+        } else {
+          throw new Error('Unable to retrieve IPO data. Please check connection and tap Refresh.');
+        }
+      }
 
-    processNewIpoData(rawData);
+      processNewIpoData(rawData);
       renderUI();
 
       if (els.lastUpdatedText) {
@@ -248,7 +265,6 @@
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         els.lastUpdatedText.textContent = `${timeStr} (${fetchSource})`;
       }
-
     } catch (error) {
       console.error('Fetch error:', error);
       showErrorState(error.message);

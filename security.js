@@ -19,13 +19,18 @@
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
   }
 
-  // Check if active session exists and has not expired
+  // Check if active session exists, has not expired, and matches current PIN hash
   function isSessionValid() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return false;
       const session = JSON.parse(raw);
       if (!session || !session.expiresAt) return false;
+      // Invalidate session if PIN hash has changed
+      if (session.hash && session.hash !== ACTIVE_HASH) {
+        localStorage.removeItem(STORAGE_KEY);
+        return false;
+      }
       return Date.now() < session.expiresAt;
     } catch (e) {
       return false;
@@ -36,6 +41,7 @@
     try {
       const session = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
       if (!session.expiresAt) return 0;
+      if (session.hash && session.hash !== ACTIVE_HASH) return 0;
       const ms = session.expiresAt - Date.now();
       if (ms <= 0) return 0;
       return Math.round(ms / (1000 * 60 * 60));
@@ -46,6 +52,7 @@
 
   function saveSession() {
     const session = {
+      hash: ACTIVE_HASH,
       unlockedAt: Date.now(),
       expiresAt: Date.now() + SESSION_DURATION_MS
     };
