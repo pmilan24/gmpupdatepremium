@@ -1,4 +1,4 @@
-name: Update NSE & BSE Anchor Allocation Reports
+name: Update Exchange Anchor Allocation Reports
 
 on:
   schedule:
@@ -39,10 +39,12 @@ jobs:
             node set-pin.js "$PANEL_PIN"
           fi
 
-      - name: Fetch and Sync NSE & BSE Anchor Data
+      - name: Fetch and Sync Exchange Anchor Data
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          NSE_BASE_URL: ${{ secrets.NSE_BASE_URL }}
+          BSE_BASE_URL: ${{ secrets.BSE_BASE_URL }}
         run: |
           node update-anchor-data.js
 
@@ -54,6 +56,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes detected in Anchor data or sync logs."
           else
-            git commit -m "chore(anchor): auto-update NSE & BSE anchor reports and sync logs [skip ci]"
+            git commit -m "chore(anchor): auto-update exchange anchor reports and sync logs [skip ci]"
             git push
           fi

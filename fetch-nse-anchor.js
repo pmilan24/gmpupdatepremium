@@ -2,6 +2,9 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const SOURCES = require('./sources');
+
+const NSE_BASE_URL = SOURCES.NSE_BASE_URL;
 
 let nseCookies = '';
 let nseCookieExpiry = 0;
@@ -18,9 +21,9 @@ async function getNSESession() {
     'Accept-Language': 'en-US,en;q=0.9'
   };
 
-  console.log('[NSE] Fetching fresh session cookies from nseindia.com...');
+  console.log('[NSE] Fetching fresh session cookies...');
   try {
-    const res = await fetch('https://www.nseindia.com/', {
+    const res = await fetch(`${NSE_BASE_URL}/`, {
       headers,
       signal: AbortSignal.timeout(8000)
     });
@@ -44,11 +47,11 @@ async function fetchNSEIpoList() {
   const apiHeaders = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'application/json, text/plain, */*',
-    'Referer': 'https://www.nseindia.com/market-data/all-upcoming-issues-ipo',
+    'Referer': `${NSE_BASE_URL}/market-data/all-upcoming-issues-ipo`,
     'Cookie': cookies
   };
 
-  const url = `https://www.nseindia.com/api/ipo-current-issue?_t=${Date.now()}`;
+  const url = `${NSE_BASE_URL}/api/ipo-current-issue?_t=${Date.now()}`;
   const res = await fetch(url, { headers: apiHeaders, signal: AbortSignal.timeout(8000) });
   if (!res.ok) {
     throw new Error(`Failed to fetch NSE IPO list: HTTP ${res.status}`);
@@ -62,11 +65,11 @@ async function fetchNSEIpoDetail(symbol, series = 'EQ') {
     const apiHeaders = {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Accept': 'application/json, text/plain, */*',
-      'Referer': `https://www.nseindia.com/market-data/issue-information?symbol=${symbol}&series=${series}&type=Active`,
+      'Referer': `${NSE_BASE_URL}/market-data/issue-information?symbol=${symbol}&series=${series}&type=Active`,
       'Cookie': cookies
     };
 
-    const url = `https://www.nseindia.com/api/ipo-detail?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(series)}&_t=${Date.now()}`;
+    const url = `${NSE_BASE_URL}/api/ipo-detail?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(series)}&_t=${Date.now()}`;
     const res = await fetch(url, { headers: apiHeaders, signal: AbortSignal.timeout(5000) });
     if (!res.ok) {
       return null;
@@ -83,7 +86,7 @@ async function downloadAnchorZip(zipUrl, symbol, isRetry = false) {
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Accept': '*/*',
-      'Referer': `https://www.nseindia.com/market-data/issue-information?symbol=${symbol}&series=EQ&type=Active`,
+      'Referer': `${NSE_BASE_URL}/market-data/issue-information?symbol=${symbol}&series=EQ&type=Active`,
       'Cookie': cookies
     };
 
@@ -204,7 +207,7 @@ async function main() {
     const outputPath = path.join(__dirname, 'nse-ipo-data.json');
     const result = {
       lastUpdated: new Date().toISOString(),
-      source: 'https://www.nseindia.com/api/ipo-current-issue',
+      source: 'Primary Exchange Portal',
       count: data.length,
       anchorCount,
       ipos: data

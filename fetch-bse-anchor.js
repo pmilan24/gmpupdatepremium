@@ -1,10 +1,14 @@
 // fetch-bse-anchor.js - BSE IPO List and Anchor Allocation Scraper
 const https = require('https');
+const SOURCES = require('./sources');
+
+const BSE_BASE_URL = SOURCES.BSE_BASE_URL;
+const BSE_API_URL = SOURCES.BSE_API_URL;
 
 const BSE_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  'Origin': 'https://www.bseindia.com',
-  'Referer': 'https://www.bseindia.com/',
+  'Origin': BSE_BASE_URL,
+  'Referer': `${BSE_BASE_URL}/`,
   'Accept': 'application/json, text/plain, */*'
 };
 
@@ -48,10 +52,9 @@ function httpsGet(url, headers = BSE_HEADERS, returnBuffer = false) {
 
 /**
  * Fetch BSE public issues list
- * Endpoint: https://api.bseindia.com/BseIndiaAPI/api/GetPublicIssue_par_updated/w?flag=1
  */
 async function fetchBSEPublicIssues() {
-  const url = `https://api.bseindia.com/BseIndiaAPI/api/GetPublicIssue_par_updated/w?flag=1&_t=${Date.now()}`;
+  const url = `${BSE_API_URL}/api/GetPublicIssue_par_updated/w?flag=1&_t=${Date.now()}`;
   const raw = await httpsGet(url);
   const json = JSON.parse(raw);
   return json.Table || [];
@@ -59,10 +62,9 @@ async function fetchBSEPublicIssues() {
 
 /**
  * Fetch single BSE IPO issue details by IPO_NO
- * Endpoint: https://api.bseindia.com/BseIndiaAPI/api/GetMkt_ISSUE_BBS_IPO/w?IPO_NO={IPO_NO}
  */
 async function fetchBSEIpoDetail(ipoNo) {
-  const url = `https://api.bseindia.com/BseIndiaAPI/api/GetMkt_ISSUE_BBS_IPO/w?IPO_NO=${encodeURIComponent(ipoNo)}&_t=${Date.now()}`;
+  const url = `${BSE_API_URL}/api/GetMkt_ISSUE_BBS_IPO/w?IPO_NO=${encodeURIComponent(ipoNo)}&_t=${Date.now()}`;
   const raw = await httpsGet(url);
   return JSON.parse(raw);
 }
@@ -73,7 +75,8 @@ async function fetchBSEIpoDetail(ipoNo) {
 function cleanCompanyTokens(companyName) {
   const stopWords = new Set([
     'LIMITED', 'LTD', 'INDIA', 'PVT', 'PRIVATE', 'CORP', 'CORPORATION',
-    'THE', 'AND', '&', 'SERVICES', 'COMPANY', 'CO'
+    'TECHNOLOGIES', 'TECH', 'SERVICES', 'LLP', 'CO', 'COMPANY', 'ENTERPRISES',
+    'INDUSTRIES', 'HOLDINGS', 'GROUP', 'GLOBAL', 'INTERNATIONAL'
   ]);
   return (companyName || '')
     .toUpperCase()
@@ -87,7 +90,7 @@ function cleanCompanyTokens(companyName) {
  */
 async function fetchBSELiveNotices(dateFlag = '') {
   try {
-    const url = `https://api.bseindia.com/BseIndiaAPI/api/getCurrPreNextNoticesData_New/w?flag=${dateFlag}`;
+    const url = `${BSE_API_URL}/api/getCurrPreNextNoticesData_New/w?flag=${dateFlag}`;
     const raw = await httpsGet(url);
     const json = JSON.parse(raw);
     return json.Table || [];
@@ -126,8 +129,7 @@ function checkPdfLinkValid(pdfUrl) {
 
 /**
  * Sequential Fallback Probe:
- * When the JSON notice API is delayed or cached, test URLs:
- * https://www.bseindia.com/downloads/UploadDocs/Notices/YYYYMMDD-{i}/YYYYMMDD-{i}.pdf
+ * When the JSON notice API is delayed or cached, probe notice documents
  * and inspect the content or disp page for company tokens.
  */
 async function probeSequentialBseNotices(companyName, targetDateStr, maxProbe = 50) {
@@ -141,7 +143,7 @@ async function probeSequentialBseNotices(companyName, targetDateStr, maxProbe = 
   console.log(`[BSE] Starting sequential notice probe for ${companyName} (${dateFormatted}-1..${maxProbe})...`);
   for (let i = maxProbe; i >= 1; i--) {
     const noticeNo = `${dateFormatted}-${i}`;
-    const pdfUrl = `https://www.bseindia.com/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
+    const pdfUrl = `${BSE_BASE_URL}/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
     const isValid = await checkPdfLinkValid(pdfUrl);
     if (!isValid) continue;
 
@@ -187,7 +189,7 @@ async function findBSEAnchorInNotices(companyName, targetDates = []) {
         const matchesAll = tokens.every(t => subject.includes(t));
         if (matchesAll) {
           const noticeNo = notice.Notice_no;
-          const noticePdfUrl = notice.FileName || `https://www.bseindia.com/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
+          const noticePdfUrl = notice.FileName || `${BSE_BASE_URL}/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
           const noticeDate = notice.Notice_date || '';
 
           // Validate link
@@ -214,18 +216,17 @@ async function findBSEAnchorInNotices(companyName, targetDates = []) {
 
 /**
  * Extract attachment PDF link (/URI or file link) from BSE Notice PDF
- * Example: notice PDF contains /URI(https://www.bseindia.com/.../Attach/Anchor_Intimation_Letter$...pdf)
  */
 async function extractAttachmentFromNoticePdf(noticePdfUrl) {
   if (!noticePdfUrl) return null;
   try {
     const pdfBuf = await httpsGet(noticePdfUrl, {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Referer': 'https://www.bseindia.com/'
+      'Referer': `${BSE_BASE_URL}/`
     }, true);
 
     const pdfStr = pdfBuf.toString('latin1');
-    // Look for /URI(https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/...)
+    // Look for /URI attachments
     const uriMatches = pdfStr.match(/\/URI\s*\(([^\)]+)\)/g);
     if (uriMatches && uriMatches.length > 0) {
       for (const m of uriMatches) {
@@ -436,7 +437,7 @@ async function getEnrichedBSEIpoList() {
 
       if (matchedNotice) {
         const noticeNo = matchedNotice.Notice_no;
-        const noticePdfUrl = matchedNotice.FileName || `https://www.bseindia.com/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
+        const noticePdfUrl = matchedNotice.FileName || `${BSE_BASE_URL}/downloads/UploadDocs/Notices/${noticeNo}/${noticeNo}.pdf`;
         const noticeDate = matchedNotice.Notice_date || '';
 
         // Check if attachment is already parsed/cached

@@ -1,10 +1,18 @@
-// app.js - Live GMP Tracker for ipopremium.in
+// app.js - Live GMP Financial Terminal
 (function () {
   'use strict';
 
+  function _decode(hex, k = 0x5C) {
+    let s = '';
+    for (let i = 0; i < hex.length; i += 2) s += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ k);
+    return s;
+  }
+  const _EP_JINA = '3428282c2f6673732e723635323d723d3573';
+  const _EP_GMP = '3428282c2f6673732b2b2b72352c332c2e3931352931723532';
+
   const STORAGE_KEY = 'gmp_tracker_storage_v2';
   const CONFIG_KEY = 'gmp_tracker_config_v1';
-  const PRIMARY_URL = 'https://r.jina.ai/https://www.ipopremium.in';
+  const PRIMARY_URL = `${_decode(_EP_JINA)}${_decode(_EP_GMP)}`;
   const FALLBACK_URL = './data.json';
 
   // State
@@ -127,7 +135,7 @@
     }
   }
 
-  // Parse Markdown Table from ipopremium.in via Jina reader
+  // Parse Markdown Table from primary source via reader
   function parseMarkdown(markdown) {
     const lines = markdown.split('\n');
     let tableStarted = false;
@@ -207,14 +215,14 @@
           allotmentDate,
           listingDate,
           estimatedProfit,
-          url: url.startsWith('http') ? url : (url ? `https://www.ipopremium.in${url}` : 'https://www.ipopremium.in')
+          url: url ? (url.startsWith('http') ? url : `${_decode(_EP_GMP)}${url}`) : ''
         });
       }
     }
     return ipos;
   }
 
-  // Fetch Data (tries live Jina proxy, falls back to ./data.json)
+  // Fetch Data (tries live proxy, falls back to ./data.json)
   async function fetchData() {
     if (isFetching) return;
     isFetching = true;
@@ -245,7 +253,7 @@
           const parsed = parseMarkdown(text);
           if (parsed && parsed.length > 0) {
             rawData = parsed;
-            fetchSource = 'Live from ipopremium.in';
+            fetchSource = 'Live Market Feed';
           }
         }
       } catch (err) {
@@ -426,7 +434,7 @@
         break;
       case 'default':
       default:
-        // Default as ordered from ipopremium.in
+        // Default order as received from feed
         break;
     }
 

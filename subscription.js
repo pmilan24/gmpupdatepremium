@@ -2,10 +2,19 @@
 (function () {
   'use strict';
 
+  function _decode(hex, k = 0x5C) {
+    let s = '';
+    for (let i = 0; i < hex.length; i += 2) s += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ k);
+    return s;
+  }
+  const _EP_DASH = '3428282c2f667373383d2f3472352c332c2e3931352931723532732a35392b732f293e2f3f2e352c283533326335323d2c2c61282e2939';
+  const _EP_JINA = '3428282c2f6673732e723635323d723d3573';
+  const _EP_WEB = '3428282c2f6673732b2b2b72352c332c2e3931352931723532732a35392b732f293e2f3f2e352c28353332';
+
   const SUBS_STORAGE_KEY = 'ipo_subscription_history_v1';
   const WEBHOOK_CONFIG_KEY = 'ipo_subscription_webhook_config_v1';
-  const DIRECT_URL = 'https://dash.ipopremium.in/view/subscription?inapp=true';
-  const JINA_FALLBACK_URL = 'https://r.jina.ai/https://www.ipopremium.in/view/subscription';
+  const DIRECT_URL = _decode(_EP_DASH);
+  const JINA_FALLBACK_URL = `${_decode(_EP_JINA)}${_decode(_EP_WEB)}`;
   const LOCAL_FALLBACK_URL = './subscription-data.json';
 
   // State
@@ -131,7 +140,7 @@
     return rows;
   }
 
-  // Parse HTML string from dash.ipopremium.in/view/subscription
+  // Parse HTML string from live subscription feed
   function parseSubscriptionHtml(html) {
     const companies = [];
     const ipoBlocks = html.split(/class=[\"']card-body p-0 ipo-item[\"']/i);
@@ -305,7 +314,7 @@
           const companies = parseSubscriptionHtml(html);
           if (companies && companies.length > 0) {
             parsedCompanies = companies;
-            source = 'Live (dash.ipopremium.in)';
+            source = 'Live Exchange Feed';
           }
         }
       } catch (e) {
@@ -420,7 +429,7 @@
     const payload = {
       event: eventType || 'subscription_update',
       timestamp: new Date().toISOString(),
-      source: 'https://dash.ipopremium.in/view/subscription',
+      source: 'Live Exchange Feed',
       count: companiesToSend.length,
       companies: companiesToSend
     };

@@ -1,4 +1,4 @@
-name: Update GMP Data from ipopremium.in
+name: Update Market GMP Data
 
 on:
   schedule:
@@ -21,7 +21,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Fetch and parse latest GMP from ipopremium.in
+      - name: Configure Custom Panel PIN Hash if secret set
+        env:
+          PANEL_PIN: ${{ secrets.PANEL_PIN }}
+        run: |
+          if [ -n "$PANEL_PIN" ]; then
+            node set-pin.js "$PANEL_PIN"
+          fi
+
+      - name: Fetch and parse latest GMP data
+        env:
+          GMP_SOURCE_URL: ${{ secrets.GMP_SOURCE_URL }}
         run: |
           node fetch-gmp.js
 
@@ -29,7 +39,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json
+          git add data.json security.js
           if git diff --staged --quiet; then
             echo "No changes detected in GMP data."
           else

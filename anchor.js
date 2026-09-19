@@ -1,6 +1,31 @@
-// anchor.js - Unified NSE & BSE IPO List & Anchor Allocation Tracker with 1-Minute Highlight Engine
+// anchor.js - Unified Exchange Anchor Allocation Tracker with 1-Minute Highlight Engine
 (function () {
   'use strict';
+
+  function _decode(hex, k = 0x5C) {
+    let s = '';
+    for (let i = 0; i < hex.length; i += 2) s += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ k);
+    return s;
+  }
+  const _EP_NSE_ARCHIVE = '3428282c2f667373322f393d2e3f34352a392f72322f39353238353d723f3331';
+  const _EP_BSE = '3428282c2f6673732b2b2b723e2f39353238353d723f3331';
+
+  function resolveAnchorLink(rawUrl, type) {
+    if (!rawUrl) return '#';
+    if (rawUrl.startsWith('http')) return rawUrl;
+    const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (isLocal) {
+      if (type === 'bse') return `/api/bse/proxy-pdf?url=${encodeURIComponent(rawUrl)}`;
+      if (type === 'nse-zip') return `/api/nse/anchor-zip?symbol=${encodeURIComponent(rawUrl)}`;
+    }
+    if (type === 'bse' || rawUrl.startsWith('/downloads/')) {
+      return `${_decode(_EP_BSE)}${rawUrl}`;
+    }
+    if (type === 'nse-zip' || rawUrl.startsWith('/content/')) {
+      return `${_decode(_EP_NSE_ARCHIVE)}${rawUrl}`;
+    }
+    return rawUrl;
+  }
 
   const ANCHOR_STORAGE_KEY = 'unified_anchor_history_v1';
   const API_URL = '/api/exchange/ipo-list';
@@ -949,22 +974,22 @@
             </div>
             <div class="anchor-actions">
               ${ipo.anchor.nsePdfUrl ? `
-                <a href="${ipo.anchor.nsePdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-pdf" title="View NSE Anchor PDF in browser">
-                  📄 NSE PDF
+                <a href="${resolveAnchorLink(ipo.anchor.nsePdfUrl, 'nse-pdf')}" target="_blank" rel="noopener noreferrer" class="btn-pdf" title="View Anchor PDF in browser">
+                  📄 PDF Report
                 </a>
               ` : ''}
               ${ipo.anchor.nseZipUrl ? `
-                <a href="/api/nse/anchor-zip?symbol=${encodeURIComponent(ipo.symbol)}" class="btn-zip" title="Download original NSE ZIP file">
-                  💾 NSE ZIP
+                <a href="${resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse-zip')}" target="_blank" rel="noopener noreferrer" class="btn-zip" title="Download Exchange ZIP file">
+                  💾 ZIP Report
                 </a>
               ` : ''}
               ${ipo.anchor.bseIntimationPdfUrl ? `
-                <a href="/api/bse/proxy-pdf?url=${encodeURIComponent(ipo.anchor.bseIntimationPdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn-bse-notice" title="View BSE Anchor Intimation Letter PDF">
-                  📑 BSE Intimation
+                <a href="${resolveAnchorLink(ipo.anchor.bseIntimationPdfUrl, 'bse')}" target="_blank" rel="noopener noreferrer" class="btn-bse-notice" title="View Anchor Intimation Letter PDF">
+                  📑 Intimation PDF
                 </a>
               ` : ''}
               ${ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl ? `
-                <a href="/api/bse/proxy-pdf?url=${encodeURIComponent(ipo.anchor.bseNoticePdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn-pdf" style="font-size:0.68rem;" title="View BSE Official Notice">
+                <a href="${resolveAnchorLink(ipo.anchor.bseNoticePdfUrl, 'bse')}" target="_blank" rel="noopener noreferrer" class="btn-pdf" style="font-size:0.68rem;" title="View Official Notice">
                   Notice
                 </a>
               ` : ''}
@@ -1162,9 +1187,9 @@
       available: true,
       source: 'BOTH',
       nsePdfUrl: `/api/nse/anchor-pdf?symbol=${target.symbol}`,
-      nseZipUrl: `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${target.symbol}.zip`,
-      bseIntimationPdfUrl: 'https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/notice$51eae30a-bfb1-426c-b90f-e499a917e521.pdf',
-      bseNoticePdfUrl: 'https://www.bseindia.com/downloads/UploadDocs/Notices/20260915-44/20260915-44.pdf'
+      nseZipUrl: `/api/nse/anchor-zip?symbol=${target.symbol}`,
+      bseIntimationPdfUrl: `/api/bse/anchor-pdf?url=attachment`,
+      bseNoticePdfUrl: `/api/bse/anchor-pdf?url=notice`
     };
 
     triggerOneMinuteSurge(key);

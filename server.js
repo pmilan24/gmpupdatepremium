@@ -3,6 +3,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const SOURCES = require('./sources');
 const {
   getEnrichedIpoList,
   fetchNSEIpoDetail,
@@ -293,7 +294,7 @@ const server = http.createServer(async (req, res) => {
 
         if (foundNotice) {
           bseNoticeNo = foundNotice.NOTICE_NO;
-          bseNoticePdfUrl = foundNotice.FILENAME || `https://www.bseindia.com/downloads/UploadDocs/Notices/${foundNotice.NOTICE_NO}/${foundNotice.NOTICE_NO}.pdf`;
+          bseNoticePdfUrl = foundNotice.FILENAME || `${SOURCES.BSE_BASE_URL}/downloads/UploadDocs/Notices/${foundNotice.NOTICE_NO}/${foundNotice.NOTICE_NO}.pdf`;
           steps.push({ stage: 'bse_notice_found', message: `Found BSE Anchor Notice #${bseNoticeNo}: ${foundNotice.SUBJECT.replace(/[\r\n]+/g, ' ')}` });
 
           steps.push({ stage: 'bse_extract_pdf', message: `Extracting Anchor Intimation Letter attachment from BSE Notice PDF...` });
@@ -389,7 +390,7 @@ const server = http.createServer(async (req, res) => {
         method: 'GET',
         headers: {
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Referer': 'https://www.bseindia.com/'
+          'Referer': `${SOURCES.BSE_BASE_URL}/`
         },
         insecureHTTPParser: true
       };
@@ -442,7 +443,7 @@ const server = http.createServer(async (req, res) => {
 
     try {
       console.log(`[SERVER] Processing PDF extraction for symbol: ${symbol}`);
-      const zipUrl = `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${symbol}.zip`;
+      const zipUrl = `${SOURCES.NSE_ARCHIVE_URL}/content/ipo/ANCHOR_${symbol}.zip`;
       const zipBuffer = await downloadAnchorZip(zipUrl, symbol);
       const pdfBuffer = extractPdfFromZipBuffer(zipBuffer);
 
@@ -487,7 +488,7 @@ const server = http.createServer(async (req, res) => {
 
     try {
       console.log(`[SERVER] Downloading ZIP archive for symbol: ${symbol}`);
-      const zipUrl = `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${symbol}.zip`;
+      const zipUrl = `${SOURCES.NSE_ARCHIVE_URL}/content/ipo/ANCHOR_${symbol}.zip`;
       const zipBuffer = await downloadAnchorZip(zipUrl, symbol);
 
       fs.writeFileSync(cachedZipPath, zipBuffer);

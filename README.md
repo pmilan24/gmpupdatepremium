@@ -1,6 +1,6 @@
 # 📈 IPO Premium – Live GMP Tracker
 
-A real-time Grey Market Premium (GMP) tracker for Indian IPOs (Mainboard & SME) sourced directly from [ipopremium.in](https://www.ipopremium.in/).
+A real-time Grey Market Premium (GMP) tracker for Indian IPOs (Mainboard & SME) with live auto-refresh, historical comparison, change highlights, and instant alert dispatch.
 
 Designed to run 100% serverless directly in your browser or hosted on GitHub Pages for free. No Python script, no local server, no installation needed—access it from your phone, laptop, or tablet anywhere!
 
@@ -17,12 +17,12 @@ Designed to run 100% serverless directly in your browser or hosted on GitHub Pag
 - **👆 Interactive Dismissal**: Tap or click any badge or row to acknowledge changes and toggle to a subtle "Seen" state.
 - **🔔 Audio Alerts**: Subtle Web Audio chimes sound whenever market premiums shift.
 - **⚓ Unified Anchor Allocation Tracker (`anchor.html`)**:
-  - Live tracking of NSE and BSE Anchor Allocation reports.
+  - Live tracking of Exchange Anchor Allocation reports.
   - Direct view & download links for official Anchor Allocation PDFs.
   - Clean filtering, search, and status badges.
 - **📊 Live Subscription Tracker (`subscription.html`)**:
   - Real-time bidding multiples across QIB, NII (sNII/bNII), Retail, and Employee categories.
-  - Sourced directly from NSE & BSE feeds.
+  - Sourced directly from live market feeds.
 - **🔒 24-Hour Security PIN Lock (`security.js`)**:
   - Frosted-glass PIN access screen protecting all pages (`index.html`, `anchor.html`, `subscription.html`).
   - Secure SHA-256 Web Crypto hashing (customizable via `PANEL_PIN` GitHub Secret).
@@ -30,6 +30,8 @@ Designed to run 100% serverless directly in your browser or hosted on GitHub Pag
 - **📱 Instant Telegram Anchor Alerts (`notifications.js`)**:
   - Free Telegram Bot integration alerting as soon as new Anchor Allocation files are published.
   - Sends the official Anchor Allocation `.pdf` directly to your Telegram chat or channel!
+- **🛡️ Secure Secret Key & Dynamic Source Resolver (`sources.js`)**:
+  - Target domains and scraping endpoints are obfuscated at runtime and configurable via GitHub Secrets so that raw source links are never exposed in public repositories.
 - **🤖 Cloud Automation**: GitHub Actions running on automated schedules (Mon–Fri) to keep data fresh without local computers running.
 
 ---
@@ -70,13 +72,16 @@ You can now open this link on your phone, save it to your home screen, or open i
 
 ## 🔒 Security Configuration (GitHub Secrets)
 
-To protect your panel and configure Telegram alerts in GitHub Actions, add these repository secrets (**Settings > Secrets and variables > Actions**):
+To protect your panel and configure confidential source feeds or Telegram alerts in GitHub Actions, add these repository secrets (**Settings > Secrets and variables > Actions**):
 
 | Secret Name | Description | Example |
 | :--- | :--- | :--- |
 | `PANEL_PIN` *(Optional)* | 4-digit or custom unlock PIN for dashboard access | `9924` |
 | `TELEGRAM_BOT_TOKEN` *(Optional)* | Bot token from `@BotFather` | `123456789:ABCdef...` |
 | `TELEGRAM_CHAT_ID` *(Optional)* | Your numeric Telegram user or group ID | `793736493` |
+| `GMP_SOURCE_URL` *(Optional)* | Custom primary market GMP feed endpoint | `https://...` |
+| `NSE_BASE_URL` *(Optional)* | Primary Exchange 1 base domain override | `https://...` |
+| `BSE_BASE_URL` *(Optional)* | Primary Exchange 2 base domain override | `https://...` |
 
 ---
 
@@ -97,15 +102,16 @@ If you want to view it locally on your computer:
 ```
 gmpupdatepremium/
 ├── index.html                  # Live GMP Tracker dashboard
-├── anchor.html                 # Unified NSE & BSE Anchor Allocation Tracker
+├── anchor.html                 # Unified Exchange Anchor Allocation Tracker
 ├── subscription.html           # Live IPO Subscription Tracker
 ├── style.css                   # Premium dark financial terminal styling
 ├── app.js                      # Core engine: fetcher, diffing, highlights, timer
 ├── security.js                 # 24-hour SHA-256 PIN authentication layer
+├── sources.js                  # Dynamic source resolver with secret key support
 ├── set-pin.js                  # CLI tool to hash and update security PIN
 ├── notifications.js            # Telegram Bot alert & PDF delivery engine
 ├── test-notify.js              # Interactive Telegram notification tester
-├── fetch-anchor-data.js        # Scraper for NSE & BSE Anchor reports
+├── fetch-anchor-data.js        # Scraper for Exchange Anchor reports
 ├── fetch-gmp.js                # Parser for live GMP data
 ├── server.js                   # Local preview server
 ├── data.json                   # Snapshot of current IPO GMP data
@@ -122,4 +128,4 @@ gmpupdatepremium/
 
 ## ⚠️ Disclaimer
 
-Data is extracted for educational and informational purposes from [ipopremium.in](https://www.ipopremium.in/). Grey Market Premium (GMP) is an unofficial, informal market estimate and should not be considered investment or financial advice.
+Data is extracted for educational and informational purposes from primary market data feeds. Grey Market Premium (GMP) is an unofficial, informal market estimate and should not be considered investment or financial advice.

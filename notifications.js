@@ -1,6 +1,7 @@
 // notifications.js - 100% Free Instant Telegram Anchor Alert & PDF Dispatcher
 const fs = require("fs");
 const path = require("path");
+const SOURCES = require("./sources");
 
 const NOTIFIED_FILE = path.join(__dirname, "notified-anchors.json");
 
@@ -119,14 +120,21 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
     // Skip if already alerted in a previous run
     if (notifiedMap[id]) continue;
 
+    function resolveDownloadUrl(rawUrl) {
+      if (!rawUrl) return '';
+      if (rawUrl.startsWith('http')) return rawUrl;
+      if (rawUrl.startsWith('/downloads/')) return `${SOURCES.BSE_BASE_URL}${rawUrl}`;
+      if (rawUrl.startsWith('/content/')) return `${SOURCES.NSE_ARCHIVE_URL}${rawUrl}`;
+      return rawUrl;
+    }
+
     // Best PDF download URL
-    const pdfUrl = (ipo.anchor.bseIntimationPdfUrl && ipo.anchor.bseIntimationPdfUrl.startsWith("http"))
-      ? ipo.anchor.bseIntimationPdfUrl
-      : (ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseNoticePdfUrl.startsWith("http"))
-        ? ipo.anchor.bseNoticePdfUrl
-        : (ipo.anchor.nseZipUrl && ipo.anchor.nseZipUrl.startsWith("http"))
-          ? ipo.anchor.nseZipUrl
-          : (ipo.anchor.nsePdfUrl || "");
+    const candidateUrl = ipo.anchor.bseIntimationPdfUrl
+      || ipo.anchor.bseNoticePdfUrl
+      || ipo.anchor.nseZipUrl
+      || ipo.anchor.nsePdfUrl
+      || "";
+    const pdfUrl = resolveDownloadUrl(candidateUrl);
 
     const company = ipo.companyName || ipo.symbol;
     const nowIST = getNowISTString();

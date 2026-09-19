@@ -1,9 +1,10 @@
-// fetch-gmp.js - Parser and updater for ipopremium.in GMP data
+// fetch-gmp.js - Parser and updater for Live Market GMP data
 const fs = require('fs');
 const path = require('path');
+const SOURCES = require('./sources');
 
-const TARGET_URL = 'https://www.ipopremium.in';
-const JINA_URL = `https://r.jina.ai/${TARGET_URL}`;
+const TARGET_URL = SOURCES.GMP_SOURCE_URL;
+const JINA_URL = `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}`;
 
 function parseMarkdownTable(markdown) {
   const lines = markdown.split('\n');
@@ -114,7 +115,7 @@ function parseMarkdownTable(markdown) {
         allotmentDate,
         listingDate,
         estimatedProfit,
-        url: url.startsWith('http') ? url : (url ? `https://www.ipopremium.in${url}` : TARGET_URL),
+        url: url ? url.replace(/^https?:\/\/[^\/]+/i, '') : '',
         updatedAt: new Date().toISOString()
       });
     }
@@ -124,8 +125,8 @@ function parseMarkdownTable(markdown) {
 }
 
 async function fetchFromWeb() {
-  const cacheBustUrl = `https://r.jina.ai/https://www.ipopremium.in?t=${Date.now()}`;
-  console.log('Fetching live data from:', cacheBustUrl);
+  const cacheBustUrl = `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}?t=${Date.now()}`;
+  console.log('Fetching live data from feed...');
   const response = await fetch(cacheBustUrl, {
     headers: {
       'Accept': 'text/plain',
@@ -134,7 +135,7 @@ async function fetchFromWeb() {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch from ${cacheBustUrl}: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch from endpoint: ${response.status} ${response.statusText}`);
   }
 
   const markdown = await response.text();
@@ -151,7 +152,7 @@ async function main() {
     const outputPath = path.join(__dirname, 'data.json');
     const result = {
       lastUpdated: new Date().toISOString(),
-      source: TARGET_URL,
+      source: 'Live Market Feed',
       count: data.length,
       ipos: data
     };

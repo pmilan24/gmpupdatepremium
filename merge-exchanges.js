@@ -11,6 +11,11 @@ function normalizeName(name) {
     .trim();
 }
 
+function stripDomain(url) {
+  if (!url || typeof url !== 'string') return url;
+  return url.replace(/^https?:\/\/[^\/]+/i, '');
+}
+
 function matchCompany(a, b) {
   if (!a || !b) return false;
   // Exact symbol match
@@ -82,11 +87,11 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         available: anchorAvailable,
         source: hasNseAnchor && hasBseAnchor ? 'BOTH' : (hasNseAnchor ? 'NSE' : (hasBseAnchor ? 'BSE' : 'NONE')),
         // NSE sources
-        nseZipUrl: hasNseAnchor ? nseItem.anchor.zipUrl : null,
-        nsePdfUrl: hasNseAnchor ? nseItem.anchor.pdfUrl : null,
+        nseZipUrl: hasNseAnchor ? stripDomain(nseItem.anchor.zipUrl) : null,
+        nsePdfUrl: hasNseAnchor ? stripDomain(nseItem.anchor.pdfUrl) : null,
         // BSE sources
-        bseNoticePdfUrl: hasBseAnchor ? matchedBse.anchor.noticePdfUrl : null,
-        bseIntimationPdfUrl: hasBseAnchor ? matchedBse.anchor.intimationPdfUrl : null,
+        bseNoticePdfUrl: hasBseAnchor ? stripDomain(matchedBse.anchor.noticePdfUrl) : null,
+        bseIntimationPdfUrl: hasBseAnchor ? stripDomain(matchedBse.anchor.intimationPdfUrl) : null,
         bseNoticeNo: hasBseAnchor ? matchedBse.anchor.noticeNo : null,
         hasBseAttachment: hasBseAnchor ? matchedBse.anchor.hasIntimationAttachment : false
       },
@@ -126,8 +131,8 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         source: hasBseAnchor ? 'BSE' : 'NONE',
         nseZipUrl: null,
         nsePdfUrl: null,
-        bseNoticePdfUrl: hasBseAnchor ? bseItem.anchor.noticePdfUrl : null,
-        bseIntimationPdfUrl: hasBseAnchor ? bseItem.anchor.intimationPdfUrl : null,
+        bseNoticePdfUrl: hasBseAnchor ? stripDomain(bseItem.anchor.noticePdfUrl) : null,
+        bseIntimationPdfUrl: hasBseAnchor ? stripDomain(bseItem.anchor.intimationPdfUrl) : null,
         bseNoticeNo: hasBseAnchor ? bseItem.anchor.noticeNo : null,
         hasBseAttachment: hasBseAnchor ? bseItem.anchor.hasIntimationAttachment : false
       },

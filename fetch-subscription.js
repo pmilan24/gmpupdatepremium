@@ -1,9 +1,10 @@
-// fetch-subscription.js - Fast company-wise subscription parser for dash.ipopremium.in
+// fetch-subscription.js - Fast company-wise subscription parser
 const fs = require('fs');
 const path = require('path');
+const SOURCES = require('./sources');
 
-const DASH_INAPP_URL = 'https://dash.ipopremium.in/view/subscription?inapp=true';
-const JINA_FALLBACK_URL = 'https://r.jina.ai/https://www.ipopremium.in/view/subscription';
+const DASH_INAPP_URL = SOURCES.SUB_DASH_URL;
+const JINA_FALLBACK_URL = `${SOURCES.JINA_PREFIX_URL}${SOURCES.SUB_WEB_URL}`;
 
 function cleanText(str) {
   if (!str) return '';

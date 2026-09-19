@@ -131,10 +131,10 @@
       "anchor": {
         "available": true,
         "source": "BOTH",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_NSE.zip",
+        "nseZipUrl": "/content/ipo/ANCHOR_NSE.zip",
         "nsePdfUrl": "/api/nse/anchor-pdf?symbol=NSE",
-        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260916-50/20260916-50.pdf",
-        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$812a2503-49a0-46c8-a3c0-17e605684592.pdf",
+        "bseNoticePdfUrl": "/downloads/UploadDocs/Notices/20260916-50/20260916-50.pdf",
+        "bseIntimationPdfUrl": "/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$812a2503-49a0-46c8-a3c0-17e605684592.pdf",
         "bseNoticeNo": "20260916-50",
         "hasBseAttachment": true
       },
@@ -174,10 +174,10 @@
       "anchor": {
         "available": true,
         "source": "BOTH",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SONA.zip",
+        "nseZipUrl": "/content/ipo/ANCHOR_SONA.zip",
         "nsePdfUrl": "/api/nse/anchor-pdf?symbol=SONA",
-        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260916-23/20260916-23.pdf",
-        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Sonaselection_India_Limited_Anchor_Allocation_Letter$06519b81-70d4-49c6-ad42-ec9eb7dc539d.pdf",
+        "bseNoticePdfUrl": "/downloads/UploadDocs/Notices/20260916-23/20260916-23.pdf",
+        "bseIntimationPdfUrl": "/downloads/UploadDocs/Notices/Attach/Sonaselection_India_Limited_Anchor_Allocation_Letter$06519b81-70d4-49c6-ad42-ec9eb7dc539d.pdf",
         "bseNoticeNo": "20260916-23",
         "hasBseAttachment": true
       },
@@ -216,7 +216,7 @@
       "anchor": {
         "available": true,
         "source": "NSE",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_AXIOMGAS.zip",
+        "nseZipUrl": "/content/ipo/ANCHOR_AXIOMGAS.zip",
         "nsePdfUrl": "/api/nse/anchor-pdf?symbol=AXIOMGAS",
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
@@ -254,7 +254,7 @@
       "anchor": {
         "available": true,
         "source": "NSE",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_KHERIAAUTO.zip",
+        "nseZipUrl": "/content/ipo/ANCHOR_KHERIAAUTO.zip",
         "nsePdfUrl": "/api/nse/anchor-pdf?symbol=KHERIAAUTO",
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
@@ -292,7 +292,7 @@
       "anchor": {
         "available": true,
         "source": "NSE",
-        "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SPECTRAA.zip",
+        "nseZipUrl": "/content/ipo/ANCHOR_SPECTRAA.zip",
         "nsePdfUrl": "/api/nse/anchor-pdf?symbol=SPECTRAA",
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
@@ -332,8 +332,8 @@
         "source": "BSE",
         "nseZipUrl": null,
         "nsePdfUrl": null,
-        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-46/20260918-46.pdf",
-        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation_letter$97dab3e1-402a-4744-b035-feeb89c87b3a.pdf",
+        "bseNoticePdfUrl": "/downloads/UploadDocs/Notices/20260918-46/20260918-46.pdf",
+        "bseIntimationPdfUrl": "/downloads/UploadDocs/Notices/Attach/Anchor_Allocation_letter$97dab3e1-402a-4744-b035-feeb89c87b3a.pdf",
         "bseNoticeNo": "20260918-46",
         "hasBseAttachment": true
       },
@@ -374,8 +374,8 @@
         "source": "BSE",
         "nseZipUrl": null,
         "nsePdfUrl": null,
-        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-28/20260918-28.pdf",
-        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Company$2f07ca52-e256-4c47-b9e9-f271b93fae34.pdf",
+        "bseNoticePdfUrl": "/downloads/UploadDocs/Notices/20260918-28/20260918-28.pdf",
+        "bseIntimationPdfUrl": "/downloads/UploadDocs/Notices/Attach/Anchor_Company$2f07ca52-e256-4c47-b9e9-f271b93fae34.pdf",
         "bseNoticeNo": "20260918-28",
         "hasBseAttachment": true
       },
@@ -416,8 +416,8 @@
         "source": "BSE",
         "nseZipUrl": null,
         "nsePdfUrl": null,
-        "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-29/20260918-29.pdf",
-        "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Intimation$bade89aa-7f1c-4061-85fe-664590198319.pdf",
+        "bseNoticePdfUrl": "/downloads/UploadDocs/Notices/20260918-29/20260918-29.pdf",
+        "bseIntimationPdfUrl": "/downloads/UploadDocs/Notices/Attach/Intimation$bade89aa-7f1c-4061-85fe-664590198319.pdf",
         "bseNoticeNo": "20260918-29",
         "hasBseAttachment": true
       },
