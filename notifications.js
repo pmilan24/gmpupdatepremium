@@ -1,4 +1,4 @@
-// notifications.js - Multi-channel Instant Anchor Alert Dispatcher (Telegram + NTFY)
+// notifications.js - 100% Free Instant Telegram Anchor Alert & PDF Dispatcher
 const fs = require("fs");
 const path = require("path");
 
@@ -40,7 +40,7 @@ function getNowISTString() {
 }
 
 /**
- * Dispatch Telegram Alert with Direct PDF Document or Link
+ * Dispatch Telegram Alert with Direct PDF Document or Link (100% Free)
  */
 async function sendTelegramAlert({ token, chatId, ipo, pdfUrl, caption }) {
   if (!token || !chatId) {
@@ -50,7 +50,7 @@ async function sendTelegramAlert({ token, chatId, ipo, pdfUrl, caption }) {
   const docApi = "https://api.telegram.org/bot" + token + "/sendDocument";
 
   try {
-    // 1. Attempt to send PDF as a native document via URL
+    // 1. Attempt to send actual PDF as a native document via URL
     if (pdfUrl && pdfUrl.startsWith("http")) {
       const payload = {
         chat_id: chatId,
@@ -74,7 +74,7 @@ async function sendTelegramAlert({ token, chatId, ipo, pdfUrl, caption }) {
       }
     }
 
-    // 2. Fallback: Send rich text message with clickable PDF link
+    // 2. Fallback: Send rich text message with direct clickable PDF download link
     const msgApi = "https://api.telegram.org/bot" + token + "/sendMessage";
     const fallbackText = caption + "\n\n📄 <b>Download Anchor Report:</b> <a href=\"" + pdfUrl + "\">Click to Open PDF</a>\n🌐 <b>Live Tracker:</b> <a href=\"https://pmilan24.github.io/gmpupdatepremium/anchor.html\">View IPO Dashboard</a>";
 
@@ -97,58 +97,16 @@ async function sendTelegramAlert({ token, chatId, ipo, pdfUrl, caption }) {
 }
 
 /**
- * Dispatch NTFY.sh Instant Mobile Push Alert
- */
-async function sendNtfyAlert({ topic, ipo, pdfUrl, title, message }) {
-  if (!topic) {
-    return { skipped: true, reason: "NTFY_TOPIC not provided" };
-  }
-
-  const cleanTopic = topic.trim();
-  const url = "https://ntfy.sh/" + cleanTopic;
-
-  try {
-    const cleanTitle = (title || 'New Anchor Report Detected').replace(/[^\x00-\x7F]/g, '').trim();
-    const headers = {
-      'Title': cleanTitle || 'New Anchor Report Detected',
-      'Priority': 'urgent',
-      'Tags': 'rotating_light,newspaper,chart_with_upwards_trend'
-    };
-
-    if (pdfUrl && pdfUrl.startsWith('http')) {
-      headers['Click'] = pdfUrl;
-      headers['Attach'] = pdfUrl;
-      headers['Actions'] = `view, Open PDF, ${pdfUrl}; view, Open Tracker, https://pmilan24.github.io/gmpupdatepremium/anchor.html`;
-    }
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers,
-      body: message
-    });
-
-    if (res.ok) {
-      console.log("[NTFY] ✅ Dispatched push notification to topic '" + cleanTopic + "'");
-      return { success: true };
-    } else {
-      const errText = await res.text();
-      console.warn("[NTFY] Request returned " + res.status + ": " + errText);
-      return { success: false, error: errText };
-    }
-  } catch (err) {
-    console.error("[NTFY] Request failed:", err.message);
-    return { success: false, error: err.message };
-  }
-}
-
-/**
  * Check IPOs and dispatch instant alerts for newly released Anchor reports
  */
 async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
   const telegramToken = options.telegramToken || process.env.TELEGRAM_BOT_TOKEN;
   const telegramChatId = options.telegramChatId || process.env.TELEGRAM_CHAT_ID;
-  const ntfyTopic = options.ntfyTopic || process.env.NTFY_TOPIC;
   const isDryRun = options.dryRun || false;
+
+  if (!telegramToken || !telegramChatId) {
+    return [];
+  }
 
   const notifiedMap = loadNotifiedSet();
   const results = [];
@@ -158,10 +116,10 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
     if (!isAnchorAvailable) continue;
 
     const id = ipo.id || ("IPO_" + ipo.symbol);
-    // If already notified in a prior run, skip to avoid spamming
+    // Skip if already alerted in a previous run
     if (notifiedMap[id]) continue;
 
-    // Pick best PDF download URL
+    // Best PDF download URL
     const pdfUrl = (ipo.anchor.bseIntimationPdfUrl && ipo.anchor.bseIntimationPdfUrl.startsWith("http"))
       ? ipo.anchor.bseIntimationPdfUrl
       : (ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseNoticePdfUrl.startsWith("http"))
@@ -184,22 +142,17 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
       "⏰ <b>Alert Time:</b> " + nowIST + "\n\n" +
       "⚡ <i>Instantly detected by background anchor sync</i>";
 
-    const ntfyTitle = "🏛️ Anchor Released: " + ipo.symbol;
-    const ntfyMessage = company + "\nDates: " + dates + " · Price: " + price + "\nTap to download Anchor allocation PDF.";
-
-    console.log("[NOTIFY] 🚀 Dispatching alerts for newly detected anchor: " + ipo.symbol + " (" + company + ")");
+    console.log("[NOTIFY] 🚀 Dispatching Telegram alert with PDF for: " + ipo.symbol + " (" + company + ")");
 
     const result = {
       id,
       symbol: ipo.symbol,
       company,
       pdfUrl,
-      telegram: null,
-      ntfy: null
+      telegram: null
     };
 
     if (!isDryRun) {
-      // 1. Telegram
       result.telegram = await sendTelegramAlert({
         token: telegramToken,
         chatId: telegramChatId,
@@ -208,16 +161,7 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
         caption
       });
 
-      // 2. NTFY Mobile Push
-      result.ntfy = await sendNtfyAlert({
-        topic: ntfyTopic,
-        ipo,
-        pdfUrl,
-        title: ntfyTitle,
-        message: ntfyMessage
-      });
-
-      // Mark as notified
+      // Mark as notified so you never get duplicates
       notifiedMap[id] = {
         symbol: ipo.symbol,
         notifiedAtIST: nowIST,
@@ -241,7 +185,6 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
 module.exports = {
   checkAndNotifyNewAnchors,
   sendTelegramAlert,
-  sendNtfyAlert,
   loadNotifiedSet,
   saveNotifiedSet
 };
