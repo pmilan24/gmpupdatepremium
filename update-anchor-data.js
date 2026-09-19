@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getUnifiedExchangeIpos } = require('./merge-exchanges');
+const { checkAndNotifyNewAnchors } = require('./notifications');
 
 const SNAPSHOT_PATH = path.join(__dirname, 'nse-ipo-data.json');
 const LOG_PATH = path.join(__dirname, 'anchor-sync-log.json');
@@ -240,6 +241,12 @@ async function main() {
     console.log(`[CRON] Successfully fetched ${ipos.length} unified IPOs.`);
     const anchorCount = ipos.filter(i => i.anchor && i.anchor.available).length;
     console.log(`[CRON] Found ${anchorCount} IPOs with released Anchor Allocation reports.`);
+
+    // Check for newly released Anchor reports and trigger instant Telegram & NTFY alerts
+    const alerts = await checkAndNotifyNewAnchors(ipos);
+    if (alerts.length > 0) {
+      console.log(`[NOTIFY] 🚀 Dispatched instant notifications for ${alerts.length} new Anchor report(s)!`);
+    }
 
     // Record successful sync log
     const recentLogs = recordSyncLog('SUCCESS', `Synchronized ${ipos.length} unified IPOs (${anchorCount} Anchor Reports Released) [${activeCadence}].`, {
