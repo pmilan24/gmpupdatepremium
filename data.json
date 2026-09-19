@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-19T06:09:03.082Z",
+  "lastUpdated": "2026-09-19T06:20:52.776Z",
   "source": "Live Market Feed",
   "count": 50,
   "ipos": [
@@ -21,7 +21,7 @@
       "listingDate": "Oct 1, 2026",
       "estimatedProfit": 2294,
       "url": "/view/ipo/1360/a-one-steels-india-ltd",
-      "updatedAt": "2026-09-19T06:09:03.081Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "adroit-industries--india--ltd---mainboard-",
@@ -41,7 +41,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 4440,
       "url": "/view/ipo/1373/adroit-industries",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "armee-infotech-ltd--mainboard-",
@@ -61,7 +61,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1368/armee-infotech-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "swastika-infra-ltd---mainboard-",
@@ -81,7 +81,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 243,
       "url": "/view/ipo/1324/swastika-infra-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "sai-urja-indo-ventures-ltd--bse-sme-",
@@ -101,7 +101,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1370/sai-urja-indo-ventures-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "pooja-logistics-ltd--nse-sme-",
@@ -121,7 +121,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1374/pooja-logistics-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "liqvd-digital-india-ltd--bse-sme-",
@@ -136,12 +136,12 @@
       "priceBand": "51-54",
       "priceUpper": 54,
       "lotSize": 2000,
-      "issueSize": "0.00",
+      "issueSize": "39.00",
       "allotmentDate": "Sep 28, 2026",
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1372/liqvd-digital-india-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "s-k-offset-ltd--bse-sme-",
@@ -161,7 +161,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1364/skoffset-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "unitec-fibres-ltd--bse-sme-",
@@ -181,7 +181,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1371/unitec-fibres-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "elevate-campuses-ltd---mainboard-",
@@ -201,7 +201,7 @@
       "listingDate": "Sep 30, 2026",
       "estimatedProfit": 656,
       "url": "/view/ipo/1346/elevate-campuses-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "anand-seamless-ltd--bse-sme-",
@@ -221,7 +221,7 @@
       "listingDate": "Sep 29, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1369/anand-seamless-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "himalaya-nutravedics-ltd---bse-sme-",
@@ -241,7 +241,7 @@
       "listingDate": "Sep 29, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1367/himalaya-nutravedics-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "varmora-granito-ltd---mainboard-",
@@ -261,7 +261,7 @@
       "listingDate": "Sep 29, 2026",
       "estimatedProfit": 1515,
       "url": "/view/ipo/1358/varmora-granito-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "vivekanand-cotspin-ltd--bse-sme-",
@@ -281,7 +281,7 @@
       "listingDate": "Sep 28, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1366/vivekanand-cotspin-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "fx-multitech-ltd--bse-sme-",
@@ -301,7 +301,7 @@
       "listingDate": "Sep 28, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1365/fx-multitech-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "robokidz-eduventures-ltd--bse-sme-",
@@ -321,7 +321,7 @@
       "listingDate": "Sep 28, 2026",
       "estimatedProfit": 61200,
       "url": "/view/ipo/1363/robokidz-eduventures-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "axiom-gas-engineering-ltd--nse-sme-",
@@ -341,7 +341,7 @@
       "listingDate": "Sep 25, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1350/axiom-gas-engineering-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "sona-selection-india-ltd--mainboard-",
@@ -361,16 +361,16 @@
       "listingDate": "Sep 24, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1353/sona-selection-india-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "national-stock-exchange-of-india-ltd--mainboard-",
       "fullName": "National Stock Exchange of India Ltd (MAINBOARD)",
       "displayName": "National Stock Exchange of India Ltd",
       "type": "Mainboard",
-      "gmp": 91,
-      "gmpPercent": "+5.1%",
-      "rawGmp": "91 (5.1%)",
+      "gmp": 95,
+      "gmpPercent": "+5.3%",
+      "rawGmp": "95 (5.3%)",
       "openDate": "Sep 17, 2026",
       "closeDate": "Sep 21, 2026",
       "priceBand": "1700-1785",
@@ -379,9 +379,9 @@
       "issueSize": "22561.60",
       "allotmentDate": "Sep 22, 2026",
       "listingDate": "Sep 24, 2026",
-      "estimatedProfit": 728,
+      "estimatedProfit": 760,
       "url": "/view/ipo/1325/national-stock-exchange-of-india-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.775Z"
     },
     {
       "id": "spectraa-technology-ltd---nse-sme--",
@@ -401,7 +401,7 @@
       "listingDate": "Sep 24, 2026",
       "estimatedProfit": 54000,
       "url": "/view/ipo/1359/spectraa-technology-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "kheria-autocomp-ltd--nse-sme-",
@@ -421,16 +421,16 @@
       "listingDate": "Sep 24, 2026",
       "estimatedProfit": 8400,
       "url": "/view/ipo/1357/kheria-autocomp-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "ss-retail-ltd---mainboard-",
       "fullName": "SS Retail Ltd. (Mainboard)",
       "displayName": "SS Retail Ltd.",
       "type": "Mainboard",
-      "gmp": 145,
-      "gmpPercent": "+34.2%",
-      "rawGmp": "145 (34.2%)",
+      "gmp": 146,
+      "gmpPercent": "+34.4%",
+      "rawGmp": "146 (34.4%)",
       "openDate": "Sep 16, 2026",
       "closeDate": "Sep 18, 2026",
       "priceBand": "403-424",
@@ -439,9 +439,9 @@
       "issueSize": "500.00",
       "allotmentDate": "Sep 21, 2026",
       "listingDate": "Sep 23, 2026",
-      "estimatedProfit": 5075,
+      "estimatedProfit": 5110,
       "url": "/view/ipo/1354/ss-retail-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "jindal-supreme--india--ltd---mainboard-",
@@ -461,7 +461,7 @@
       "listingDate": "Sep 23, 2026",
       "estimatedProfit": 4186,
       "url": "/view/ipo/1349/jindal-supreme",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "hero-motors-ltd--mainboard-",
@@ -481,7 +481,7 @@
       "listingDate": "Sep 23, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1347/hero-motors-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "shakti-polytarp-ltd---bse-sme-",
@@ -501,7 +501,7 @@
       "listingDate": "Sep 22, 2026",
       "estimatedProfit": 10000,
       "url": "/view/ipo/1351/shakti-polytarp-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "quanto-agroworld-ltd--bse-sme-",
@@ -521,7 +521,7 @@
       "listingDate": "Sep 22, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1352/quanto-agroworld-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "vama-wovenfab-ltd---bse-sme-",
@@ -541,7 +541,7 @@
       "listingDate": "Sep 22, 2026",
       "estimatedProfit": 1200,
       "url": "/view/ipo/1356/vama-wovenfab-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "injecto-polymers-ltd---bse-sme-",
@@ -561,7 +561,7 @@
       "listingDate": "Sep 21, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1348/injecto-polymers-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "century-business-media-ltd--bse-sme-",
@@ -581,7 +581,7 @@
       "listingDate": "Sep 21, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1344/century-business-media-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "manika-plastech-ltd---mainboard-",
@@ -601,7 +601,7 @@
       "listingDate": "Sep 21, 2026",
       "estimatedProfit": 696,
       "url": "/view/ipo/1341/manika-plastech-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "raksan-transformers-ltd--bse-sme-",
@@ -621,7 +621,7 @@
       "listingDate": "Sep 18, 2026",
       "estimatedProfit": 4800,
       "url": "/view/ipo/1245/raksan-transformers-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "veegaland-developers-ltd--mainboard-",
@@ -641,7 +641,7 @@
       "listingDate": "Sep 18, 2026",
       "estimatedProfit": 856,
       "url": "/view/ipo/1326/veegaland-developers-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "maharaja---speedex-india-ltd--bse-sme-",
@@ -661,7 +661,7 @@
       "listingDate": "Sep 18, 2026",
       "estimatedProfit": 16800,
       "url": "/view/ipo/1340/maharaja-speedex-india-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "om-galaxy-ltd--bse-sme-",
@@ -681,7 +681,7 @@
       "listingDate": "Sep 18, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1342/om-galaxy-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "panchatv-bharat-ltd---bse-sme-",
@@ -701,7 +701,7 @@
       "listingDate": "Sep 18, 2026",
       "estimatedProfit": 3000,
       "url": "/view/ipo/1345/panchatv-bharat-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "asset-reconstruction-company--india--limited--mainboard-",
@@ -721,7 +721,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 1284,
       "url": "/view/ipo/1331/asset-reconstruction-company",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "amtech-esters-ltd---bse-sme-",
@@ -741,7 +741,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 25600,
       "url": "/view/ipo/1332/amtech-esters-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "manipal-payment---identity-solutions-ltd---mainboard-",
@@ -761,7 +761,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": -264,
       "url": "/view/ipo/1328/manipal-payment-identity-solutions-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "infrax-renewable-ltd--bse-sme-",
@@ -781,7 +781,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1339/infrax-renewable-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "rentomojo-ltd---mainboard-",
@@ -801,7 +801,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 3219,
       "url": "/view/ipo/1327/rentomojo-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "vinod-texworld-ltd---nse-sme-",
@@ -821,7 +821,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 1200,
       "url": "/view/ipo/1338/vinod-texworld-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "steamhouse-india-ltd---mainboard-",
@@ -841,7 +841,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 2405,
       "url": "/view/ipo/1337/steamhouse-india-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "karamtara-engineering-ltd--mainboard-",
@@ -861,7 +861,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 2714,
       "url": "/view/ipo/1107/karamtara-engineering-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "lcc-projects-ltd---mainboard-",
@@ -881,7 +881,7 @@
       "listingDate": "Sep 17, 2026",
       "estimatedProfit": 3672,
       "url": "/view/ipo/1333/lcc-projects-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "kanohar-electricals-ltd--mainboard-",
@@ -901,7 +901,7 @@
       "listingDate": "Sep 16, 2026",
       "estimatedProfit": 4186,
       "url": "/view/ipo/1330/kanohar-electricals-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "glass-wall-systems--india--ltd--mainboard-",
@@ -921,7 +921,7 @@
       "listingDate": "Sep 16, 2026",
       "estimatedProfit": 3198,
       "url": "/view/ipo/1334/glass-wall-systems",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "prasol-chemicals-ltd---mainboard-",
@@ -941,7 +941,7 @@
       "listingDate": "Sep 16, 2026",
       "estimatedProfit": -286,
       "url": "/view/ipo/1336/prasol-chemicals-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "apana-logistics-ltd--bse-sme-",
@@ -961,7 +961,7 @@
       "listingDate": "Sep 15, 2026",
       "estimatedProfit": 0,
       "url": "/view/ipo/1335/apana-logistics-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "pranav-constructions-ltd---mainboard-",
@@ -981,7 +981,7 @@
       "listingDate": "Sep 15, 2026",
       "estimatedProfit": 6360,
       "url": "/view/ipo/1329/pranav-constructions-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     },
     {
       "id": "qualiance-international-ltd---nse-sme-",
@@ -1001,7 +1001,7 @@
       "listingDate": "Sep 11, 2026",
       "estimatedProfit": 81000,
       "url": "/view/ipo/1284/qualiance-international-ltd",
-      "updatedAt": "2026-09-19T06:09:03.082Z"
+      "updatedAt": "2026-09-19T06:20:52.776Z"
     }
   ]
 }

@@ -5,7 +5,7 @@
   // SHA-256 hash of the valid PIN (Default: "9924")
   // Can be updated via node set-pin.js <NEW_PIN> or GitHub Actions secret PANEL_PIN
   const VALID_PIN_HASH = "__PANEL_PIN_HASH__"; // replaced at build or defaults below
-  const DEFAULT_HASH = "9730f9c50a2e1e274f701a6a33c7c2d4b65588b4a411fd314c0f1dd008e72341"; // default PIN: 9924
+  const DEFAULT_HASH = "56034da243fe2600585a7d5b77191b833088b4445015ca3092a819d8a0184937"; // default PIN: 9924
   const ACTIVE_HASH = (VALID_PIN_HASH && !VALID_PIN_HASH.startsWith("__")) ? VALID_PIN_HASH : DEFAULT_HASH;
 
   const STORAGE_KEY = "panel_auth_session";
