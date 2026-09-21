@@ -2,17 +2,29 @@
 (function () {
   'use strict';
 
-  function resolveAnchorLink(rawUrl, type) {
+  function resolveAnchorLink(rawUrl, type, symbol) {
+    const sym = (symbol || '').toUpperCase().trim();
+    if (type === 'nse' || type === 'nse-zip' || type === 'nse-pdf' || type === 'nse-direct') {
+      const match = rawUrl ? rawUrl.match(/ANCHOR_([A-Za-z0-9_\-]+)\.zip/i) : null;
+      const targetSym = sym || (match ? match[1] : '');
+      if (targetSym) {
+        return `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(targetSym)}.zip`;
+      }
+      if (rawUrl && rawUrl.startsWith('http')) return rawUrl;
+      if (rawUrl && rawUrl.startsWith('/content/')) return `https://nsearchives.nseindia.com${rawUrl}`;
+      return '#';
+    }
+
+    if (type === 'bse' || type === 'bse-pdf' || type === 'bse-notice') {
+      if (!rawUrl) return '#';
+      if (rawUrl.startsWith('http')) return rawUrl;
+      return `https://www.bseindia.com${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
+    }
+
     if (!rawUrl) return '#';
     if (rawUrl.startsWith('http')) return rawUrl;
-    if (type === 'bse' || rawUrl.startsWith('/downloads/')) {
-      return `/api/bse/proxy-pdf?url=${encodeURIComponent(rawUrl)}`;
-    }
-    if (type === 'nse-zip' || rawUrl.startsWith('/content/')) {
-      const match = rawUrl.match(/ANCHOR_([A-Za-z0-9_\-]+)\.zip/i);
-      const symbol = match ? match[1] : '';
-      return `/api/nse/anchor-zip?symbol=${encodeURIComponent(symbol)}`;
-    }
+    if (rawUrl.startsWith('/content/')) return `https://nsearchives.nseindia.com${rawUrl}`;
+    if (rawUrl.startsWith('/downloads/') || rawUrl.startsWith('/xml-data/')) return `https://www.bseindia.com${rawUrl}`;
     return rawUrl;
   }
 
@@ -861,11 +873,14 @@
     } else if (currentFilter === 'anchor') {
       list = list.filter(i => i.anchor && i.anchor.available);
     } else if (currentFilter === 'dual') {
-      list = list.filter(i => i.exchange && i.exchange.includes('BSE') && i.exchange.includes('NSE'));
+      list = list.filter(i => (i.exchange && i.exchange.includes('BSE') && i.exchange.includes('NSE')) || (i.platforms && i.platforms.includes('BSE') && i.platforms.includes('NSE')));
     } else if (currentFilter === 'mainboard') {
-      list = list.filter(i => i.series === 'EQ' || (i.platforms && i.platforms.includes('MainBoard')));
+      list = list.filter(i => {
+        const isSme = i.series === 'SME' || (i.exchange && i.exchange.toUpperCase().includes('SME')) || (i.bseData && i.bseData.platform === 'SME');
+        return !isSme;
+      });
     } else if (currentFilter === 'sme') {
-      list = list.filter(i => i.series === 'SME' || (i.exchange && i.exchange.includes('SME')));
+      list = list.filter(i => i.series === 'SME' || (i.exchange && i.exchange.toUpperCase().includes('SME')) || (i.bseData && i.bseData.platform === 'SME'));
     }
 
     if (searchQuery) {
@@ -955,13 +970,18 @@
       const isSurgeActive = surgeExpiry && surgeExpiry > now;
       const remainingSeconds = isSurgeActive ? Math.ceil((surgeExpiry - now) / 1000) : 0;
 
-      const isDual = ipo.exchange && ipo.exchange.includes('BSE') && ipo.exchange.includes('NSE');
-      const isBseOnly = ipo.exchange && ipo.exchange.includes('BSE') && !ipo.exchange.includes('NSE');
-      const isSme = ipo.series === 'SME' || (ipo.exchange && ipo.exchange.includes('SME'));
+      const isDual = (ipo.exchange && ipo.exchange.includes('BSE') && ipo.exchange.includes('NSE')) ||
+                     (ipo.platforms && ipo.platforms.includes('BSE') && ipo.platforms.includes('NSE'));
+      const isBseOnly = !isDual && (
+        (ipo.exchange && ipo.exchange.includes('BSE') && !ipo.exchange.includes('NSE')) ||
+        (ipo.platforms && ipo.platforms.includes('BSE') && !ipo.platforms.includes('NSE'))
+      );
+      const isSme = ipo.series === 'SME' || (ipo.exchange && ipo.exchange.toUpperCase().includes('SME')) || (ipo.bseData && ipo.bseData.platform === 'SME');
+      const isMainboard = !isSme;
 
       let exchangeBadge = '';
       if (isDual) {
-        exchangeBadge = `<span class="exchange-badge exchange-badge-both">NSE | BSE DUAL</span>`;
+        exchangeBadge = `<span class="exchange-badge exchange-badge-both">NSE | BSE</span>`;
       } else if (isBseOnly) {
         exchangeBadge = `<span class="exchange-badge exchange-badge-bse">BSE</span>`;
       } else {
@@ -992,7 +1012,10 @@
           ? `<span class="anchor-timer-tag">⏱ Live Surge: ${remainingSeconds}s</span>` 
           : '';
 
-        const sourceLabel = ipo.anchor.source === 'BOTH' ? '✨ NSE & BSE' : (ipo.anchor.source === 'BSE' ? '🏛️ BSE Notice' : '🏛️ NSE Archive');
+        const hasNseAnchor = ipo.anchor.source === 'NSE' || ipo.anchor.source === 'BOTH' || !!ipo.anchor.nseZipUrl;
+        const hasBseAnchor = ipo.anchor.source === 'BSE' || ipo.anchor.source === 'BOTH' || !!ipo.anchor.bseIntimationPdfUrl || !!ipo.anchor.bseNoticePdfUrl;
+
+        const sourceLabel = (hasNseAnchor && hasBseAnchor) ? '✨ NSE & BSE' : (hasBseAnchor ? '🏛️ BSE Notice' : '🏛️ NSE Archive');
 
         anchorHtml = `
           <div class="anchor-status-box">
@@ -1001,24 +1024,19 @@
               ${timerHtml}
             </div>
             <div class="anchor-actions">
-              ${ipo.anchor.nsePdfUrl ? `
-                <a href="${resolveAnchorLink(ipo.anchor.nsePdfUrl, 'nse-pdf')}" target="_blank" rel="noopener noreferrer" class="btn-pdf" title="View Anchor PDF in browser">
-                  📄 PDF Report
+              ${hasNseAnchor ? `
+                <a href="${resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" title="Direct Download Official NSE Anchor Allocation Report (ZIP)">
+                  📥 NSE Download
                 </a>
               ` : ''}
-              ${ipo.anchor.nseZipUrl ? `
-                <a href="${resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse-zip')}" target="_blank" rel="noopener noreferrer" class="btn-zip" title="Download Exchange ZIP file">
-                  💾 ZIP Report
+              ${hasBseAnchor ? `
+                <a href="${resolveAnchorLink(ipo.anchor.bseIntimationPdfUrl || ipo.anchor.bseNoticePdfUrl, 'bse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" title="Direct Download/View Official BSE Anchor Notice PDF">
+                  📥 BSE Download
                 </a>
               ` : ''}
-              ${ipo.anchor.bseIntimationPdfUrl ? `
-                <a href="${resolveAnchorLink(ipo.anchor.bseIntimationPdfUrl, 'bse')}" target="_blank" rel="noopener noreferrer" class="btn-bse-notice" title="View Anchor Intimation Letter PDF">
-                  📑 Intimation PDF
-                </a>
-              ` : ''}
-              ${ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl ? `
-                <a href="${resolveAnchorLink(ipo.anchor.bseNoticePdfUrl, 'bse')}" target="_blank" rel="noopener noreferrer" class="btn-pdf" style="font-size:0.68rem;" title="View Official Notice">
-                  Notice
+              ${(hasBseAnchor && ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseIntimationPdfUrl && ipo.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl) ? `
+                <a href="${resolveAnchorLink(ipo.anchor.bseNoticePdfUrl, 'bse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-sub" title="View BSE Official Notice">
+                  📄 BSE Notice
                 </a>
               ` : ''}
             </div>
@@ -1067,7 +1085,7 @@
             <div class="company-title">
               <span style="color: #60a5fa; font-weight: 700;">${ipo.symbol}</span>
               ${exchangeBadge}
-              <span class="badge-tag ${isSme ? 'badge-sme' : 'badge-mainboard'}">${ipo.series || 'EQ'}</span>
+              <span class="badge-tag ${isSme ? 'badge-sme' : 'badge-mainboard'}">${isSme ? 'SME' : 'Mainboard'}</span>
             </div>
             <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-top: 3px;">
               ${ipo.companyName}
@@ -1214,10 +1232,9 @@
     target.anchor = {
       available: true,
       source: 'BOTH',
-      nsePdfUrl: `/api/nse/anchor-pdf?symbol=${target.symbol}`,
-      nseZipUrl: `/api/nse/anchor-zip?symbol=${target.symbol}`,
-      bseIntimationPdfUrl: `/api/bse/anchor-pdf?url=attachment`,
-      bseNoticePdfUrl: `/api/bse/anchor-pdf?url=notice`
+      nseZipUrl: `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${target.symbol}.zip`,
+      bseIntimationPdfUrl: `https://www.bseindia.com/downloads/UploadDocs/Notices/sample.pdf`,
+      bseNoticePdfUrl: `https://www.bseindia.com/downloads/UploadDocs/Notices/sample.pdf`
     };
 
     triggerOneMinuteSurge(key);

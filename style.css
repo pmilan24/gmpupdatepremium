@@ -1197,6 +1197,65 @@ body {
   transform: translateY(-1px);
 }
 
+/* Direct Exchange Download Buttons */
+.btn-anchor-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-nse-download {
+  background: rgba(37, 99, 235, 0.22);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.btn-nse-download:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-bse-download {
+  background: rgba(16, 185, 129, 0.22);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.btn-bse-download:hover {
+  background: #059669;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-bse-sub {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  font-size: 0.7rem;
+  padding: 4px 8px;
+}
+
+.btn-bse-sub:hover {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  transform: translateY(-1px);
+}
+
 /* Highlight row in table when anchor is new */
 .ipo-row.anchor-active-highlight {
   background-color: rgba(245, 158, 11, 0.09);

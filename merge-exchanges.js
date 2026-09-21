@@ -86,12 +86,12 @@ function mergeNseAndBse(nseList = [], bseList = []) {
       anchor: {
         available: anchorAvailable,
         source: hasNseAnchor && hasBseAnchor ? 'BOTH' : (hasNseAnchor ? 'NSE' : (hasBseAnchor ? 'BSE' : 'NONE')),
-        // NSE sources
-        nseZipUrl: hasNseAnchor ? stripDomain(nseItem.anchor.zipUrl) : null,
-        nsePdfUrl: hasNseAnchor ? stripDomain(nseItem.anchor.pdfUrl) : null,
-        // BSE sources
-        bseNoticePdfUrl: hasBseAnchor ? stripDomain(matchedBse.anchor.noticePdfUrl) : null,
-        bseIntimationPdfUrl: hasBseAnchor ? stripDomain(matchedBse.anchor.intimationPdfUrl) : null,
+        // NSE direct sources
+        nseZipUrl: hasNseAnchor ? (nseItem.anchor.zipUrl?.startsWith('http') ? nseItem.anchor.zipUrl : `https://nsearchives.nseindia.com${nseItem.anchor.zipUrl?.startsWith('/') ? '' : '/'}${nseItem.anchor.zipUrl || `content/ipo/ANCHOR_${nseItem.symbol.toUpperCase()}.zip`}`) : null,
+        nsePdfUrl: null,
+        // BSE direct sources
+        bseNoticePdfUrl: hasBseAnchor && matchedBse.anchor.noticePdfUrl ? (matchedBse.anchor.noticePdfUrl.startsWith('http') ? matchedBse.anchor.noticePdfUrl : `https://www.bseindia.com${matchedBse.anchor.noticePdfUrl.startsWith('/') ? '' : '/'}${matchedBse.anchor.noticePdfUrl}`) : null,
+        bseIntimationPdfUrl: hasBseAnchor && matchedBse.anchor.intimationPdfUrl ? (matchedBse.anchor.intimationPdfUrl.startsWith('http') ? matchedBse.anchor.intimationPdfUrl : `https://www.bseindia.com${matchedBse.anchor.intimationPdfUrl.startsWith('/') ? '' : '/'}${matchedBse.anchor.intimationPdfUrl}`) : null,
         bseNoticeNo: hasBseAnchor ? matchedBse.anchor.noticeNo : null,
         hasBseAttachment: hasBseAnchor ? matchedBse.anchor.hasIntimationAttachment : false
       },
@@ -115,7 +115,7 @@ function mergeNseAndBse(nseList = [], bseList = []) {
       id: `BSE_${bseItem.symbol || bseItem.bseIpoNo}`,
       symbol: bseItem.symbol,
       companyName: bseItem.companyName,
-      exchange: bseItem.exchange,
+      exchange: bseItem.exchange || (bseItem.platform === 'SME' ? 'BSE SME' : 'BSE'),
       platforms: ['BSE'],
       status: bseItem.status,
       series: bseItem.platform === 'SME' ? 'SME' : 'EQ',
@@ -131,8 +131,8 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         source: hasBseAnchor ? 'BSE' : 'NONE',
         nseZipUrl: null,
         nsePdfUrl: null,
-        bseNoticePdfUrl: hasBseAnchor ? stripDomain(bseItem.anchor.noticePdfUrl) : null,
-        bseIntimationPdfUrl: hasBseAnchor ? stripDomain(bseItem.anchor.intimationPdfUrl) : null,
+        bseNoticePdfUrl: hasBseAnchor && bseItem.anchor.noticePdfUrl ? (bseItem.anchor.noticePdfUrl.startsWith('http') ? bseItem.anchor.noticePdfUrl : `https://www.bseindia.com${bseItem.anchor.noticePdfUrl.startsWith('/') ? '' : '/'}${bseItem.anchor.noticePdfUrl}`) : null,
+        bseIntimationPdfUrl: hasBseAnchor && bseItem.anchor.intimationPdfUrl ? (bseItem.anchor.intimationPdfUrl.startsWith('http') ? bseItem.anchor.intimationPdfUrl : `https://www.bseindia.com${bseItem.anchor.intimationPdfUrl.startsWith('/') ? '' : '/'}${bseItem.anchor.intimationPdfUrl}`) : null,
         bseNoticeNo: hasBseAnchor ? bseItem.anchor.noticeNo : null,
         hasBseAttachment: hasBseAnchor ? bseItem.anchor.hasIntimationAttachment : false
       },
