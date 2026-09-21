@@ -225,6 +225,10 @@ async function getBackendIpoList(activeToken) {
 }
 
 // --- Smart, Resilient IPO Matching Engine ---
+function normalizeStr(str) {
+  return (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
 function getTokenWords(str) {
   if (!str) return [];
   const noise = new Set([
@@ -232,17 +236,26 @@ function getTokenWords(str) {
     'services', 'service', 'technologies', 'technology', 'tech', 'enterprises',
     'enterprise', 'industries', 'industry', 'international', 'infra',
     'infrastructure', 'holdings', 'holding', 'corporation', 'corp', 'group',
-    'company', 'co', 'mainboard', 'sme', 'nse', 'bse'
+    'company', 'co', 'mainboard', 'sme', 'nse', 'bse', 'ipo', 'issue', 'ventures'
   ]);
 
-  return str
+  const raw = str
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
-    .filter(w => w.length > 1 && !noise.has(w));
+    .filter(w => w.length > 1);
+
+  const filtered = raw.filter(w => !noise.has(w));
+  return filtered.length > 0 ? filtered : raw;
 }
 
 function calculateSimilarity(str1, str2) {
+  const norm1 = normalizeStr(str1);
+  const norm2 = normalizeStr(str2);
+  if (norm1 && norm2 && (norm1 === norm2 || norm1.includes(norm2) || norm2.includes(norm1))) {
+    return 0.95;
+  }
+
   const words1 = getTokenWords(str1);
   const words2 = getTokenWords(str2);
   if (words1.length === 0 || words2.length === 0) return 0;
@@ -264,18 +277,18 @@ function findMatchingIpo(scrapedCompany, backendIpoList) {
   let highestScore = 0;
 
   for (const ipo of backendIpoList) {
-    const backendName = ipo.company_name || '';
+    const backendName = ipo.company_name || ipo.name || ipo.title || '';
     const backendSymbol = (ipo.symbol || '').toLowerCase().trim();
 
     // 1. Direct symbol containment in scraped company name
     if (backendSymbol && backendSymbol.length >= 3) {
       const lowerScraped = scrapedName.toLowerCase();
-      if (lowerScraped.includes(backendSymbol)) {
+      if (lowerScraped.includes(backendSymbol) || backendSymbol === lowerScraped) {
         return ipo;
       }
     }
 
-    // 2. Token overlap similarity
+    // 2. Token overlap & substring similarity
     const score = calculateSimilarity(scrapedName, backendName);
     if (score > highestScore && score >= 0.5) {
       highestScore = score;
