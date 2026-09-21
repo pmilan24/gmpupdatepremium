@@ -516,7 +516,46 @@
         isComplete: false
       });
 
-      // 1. Fetch NSE India first
+      // On static hosting (like GitHub Pages), load snapshot instantly
+      const isStaticHost = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+      if (isStaticHost) {
+        try {
+          const fbRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
+          if (fbRes.ok) {
+            const fbData = await fbRes.json();
+            const snapList = fbData.ipos || fbData;
+            if (Array.isArray(snapList) && snapList.length > 0) {
+              ipoList = snapList;
+              processAnchorDiff(ipoList);
+              renderUI();
+              updateProgressTracker({
+                stageBadge: 'Complete',
+                title: `⚡ Live Exchange Snapshot Loaded (${ipoList.length} IPOs)`,
+                desc: 'Loaded latest unified exchange issues from GitHub snapshot.',
+                progressPercent: 100,
+                step1Status: 'done',
+                step1Text: 'Snapshot Loaded',
+                step2Status: 'done',
+                step2Text: 'Snapshot Loaded',
+                step3Status: 'done',
+                step3Text: 'Ready',
+                isComplete: true
+              });
+              if (els.progressTracker) {
+                setTimeout(() => {
+                  els.progressTracker.style.display = 'none';
+                }, 1500);
+              }
+              startCountdown();
+              return;
+            }
+          }
+        } catch (staticErr) {
+          console.warn('[ANCHOR] Static snapshot load error:', staticErr.message);
+        }
+      }
+
+      // 1. Fetch NSE India first (when running on server)
       try {
         const nseRes = await fetch(`/api/nse/ipo-list?t=${Date.now()}`, { cache: 'no-cache' });
         if (nseRes.ok) {

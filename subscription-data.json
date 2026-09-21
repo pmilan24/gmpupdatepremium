@@ -1,531 +1,93 @@
 {
-  "lastUpdated": "2026-09-18T08:56:09.512Z",
+  "lastUpdated": "2026-09-21T10:22:06.687Z",
   "count": 8,
   "companies": [
     {
-      "id": "1347",
-      "companyName": "Hero Motors Ltd (MAINBOARD)",
-      "marketType": "Mainboard",
-      "dates": "16th to 18th Sep 2026",
-      "priceRange": "₹79 to ₹84",
-      "quantities": {
-        "retail": 178,
-        "sHNI": 2492,
-        "bHNI": 11926
-      },
-      "lastUpdatedSource": "18-Sep-2026 14:22:01",
-      "totalApplications": 1471914,
-      "summary": {
-        "totalTimes": 6.04,
-        "qibTimes": 0.86,
-        "hniTimes": 8.52,
-        "retailTimes": 7.94
-      },
-      "sharesBreakup": [
-        {
-          "category": "QIBs",
-          "offered": 23809525,
-          "applied": 20429950,
-          "times": 0.86
-        },
-        {
-          "category": "HNIs",
-          "offered": 17857143,
-          "applied": 152108476,
-          "times": 8.52
-        },
-        {
-          "category": "HNIs 10+",
-          "offered": 11904762,
-          "applied": 79118864,
-          "times": 6.65
-        },
-        {
-          "category": "HNIs 2+",
-          "offered": 5952381,
-          "applied": 72989612,
-          "times": 12.26
-        },
-        {
-          "category": "Retail",
-          "offered": 41666666,
-          "applied": 331029982,
-          "times": 7.94
-        },
-        {
-          "category": "Total",
-          "offered": 83333334,
-          "applied": 503568408,
-          "times": 6.04
-        }
-      ],
-      "applicationsBreakup": [
-        {
-          "category": "HNIs (10L+)",
-          "reserved": 4777,
-          "applied": 6226,
-          "times": 1.3
-        },
-        {
-          "category": "HNIs (2-10L)",
-          "reserved": 2389,
-          "applied": 27040,
-          "times": 11.32
-        },
-        {
-          "category": "Retail",
-          "reserved": 234082,
-          "applied": 1438648,
-          "times": 6.15
-        }
-      ],
-      "demandBreakupCrores": [
-        {
-          "category": "QIBs",
-          "offered": 200,
-          "applied": 171.61,
-          "times": 0.86
-        },
-        {
-          "category": "FIIs",
-          "offered": 0,
-          "applied": 10.11,
-          "times": 0
-        },
-        {
-          "category": "DIIs",
-          "offered": 0,
-          "applied": 0.04,
-          "times": 0
-        },
-        {
-          "category": "Mutual funds",
-          "offered": 0,
-          "applied": 150.02,
-          "times": 0
-        },
-        {
-          "category": "Others",
-          "offered": 0,
-          "applied": 11.44,
-          "times": 0
-        },
-        {
-          "category": "HNIs",
-          "offered": 150,
-          "applied": 1277.71,
-          "times": 8.52
-        },
-        {
-          "category": "HNIs 10+",
-          "offered": 100,
-          "applied": 664.6,
-          "times": 6.65
-        },
-        {
-          "category": "HNIs 2+",
-          "offered": 50,
-          "applied": 613.11,
-          "times": 12.26
-        },
-        {
-          "category": "Retail",
-          "offered": 350,
-          "applied": 2780.65,
-          "times": 7.94
-        },
-        {
-          "category": "Total",
-          "offered": 700,
-          "applied": 4229.97,
-          "times": 6.04
-        }
-      ]
-    },
-    {
-      "id": "1349",
-      "companyName": "Jindal Supreme (India) Ltd. (Mainboard)",
-      "marketType": "Mainboard",
-      "dates": "16th to 18th Sep 2026",
-      "priceRange": "₹88 to ₹93",
-      "quantities": {
-        "retail": 161,
-        "sHNI": 2254,
-        "bHNI": 10787
-      },
-      "lastUpdatedSource": "18-Sep-2026 14:21:07",
-      "totalApplications": 2902221,
-      "summary": {
-        "totalTimes": 118.59,
-        "qibTimes": 30.37,
-        "hniTimes": 246.66,
-        "retailTimes": 114.11
-      },
-      "sharesBreakup": [
-        {
-          "category": "QIBs",
-          "offered": 2685600,
-          "applied": 81572743,
-          "times": 30.37
-        },
-        {
-          "category": "HNIs",
-          "offered": 2014200,
-          "applied": 496821689,
-          "times": 246.66
-        },
-        {
-          "category": "HNIs 10+",
-          "offered": 1342800,
-          "applied": 303202606,
-          "times": 225.8
-        },
-        {
-          "category": "HNIs 2+",
-          "offered": 671400,
-          "applied": 193619083,
-          "times": 288.38
-        },
-        {
-          "category": "Retail",
-          "offered": 4699800,
-          "applied": 536281340,
-          "times": 114.11
-        },
-        {
-          "category": "Total",
-          "offered": 9399600,
-          "applied": 1114675772,
-          "times": 118.59
-        }
-      ],
-      "applicationsBreakup": [
-        {
-          "category": "HNIs (10L+)",
-          "reserved": 596,
-          "applied": 27388,
-          "times": 45.95
-        },
-        {
-          "category": "HNIs (2-10L)",
-          "reserved": 298,
-          "applied": 81533,
-          "times": 273.6
-        },
-        {
-          "category": "Retail",
-          "reserved": 29191,
-          "applied": 2793300,
-          "times": 95.69
-        }
-      ],
-      "demandBreakupCrores": [
-        {
-          "category": "QIBs",
-          "offered": 24.98,
-          "applied": 758.63,
-          "times": 30.37
-        },
-        {
-          "category": "FIIs",
-          "offered": 0,
-          "applied": 153.65,
-          "times": 0
-        },
-        {
-          "category": "DIIs",
-          "offered": 0,
-          "applied": 157.67,
-          "times": 0
-        },
-        {
-          "category": "Mutual funds",
-          "offered": 0,
-          "applied": 0,
-          "times": 0
-        },
-        {
-          "category": "Others",
-          "offered": 0,
-          "applied": 447.31,
-          "times": 0
-        },
-        {
-          "category": "HNIs",
-          "offered": 18.73,
-          "applied": 4620.44,
-          "times": 246.66
-        },
-        {
-          "category": "HNIs 10+",
-          "offered": 12.49,
-          "applied": 2819.78,
-          "times": 225.8
-        },
-        {
-          "category": "HNIs 2+",
-          "offered": 6.24,
-          "applied": 1800.66,
-          "times": 288.38
-        },
-        {
-          "category": "Retail",
-          "offered": 43.71,
-          "applied": 4987.42,
-          "times": 114.11
-        },
-        {
-          "category": "Total",
-          "offered": 87.42,
-          "applied": 10366.48,
-          "times": 118.59
-        }
-      ]
-    },
-    {
-      "id": "1354",
-      "companyName": "SS Retail Ltd. (Mainboard)",
-      "marketType": "Mainboard",
-      "dates": "16th to 18th Sep 2026",
-      "priceRange": "₹403 to ₹424",
-      "quantities": {
-        "retail": 35,
-        "sHNI": 490,
-        "bHNI": 2380
-      },
-      "lastUpdatedSource": "18-Sep-2026 14:21:09",
-      "totalApplications": 2984525,
-      "summary": {
-        "totalTimes": 47.03,
-        "qibTimes": 43.16,
-        "hniTimes": 105.74,
-        "retailTimes": 27.44
-      },
-      "sharesBreakup": [
-        {
-          "category": "QIBs",
-          "offered": 2301886,
-          "applied": 99349705,
-          "times": 43.16
-        },
-        {
-          "category": "HNIs",
-          "offered": 1726415,
-          "applied": 182551845,
-          "times": 105.74
-        },
-        {
-          "category": "HNIs 10+",
-          "offered": 1150943,
-          "applied": 131243140,
-          "times": 114.03
-        },
-        {
-          "category": "HNIs 2+",
-          "offered": 575472,
-          "applied": 51308705,
-          "times": 89.16
-        },
-        {
-          "category": "Retail",
-          "offered": 4028301,
-          "applied": 110525205,
-          "times": 27.44
-        },
-        {
-          "category": "Employees",
-          "offered": 300752,
-          "applied": 616525,
-          "times": 2.05
-        },
-        {
-          "category": "Total",
-          "offered": 8357354,
-          "applied": 393043280,
-          "times": 47.03
-        }
-      ],
-      "applicationsBreakup": [
-        {
-          "category": "HNIs (10L+)",
-          "reserved": 2349,
-          "applied": 54678,
-          "times": 23.28
-        },
-        {
-          "category": "HNIs (2-10L)",
-          "reserved": 1174,
-          "applied": 101608,
-          "times": 86.55
-        },
-        {
-          "category": "Retail",
-          "reserved": 115094,
-          "applied": 2819599,
-          "times": 24.5
-        },
-        {
-          "category": "Employee",
-          "reserved": 0,
-          "applied": 8640,
-          "times": 0
-        }
-      ],
-      "demandBreakupCrores": [
-        {
-          "category": "QIBs",
-          "offered": 97.6,
-          "applied": 4212.43,
-          "times": 43.16
-        },
-        {
-          "category": "FIIs",
-          "offered": 0,
-          "applied": 1650.61,
-          "times": 0
-        },
-        {
-          "category": "DIIs",
-          "offered": 0,
-          "applied": 1290.85,
-          "times": 0
-        },
-        {
-          "category": "Mutual funds",
-          "offered": 0,
-          "applied": 264.8,
-          "times": 0
-        },
-        {
-          "category": "Others",
-          "offered": 0,
-          "applied": 1006.17,
-          "times": 0
-        },
-        {
-          "category": "HNIs",
-          "offered": 73.2,
-          "applied": 7740.2,
-          "times": 105.74
-        },
-        {
-          "category": "HNIs 10+",
-          "offered": 48.8,
-          "applied": 5564.71,
-          "times": 114.03
-        },
-        {
-          "category": "HNIs 2+",
-          "offered": 24.4,
-          "applied": 2175.49,
-          "times": 89.16
-        },
-        {
-          "category": "Retail",
-          "offered": 170.8,
-          "applied": 4686.27,
-          "times": 27.44
-        },
-        {
-          "category": "Employees",
-          "offered": 12.75,
-          "applied": 26.14,
-          "times": 2.05
-        },
-        {
-          "category": "Total",
-          "offered": 354.35,
-          "applied": 16665.04,
-          "times": 47.03
-        }
-      ]
-    },
-    {
       "id": "1325",
-      "companyName": "National Stock Exchange of India Ltd (MAINBOARD)",
+      "companyName": "National Stock Exchange of India",
       "marketType": "Mainboard",
       "dates": "17th to 21st Sep 2026",
-      "priceRange": "₹1700 to ₹1785",
+      "priceRange": "1700 to 1785",
       "quantities": {
         "retail": 8,
         "sHNI": 120,
         "bHNI": 568
       },
-      "lastUpdatedSource": "18-Sep-2026 14:21:09",
-      "totalApplications": 1811093,
+      "lastUpdatedSource": "21-Sep-2026 15:51:02",
+      "totalApplications": 3496434,
       "summary": {
-        "totalTimes": 0.97,
-        "qibTimes": 1.25,
-        "hniTimes": 1.32,
-        "retailTimes": 0.65
+        "totalTimes": 5.63,
+        "qibTimes": 12.67,
+        "hniTimes": 6.51,
+        "retailTimes": 1.25
       },
       "sharesBreakup": [
         {
           "category": "QIBs",
           "offered": 25207868,
-          "applied": 31540304,
-          "times": 1.25
+          "applied": 319451000,
+          "times": 12.67
         },
         {
           "category": "HNIs",
           "offered": 18900482,
-          "applied": 24975168,
-          "times": 1.32
+          "applied": 123049360,
+          "times": 6.51
         },
         {
           "category": "HNIs 10+",
           "offered": 12600321,
-          "applied": 15292936,
-          "times": 1.21
+          "applied": 97813160,
+          "times": 7.76
         },
         {
           "category": "HNIs 2+",
           "offered": 6300161,
-          "applied": 9682232,
-          "times": 1.54
+          "applied": 25236200,
+          "times": 4.01
         },
         {
           "category": "Retail",
           "offered": 44101125,
-          "applied": 28481136,
-          "times": 0.65
+          "applied": 55342656,
+          "times": 1.25
         },
         {
           "category": "Employees",
-          "offered": 433437,
-          "applied": 581072,
-          "times": 1.34
+          "offered": 433438,
+          "applied": 989160,
+          "times": 2.28
         },
         {
           "category": "Total",
-          "offered": 88642912,
-          "applied": 85577680,
-          "times": 0.97
+          "offered": 88642913,
+          "applied": 498832176,
+          "times": 5.63
         }
       ],
       "applicationsBreakup": [
         {
           "category": "HNIs (10L+)",
           "reserved": 105003,
-          "applied": 18616,
-          "times": 0.18
+          "applied": 138085,
+          "times": 1.32
         },
         {
           "category": "HNIs (2-10L)",
           "reserved": 52501,
-          "applied": 60820,
-          "times": 1.16
+          "applied": 169723,
+          "times": 3.23
         },
         {
           "category": "Retail",
           "reserved": 5512641,
-          "applied": 1707957,
-          "times": 0.31
+          "applied": 3148238,
+          "times": 0.57
         },
         {
           "category": "Employee",
           "reserved": 0,
-          "applied": 23700,
+          "applied": 40388,
           "times": 0
         }
       ],
@@ -533,159 +95,159 @@
         {
           "category": "QIBs",
           "offered": 4499.6,
-          "applied": 5629.94,
-          "times": 1.25
+          "applied": 57022,
+          "times": 12.67
         },
         {
           "category": "FIIs",
           "offered": 0,
-          "applied": 542.97,
+          "applied": 25046.97,
           "times": 0
         },
         {
           "category": "DIIs",
           "offered": 0,
-          "applied": 4549.48,
+          "applied": 12131.3,
           "times": 0
         },
         {
           "category": "Mutual funds",
           "offered": 0,
-          "applied": 500.36,
+          "applied": 9654.14,
           "times": 0
         },
         {
           "category": "Others",
           "offered": 0,
-          "applied": 37.14,
+          "applied": 10189.6,
           "times": 0
         },
         {
           "category": "HNIs",
           "offered": 3373.74,
-          "applied": 4458.07,
-          "times": 1.32
+          "applied": 21964.31,
+          "times": 6.51
         },
         {
           "category": "HNIs 10+",
           "offered": 2249.16,
-          "applied": 2729.79,
-          "times": 1.21
+          "applied": 17459.65,
+          "times": 7.76
         },
         {
           "category": "HNIs 2+",
           "offered": 1124.58,
-          "applied": 1728.28,
-          "times": 1.54
+          "applied": 4504.66,
+          "times": 4.01
         },
         {
           "category": "Retail",
           "offered": 7872.05,
-          "applied": 5083.88,
-          "times": 0.65
+          "applied": 9878.66,
+          "times": 1.25
         },
         {
           "category": "Employees",
           "offered": 77.37,
-          "applied": 103.72,
-          "times": 1.34
+          "applied": 176.57,
+          "times": 2.28
         },
         {
           "category": "Total",
           "offered": 15822.76,
-          "applied": 15275.62,
-          "times": 0.97
+          "applied": 89041.54,
+          "times": 5.63
         }
       ]
     },
     {
       "id": "1353",
-      "companyName": "Sona Selection India Ltd (MAINBOARD)",
+      "companyName": "Sona Selection India",
       "marketType": "Mainboard",
       "dates": "17th to 21st Sep 2026",
-      "priceRange": "₹94 to ₹99",
+      "priceRange": "94 to 99",
       "quantities": {
         "retail": 150,
         "sHNI": 2100,
         "bHNI": 10200
       },
-      "lastUpdatedSource": "18-Sep-2026 14:21:09",
-      "totalApplications": 27782,
+      "lastUpdatedSource": "21-Sep-2026 15:51:02",
+      "totalApplications": 61353,
       "summary": {
-        "totalTimes": 0.68,
-        "qibTimes": 0.11,
-        "hniTimes": 0.37,
-        "retailTimes": 1.14
+        "totalTimes": 1.94,
+        "qibTimes": 1.16,
+        "hniTimes": 1.97,
+        "retailTimes": 2.38
       },
       "sharesBreakup": [
         {
           "category": "QIBs",
           "offered": 2860000,
-          "applied": 303000,
-          "times": 0.11
+          "applied": 3325800,
+          "times": 1.16
         },
         {
           "category": "HNIs",
           "offered": 2145000,
-          "applied": 792450,
-          "times": 0.37
+          "applied": 4223850,
+          "times": 1.97
         },
         {
           "category": "HNIs 10+",
           "offered": 1430000,
-          "applied": 443700,
-          "times": 0.31
+          "applied": 2858100,
+          "times": 2
         },
         {
           "category": "HNIs 2+",
           "offered": 715000,
-          "applied": 348750,
-          "times": 0.49
+          "applied": 1365750,
+          "times": 1.91
         },
         {
           "category": "Retail",
           "offered": 5005000,
-          "applied": 5728350,
-          "times": 1.14
+          "applied": 11917200,
+          "times": 2.38
         },
         {
           "category": "Total",
           "offered": 10010000,
-          "applied": 6823800,
-          "times": 0.68
+          "applied": 19466850,
+          "times": 1.94
         }
       ],
       "applicationsBreakup": [
         {
           "category": "HNIs (10L+)",
           "reserved": 681,
-          "applied": 42,
-          "times": 0.06
+          "applied": 158,
+          "times": 0.23
         },
         {
           "category": "HNIs (2-10L)",
           "reserved": 340,
-          "applied": 108,
-          "times": 0.32
+          "applied": 521,
+          "times": 1.53
         },
         {
           "category": "Retail",
           "reserved": 33367,
-          "applied": 27632,
-          "times": 0.83
+          "applied": 60674,
+          "times": 1.82
         }
       ],
       "demandBreakupCrores": [
         {
           "category": "QIBs",
           "offered": 28.31,
-          "applied": 3,
-          "times": 0.11
+          "applied": 32.93,
+          "times": 1.16
         },
         {
           "category": "FIIs",
           "offered": 0,
-          "applied": 0,
+          "applied": 25.5,
           "times": 0
         },
         {
@@ -703,124 +265,124 @@
         {
           "category": "Others",
           "offered": 0,
-          "applied": 3,
+          "applied": 7.42,
           "times": 0
         },
         {
           "category": "HNIs",
           "offered": 21.24,
-          "applied": 7.85,
-          "times": 0.37
+          "applied": 41.82,
+          "times": 1.97
         },
         {
           "category": "HNIs 10+",
           "offered": 14.16,
-          "applied": 4.39,
-          "times": 0.31
+          "applied": 28.3,
+          "times": 2
         },
         {
           "category": "HNIs 2+",
           "offered": 7.08,
-          "applied": 3.45,
-          "times": 0.49
+          "applied": 13.52,
+          "times": 1.91
         },
         {
           "category": "Retail",
           "offered": 49.55,
-          "applied": 56.71,
-          "times": 1.14
+          "applied": 117.98,
+          "times": 2.38
         },
         {
           "category": "Total",
           "offered": 99.1,
-          "applied": 67.56,
-          "times": 0.68
+          "applied": 192.72,
+          "times": 1.94
         }
       ]
     },
     {
       "id": "1357",
-      "companyName": "Kheria Autocomp Ltd (NSE SME)",
+      "companyName": "Kheria Autocomp",
       "marketType": "SME",
       "dates": "17th to 21st Sep 2026",
-      "priceRange": "₹96 to ₹101",
+      "priceRange": "96 to 101",
       "quantities": {
-        "retail": 1200,
-        "sHNI": 2400,
+        "retail": 0,
+        "sHNI": 3600,
         "bHNI": 10800
       },
-      "lastUpdatedSource": "18-Sep-2026 14:14:24",
+      "lastUpdatedSource": "21-Sep-2026 15:51:03",
       "totalApplications": 0,
       "summary": {
-        "totalTimes": 0.28,
-        "qibTimes": 0,
-        "hniTimes": 0.2,
+        "totalTimes": 2.26,
+        "qibTimes": 1.05,
+        "hniTimes": 2.78,
         "retailTimes": 0
       },
       "sharesBreakup": [
         {
           "category": "QIB",
           "offered": 873600,
-          "applied": 0,
-          "times": 0
+          "applied": 916800,
+          "times": 1.05
         },
         {
           "category": "HNIs",
           "offered": 655200,
-          "applied": 132000,
-          "times": 0.2
+          "applied": 1820400,
+          "times": 2.78
         },
         {
           "category": "bHNI",
           "offered": 435600,
-          "applied": 43200,
-          "times": 0.1
+          "applied": 987600,
+          "times": 2.27
         },
         {
           "category": "sHNI",
           "offered": 219600,
-          "applied": 88800,
-          "times": 0.4
+          "applied": 832800,
+          "times": 3.79
         },
         {
           "category": "Individual",
           "offered": 1528800,
-          "applied": 720000,
-          "times": 0.47
+          "applied": 4168800,
+          "times": 2.73
         },
         {
           "category": "Total",
           "offered": 3057600,
-          "applied": 852000,
-          "times": 0.28
+          "applied": 6906000,
+          "times": 2.26
         }
       ],
       "applicationsBreakup": [
         {
           "category": "HNIs (10L+)",
           "reserved": 121,
-          "applied": 5,
-          "times": 0.04
+          "applied": 91,
+          "times": 0.75
         },
         {
           "category": "HNIs (3-10L)",
           "reserved": 61,
-          "applied": 22,
-          "times": 0.36
+          "applied": 212,
+          "times": 3.48
         },
         {
           "category": "Individual",
           "reserved": 637,
-          "applied": 300,
-          "times": 0.47
+          "applied": 1737,
+          "times": 2.73
         }
       ],
       "demandBreakupCrores": [
         {
           "category": "QIB",
           "offered": 8.82,
-          "applied": 0,
-          "times": 0
+          "applied": 9.26,
+          "times": 1.05
         },
         {
           "category": "FII",
@@ -849,275 +411,275 @@
         {
           "category": "OTH",
           "offered": 0,
-          "applied": 0,
+          "applied": 9.26,
           "times": 0
         },
         {
           "category": "HNIs",
           "offered": 6.62,
-          "applied": 1.33,
-          "times": 0.2
+          "applied": 18.39,
+          "times": 2.78
         },
         {
           "category": "bHNI",
           "offered": 4.4,
-          "applied": 0.44,
-          "times": 0.1
+          "applied": 9.97,
+          "times": 2.27
         },
         {
           "category": "sHNI",
           "offered": 2.22,
-          "applied": 0.9,
-          "times": 0.4
+          "applied": 8.41,
+          "times": 3.79
         },
         {
           "category": "Individual",
           "offered": 15.44,
-          "applied": 7.27,
-          "times": 0.47
+          "applied": 42.1,
+          "times": 2.73
         },
         {
           "category": "Total",
           "offered": 30.88,
-          "applied": 8.61,
-          "times": 0.28
+          "applied": 69.75,
+          "times": 2.26
         }
       ]
     },
     {
       "id": "1359",
-      "companyName": "SpectraA Technology Ltd. (NSE SME )",
+      "companyName": "SpectraA Technology",
       "marketType": "SME",
       "dates": "17th to 21st Sep 2026",
-      "priceRange": "₹112 to ₹118",
+      "priceRange": "112 to 118",
       "quantities": {
-        "retail": 1200,
-        "sHNI": 2400,
+        "retail": 0,
+        "sHNI": 3600,
         "bHNI": 9600
       },
-      "lastUpdatedSource": "18-Sep-2026 14:21:10",
+      "lastUpdatedSource": "21-Sep-2026 15:51:03",
       "totalApplications": 0,
       "summary": {
-        "totalTimes": 15.42,
-        "qibTimes": 0,
-        "hniTimes": 13.97,
+        "totalTimes": 295.88,
+        "qibTimes": 184.47,
+        "hniTimes": 438.1,
         "retailTimes": 0
       },
       "sharesBreakup": [
         {
           "category": "QIB",
           "offered": 684000,
-          "applied": 0,
-          "times": 0
+          "applied": 126176400,
+          "times": 184.47
         },
         {
           "category": "HNIs",
           "offered": 514800,
-          "applied": 7189200,
-          "times": 13.97
+          "applied": 225534000,
+          "times": 438.1
         },
         {
           "category": "bHNI",
           "offered": 343200,
-          "applied": 4236000,
-          "times": 12.34
+          "applied": 166988400,
+          "times": 486.56
         },
         {
           "category": "sHNI",
           "offered": 171600,
-          "applied": 2953200,
-          "times": 17.21
+          "applied": 58545600,
+          "times": 341.17
         },
         {
           "category": "Individual",
           "offered": 1197600,
-          "applied": 29767200,
-          "times": 24.86
+          "applied": 357336000,
+          "times": 298.38
         },
         {
           "category": "Total",
           "offered": 2396400,
-          "applied": 36956400,
-          "times": 15.42
+          "applied": 709046400,
+          "times": 295.88
         }
       ],
       "applicationsBreakup": [
         {
           "category": "HNIs (10L+)",
           "reserved": 95,
-          "applied": 429,
-          "times": 4.52
+          "applied": 16812,
+          "times": 176.97
         },
         {
           "category": "HNIs (3-10L)",
           "reserved": 48,
-          "applied": 761,
-          "times": 15.85
+          "applied": 15200,
+          "times": 316.67
         },
         {
           "category": "Individual",
           "reserved": 499,
-          "applied": 12403,
-          "times": 24.86
+          "applied": 148890,
+          "times": 298.38
         }
       ],
       "demandBreakupCrores": [
         {
           "category": "QIB",
           "offered": 8.07,
-          "applied": 0,
-          "times": 0
+          "applied": 1488.88,
+          "times": 184.47
         },
         {
           "category": "FII",
           "offered": 0,
-          "applied": 0,
+          "applied": 238.68,
           "times": 0
         },
         {
           "category": "FI",
           "offered": 0,
-          "applied": 0,
+          "applied": 140.03,
           "times": 0
         },
         {
           "category": "IC",
           "offered": 0,
-          "applied": 0,
+          "applied": 0.04,
           "times": 0
         },
         {
           "category": "MF",
           "offered": 0,
-          "applied": 0,
+          "applied": 47.49,
           "times": 0
         },
         {
           "category": "OTH",
           "offered": 0,
-          "applied": 0,
+          "applied": 1062.64,
           "times": 0
         },
         {
           "category": "HNIs",
           "offered": 6.07,
-          "applied": 84.83,
-          "times": 13.97
+          "applied": 2661.3,
+          "times": 438.1
         },
         {
           "category": "bHNI",
           "offered": 4.05,
-          "applied": 49.98,
-          "times": 12.34
+          "applied": 1970.46,
+          "times": 486.56
         },
         {
           "category": "sHNI",
           "offered": 2.02,
-          "applied": 34.85,
-          "times": 17.21
+          "applied": 690.84,
+          "times": 341.17
         },
         {
           "category": "Individual",
           "offered": 14.13,
-          "applied": 351.25,
-          "times": 24.86
+          "applied": 4216.56,
+          "times": 298.38
         },
         {
           "category": "Total",
           "offered": 28.28,
-          "applied": 436.09,
-          "times": 15.42
+          "applied": 8366.75,
+          "times": 295.88
         }
       ]
     },
     {
       "id": "1350",
-      "companyName": "Axiom Gas Engineering Ltd (NSE SME)",
+      "companyName": "Axiom Gas Engineering",
       "marketType": "SME",
       "dates": "18th to 22nd Sep 2026",
-      "priceRange": "₹51 to ₹54",
+      "priceRange": "51 to 54",
       "quantities": {
-        "retail": 2000,
-        "sHNI": 4000,
+        "retail": 0,
+        "sHNI": 6000,
         "bHNI": 20000
       },
-      "lastUpdatedSource": "18-Sep-2026 14:21:10",
+      "lastUpdatedSource": "21-Sep-2026 15:43:04",
       "totalApplications": 0,
       "summary": {
-        "totalTimes": 0.35,
-        "qibTimes": 0.54,
-        "hniTimes": 0.25,
+        "totalTimes": 0.8,
+        "qibTimes": 0.8,
+        "hniTimes": 0.65,
         "retailTimes": 0
       },
       "sharesBreakup": [
         {
           "category": "QIB",
           "offered": 714000,
-          "applied": 386000,
-          "times": 0.54
+          "applied": 572000,
+          "times": 0.8
         },
         {
           "category": "HNIs",
           "offered": 3568000,
-          "applied": 876000,
-          "times": 0.25
+          "applied": 2332000,
+          "times": 0.65
         },
         {
           "category": "bHNI",
           "offered": 2378000,
-          "applied": 368000,
-          "times": 0.15
+          "applied": 1672000,
+          "times": 0.7
         },
         {
           "category": "sHNI",
           "offered": 1190000,
-          "applied": 508000,
-          "times": 0.43
+          "applied": 660000,
+          "times": 0.55
         },
         {
           "category": "Individual",
           "offered": 3568000,
-          "applied": 1448000,
-          "times": 0.41
+          "applied": 3408000,
+          "times": 0.96
         },
         {
           "category": "Total",
           "offered": 7850000,
-          "applied": 2710000,
-          "times": 0.35
+          "applied": 6312000,
+          "times": 0.8
         }
       ],
       "applicationsBreakup": [
         {
           "category": "HNIs (10L+)",
           "reserved": 396,
-          "applied": 2,
-          "times": 0.01
+          "applied": 9,
+          "times": 0.02
         },
         {
           "category": "HNIs (3-10L)",
           "reserved": 198,
-          "applied": 31,
-          "times": 0.16
+          "applied": 48,
+          "times": 0.24
         },
         {
           "category": "Individual",
           "reserved": 892,
-          "applied": 362,
-          "times": 0.41
+          "applied": 852,
+          "times": 0.96
         }
       ],
       "demandBreakupCrores": [
         {
           "category": "QIB",
           "offered": 3.86,
-          "applied": 2.08,
-          "times": 0.54
+          "applied": 3.09,
+          "times": 0.8
         },
         {
           "category": "FII",
           "offered": 0,
-          "applied": 0,
+          "applied": 1,
           "times": 0
         },
         {
@@ -1147,34 +709,271 @@
         {
           "category": "HNIs",
           "offered": 19.27,
-          "applied": 4.73,
-          "times": 0.25
+          "applied": 12.59,
+          "times": 0.65
         },
         {
           "category": "bHNI",
           "offered": 12.84,
-          "applied": 1.99,
-          "times": 0.15
+          "applied": 9.03,
+          "times": 0.7
         },
         {
           "category": "sHNI",
           "offered": 6.43,
-          "applied": 2.74,
-          "times": 0.43
+          "applied": 3.56,
+          "times": 0.55
         },
         {
           "category": "Individual",
           "offered": 19.27,
-          "applied": 7.82,
-          "times": 0.41
+          "applied": 18.4,
+          "times": 0.96
         },
         {
           "category": "Total",
           "offered": 42.39,
-          "applied": 14.63,
-          "times": 0.35
+          "applied": 34.08,
+          "times": 0.8
         }
       ]
+    },
+    {
+      "id": "1363",
+      "companyName": "Robokidz Eduventures",
+      "marketType": "SME",
+      "dates": "21st to 23rd Sep 2026",
+      "priceRange": "100 to 106",
+      "quantities": {
+        "retail": 0,
+        "sHNI": 3600,
+        "bHNI": 9600
+      },
+      "lastUpdatedSource": "21-Sep-2026 15:49:08",
+      "totalApplications": 0,
+      "summary": {
+        "totalTimes": 7.52,
+        "qibTimes": 0.07,
+        "hniTimes": 6.35,
+        "retailTimes": 0
+      },
+      "sharesBreakup": [
+        {
+          "category": "QIBs",
+          "offered": 553200,
+          "applied": 40800,
+          "times": 0.07
+        },
+        {
+          "category": "HNIs",
+          "offered": 417600,
+          "applied": 2652000,
+          "times": 6.35
+        },
+        {
+          "category": "bHNI",
+          "offered": 278400,
+          "applied": 1527600,
+          "times": 5.49
+        },
+        {
+          "category": "sHNI",
+          "offered": 139200,
+          "applied": 1124400,
+          "times": 8.08
+        },
+        {
+          "category": "Individual",
+          "offered": 972000,
+          "applied": 11918400,
+          "times": 12.26
+        },
+        {
+          "category": "Total",
+          "offered": 1942800,
+          "applied": 14611200,
+          "times": 7.52
+        }
+      ],
+      "applicationsBreakup": [
+        {
+          "category": "HNIs (10L+)",
+          "reserved": 77,
+          "applied": 150,
+          "times": 1.95
+        },
+        {
+          "category": "HNIs (3-10L)",
+          "reserved": 39,
+          "applied": 281,
+          "times": 7.21
+        },
+        {
+          "category": "Individual",
+          "reserved": 405,
+          "applied": 4966,
+          "times": 12.26
+        }
+      ],
+      "demandBreakupCrores": []
+    },
+    {
+      "id": "1365",
+      "companyName": "FX Multitech",
+      "marketType": "SME",
+      "dates": "21st to 23rd Sep 2026",
+      "priceRange": "110 to 116",
+      "quantities": {
+        "retail": 0,
+        "sHNI": 3600,
+        "bHNI": 9600
+      },
+      "lastUpdatedSource": "21-Sep-2026 15:49:11",
+      "totalApplications": 0,
+      "summary": {
+        "totalTimes": 0.21,
+        "qibTimes": 0,
+        "hniTimes": 0.83,
+        "retailTimes": 0
+      },
+      "sharesBreakup": [
+        {
+          "category": "QIBs",
+          "offered": 744000,
+          "applied": 0,
+          "times": 0
+        },
+        {
+          "category": "HNIs",
+          "offered": 558000,
+          "applied": 462000,
+          "times": 0.83
+        },
+        {
+          "category": "bHNI",
+          "offered": 372000,
+          "applied": 447600,
+          "times": 1.2
+        },
+        {
+          "category": "sHNI",
+          "offered": 186000,
+          "applied": 14400,
+          "times": 0.08
+        },
+        {
+          "category": "Individual",
+          "offered": 1298400,
+          "applied": 72000,
+          "times": 0.06
+        },
+        {
+          "category": "Total",
+          "offered": 2600400,
+          "applied": 534000,
+          "times": 0.21
+        }
+      ],
+      "applicationsBreakup": [
+        {
+          "category": "HNIs (10L+)",
+          "reserved": 103,
+          "applied": 4,
+          "times": 0.04
+        },
+        {
+          "category": "HNIs (3-10L)",
+          "reserved": 52,
+          "applied": 4,
+          "times": 0.08
+        },
+        {
+          "category": "Individual",
+          "reserved": 541,
+          "applied": 30,
+          "times": 0.06
+        }
+      ],
+      "demandBreakupCrores": []
+    },
+    {
+      "id": "1366",
+      "companyName": "Vivekanand Cotspin",
+      "marketType": "SME",
+      "dates": "21st to 23rd Sep 2026",
+      "priceRange": "32 to 37",
+      "quantities": {
+        "retail": 0,
+        "sHNI": 9000,
+        "bHNI": 30000
+      },
+      "lastUpdatedSource": "21-Sep-2026 14:37:17",
+      "totalApplications": 0,
+      "summary": {
+        "totalTimes": 0.08,
+        "qibTimes": 0,
+        "hniTimes": 0.26,
+        "retailTimes": 0
+      },
+      "sharesBreakup": [
+        {
+          "category": "QIBs",
+          "offered": 1149000,
+          "applied": 0,
+          "times": 0
+        },
+        {
+          "category": "HNIs",
+          "offered": 855000,
+          "applied": 225000,
+          "times": 0.26
+        },
+        {
+          "category": "bHNI",
+          "offered": 570000,
+          "applied": 174000,
+          "times": 0.31
+        },
+        {
+          "category": "sHNI",
+          "offered": 285000,
+          "applied": 51000,
+          "times": 0.18
+        },
+        {
+          "category": "Individual",
+          "offered": 1995000,
+          "applied": 84000,
+          "times": 0.04
+        },
+        {
+          "category": "Total",
+          "offered": 3999000,
+          "applied": 309000,
+          "times": 0.08
+        }
+      ],
+      "applicationsBreakup": [
+        {
+          "category": "HNIs (10L+)",
+          "reserved": 63,
+          "applied": 2,
+          "times": 0.03
+        },
+        {
+          "category": "HNIs (3-10L)",
+          "reserved": 32,
+          "applied": 3,
+          "times": 0.09
+        },
+        {
+          "category": "Individual",
+          "reserved": 333,
+          "applied": 14,
+          "times": 0.04
+        }
+      ],
+      "demandBreakupCrores": []
     }
   ]
 }

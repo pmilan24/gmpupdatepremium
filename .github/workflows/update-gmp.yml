@@ -32,6 +32,7 @@ jobs:
       - name: Fetch and parse latest GMP data
         env:
           GMP_SOURCE_URL: ${{ secrets.GMP_SOURCE_URL }}
+          JINA_PREFIX_URL: ${{ secrets.JINA_PREFIX_URL }}
         run: |
           node fetch-gmp.js
 

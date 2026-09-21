@@ -275,7 +275,7 @@
   }
 
   // Fetch Live Subscription Data
-  async function fetchSubscriptionData() {
+  async function fetchSubscriptionData(isManual = false) {
     if (isFetching) return;
     isFetching = true;
     updateRefreshButton(true);
@@ -285,7 +285,8 @@
 
     try {
       const cacheBust = Date.now() + '_' + Math.floor(Math.random() * 10000);
-      const localRes = await fetch(`${SUBSCRIPTION_URL}?_t=${cacheBust}`, {
+      const forceParam = isManual ? '&force=1' : '';
+      const localRes = await fetch(`${SUBSCRIPTION_URL}?_t=${cacheBust}${forceParam}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -299,11 +300,11 @@
       }
 
       if (!parsedCompanies || parsedCompanies.length === 0) {
-        if (storageState && storageState.items && Object.keys(storageState.items).length > 0) {
-          parsedCompanies = Object.values(storageState.items);
+        if (Array.isArray(companiesList) && companiesList.length > 0) {
+          parsedCompanies = companiesList;
           source = 'Offline Cache';
         } else {
-          throw new Error('Unable to retrieve subscription data.');
+          throw new Error('Unable to retrieve subscription data. Please check connection and click Refresh.');
         }
       }
 
@@ -803,7 +804,7 @@
   // Setup Event Listeners
   function setupEventListeners() {
     if (els.refreshBtn) {
-      els.refreshBtn.addEventListener('click', () => fetchSubscriptionData());
+      els.refreshBtn.addEventListener('click', () => fetchSubscriptionData(true));
     }
 
     if (els.intervalSelect) {

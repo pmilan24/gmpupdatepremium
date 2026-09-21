@@ -1,0 +1,54 @@
+name: Sync IPO Subscription Data to Backend & Web
+
+on:
+  schedule:
+    # --- Monday to Friday (1-5) Schedule in UTC (IST = UTC + 5:30) ---
+    # 9:55 AM to 10:30 AM IST (04:25 to 05:00 UTC) - Every 5 minutes
+    - cron: '25,30,35,40,45,50,55 4 * * 1-5'
+    # 10:30 AM to 5:30 PM IST (05:00 to 12:00 UTC) - Every 5 minutes (Continuous Trading Session)
+    - cron: '*/5 5,6,7,8,9,10,11 * * 1-5'
+    # 5:30 PM to 6:00 PM IST (12:00 to 12:30 UTC) - Every 5 minutes (Closing Window)
+    - cron: '0,5,10,15,20,25,30 12 * * 1-5'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  sync-subscription:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Live Subscription & Sync to Backend API
+        env:
+          # Secure Credentials & Endpoints configured in GitHub Repository Secrets
+          AUTH_LOGIN_URL: ${{ secrets.AUTH_LOGIN_URL }}
+          AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
+          AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
+          BACKEND_IPO_LIST_URL: ${{ secrets.BACKEND_IPO_LIST_URL }}
+          BACKEND_UPDATE_SUB_URL: ${{ secrets.BACKEND_UPDATE_SUB_URL }}
+          BACKEND_API_TOKEN: ${{ secrets.BACKEND_API_TOKEN }}
+          SUB_DASH_URL: ${{ secrets.SUB_DASH_URL }}
+          SUB_WEB_URL: ${{ secrets.SUB_WEB_URL }}
+          JINA_PREFIX_URL: ${{ secrets.JINA_PREFIX_URL }}
+        run: |
+          node sync-subscription-api.js --force --once
+
+      - name: Commit and push updated subscription snapshot if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add subscription-data.json
+          if git diff --staged --quiet; then
+            echo "No changes detected in subscription data snapshot."
+          else
+            git commit -m "chore(subscription): auto-sync live subscription snapshot"
+            git push
+          fi

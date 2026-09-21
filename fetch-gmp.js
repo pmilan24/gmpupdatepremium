@@ -124,17 +124,7 @@ function parseMarkdownTable(markdown) {
   return ipos;
 }
 
-const USER_AGENTS = [
-  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.6367.82 Mobile Safari/537.36',
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15'
-];
 
-function getRandomUserAgent() {
-  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-}
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
   const controller = new AbortController();
@@ -149,6 +139,8 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
   }
 }
 
+const { proxyRotator, getRandomUserAgent, getRandomPublicIp } = require('./proxy-rotator');
+
 async function fetchFromWeb() {
   if (!TARGET_URL) {
     console.error('TARGET_URL is not configured.');
@@ -158,6 +150,7 @@ async function fetchFromWeb() {
   // Strategy list for rotating proxies and edge IP routing
   const strategies = [
     {
+      id: 'gmp-jina-primary',
       name: 'Jina Reader Primary (Edge IP Rotation & Cache-Bust)',
       url: `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}?_t=${Date.now()}`,
       headers: {
@@ -166,6 +159,7 @@ async function fetchFromWeb() {
       }
     },
     {
+      id: 'gmp-jina-clean',
       name: 'Jina Reader Direct Clean Route',
       url: `${SOURCES.JINA_PREFIX_URL}${TARGET_URL}`,
       headers: {
@@ -174,6 +168,7 @@ async function fetchFromWeb() {
       }
     },
     {
+      id: 'gmp-jina-alt',
       name: 'Jina Reader Protocol Alternate Route',
       url: `${SOURCES.JINA_PREFIX_URL}${TARGET_URL.replace(/^https:\/\//, 'http://')}`,
       headers: {
@@ -182,6 +177,7 @@ async function fetchFromWeb() {
       }
     },
     {
+      id: 'gmp-jina-encoded',
       name: 'Jina Reader Encoded Routing',
       url: `${SOURCES.JINA_PREFIX_URL}${encodeURIComponent(TARGET_URL)}?_nocache=${Date.now()}`,
       headers: {
@@ -191,35 +187,39 @@ async function fetchFromWeb() {
     }
   ];
 
-  for (let i = 0; i < strategies.length; i++) {
-    const strat = strategies[i];
-    console.log(`[Attempt ${i + 1}/${strategies.length}] Trying proxy strategy: ${strat.name}...`);
+  // Filter out any currently blacklisted proxy strategies
+  const activeStrategies = strategies.filter(s => !proxyRotator.isBlacklisted(s.id));
+  const candidateStrategies = activeStrategies.length > 0 ? activeStrategies : strategies;
+
+  for (let i = 0; i < candidateStrategies.length; i++) {
+    const strat = candidateStrategies[i];
+    console.log(`[Attempt ${i + 1}/${candidateStrategies.length}] Trying proxy strategy: ${strat.name}...`);
     try {
       const response = await fetchWithTimeout(strat.url, { headers: strat.headers }, 15000);
       if (!response.ok) {
-        console.warn(`⚠️ Strategy ${strat.name} responded with status: ${response.status} ${response.statusText}`);
-        continue;
+        throw new Error(`HTTP ${response.status} ${response.statusText}`);
       }
       const text = await response.text();
       if (!text || text.length < 200) {
-        console.warn(`⚠️ Strategy ${strat.name} returned insufficient content (${text ? text.length : 0} bytes)`);
-        continue;
+        throw new Error(`Insufficient content (${text ? text.length : 0} bytes)`);
       }
 
       const ipos = parseMarkdownTable(text);
       if (ipos && ipos.length > 0) {
         console.log(`✅ Strategy ${strat.name} successfully parsed ${ipos.length} IPOs!`);
+        proxyRotator.recordSuccess(strat.id);
         return ipos;
       } else {
-        console.warn(`⚠️ Strategy ${strat.name} returned content, but 0 IPOs were parsed.`);
+        throw new Error('Returned content, but 0 IPOs were parsed.');
       }
     } catch (err) {
       console.warn(`❌ Strategy ${strat.name} failed: ${err.message}`);
+      proxyRotator.recordFailure(strat.id, err.message);
     }
 
     // Brief cooldown before trying next proxy strategy
-    if (i < strategies.length - 1) {
-      await new Promise(r => setTimeout(r, 1200));
+    if (i < candidateStrategies.length - 1) {
+      await new Promise(r => setTimeout(r, 1000));
     }
   }
 

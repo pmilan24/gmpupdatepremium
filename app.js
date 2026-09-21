@@ -12,7 +12,7 @@
   let currentFilter = 'all';
   let currentSort = 'default';
   let searchQuery = '';
-  let refreshIntervalSeconds = 180; // 3 minutes default
+  let refreshIntervalSeconds = 60; // 1 minute default
   let secondsRemaining = refreshIntervalSeconds;
   let countdownTimer = null;
   let isFetching = false;
@@ -213,8 +213,8 @@
     return ipos;
   }
 
-  // Fetch Data (reads ./data.json updated continuously by GitHub Actions)
-  async function fetchData() {
+  // Fetch Data (reads ./data.json updated continuously by GitHub Actions or local server)
+  async function fetchData(isManual = false) {
     if (isFetching) return;
     isFetching = true;
     updateRefreshButton(true);
@@ -225,7 +225,8 @@
     try {
       // Aggressive cache busting for mobile browsers (Safari/Chrome)
       const cacheBust = Date.now() + '_' + Math.floor(Math.random() * 10000);
-      const response = await fetch(`${DATA_URL}?_t=${cacheBust}`, {
+      const forceParam = isManual ? '&force=1' : '';
+      const response = await fetch(`${DATA_URL}?_t=${cacheBust}${forceParam}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -683,7 +684,7 @@
     // Refresh Button
     if (els.refreshBtn) {
       els.refreshBtn.addEventListener('click', () => {
-        fetchData();
+        fetchData(true);
       });
     }
 

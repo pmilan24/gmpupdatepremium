@@ -1,106 +1,28 @@
 [
   {
-    "timestampIST": "19 Sept 2026, 10:57:45 am IST",
-    "epochMs": 1789795665087,
-    "istDate": "19 Sept 2026",
-    "istTime": "10:57:45 am IST",
-    "status": "SKIPPED_WEEKEND",
-    "message": "Weekend detected (Saturday). Market is closed. Saturday & Sunday sync is OFF. Next scheduled run: Monday at 3:00 PM IST.",
-    "details": {
-      "day": 6,
-      "timeIST": "19 Sept 2026, 10:57:45 am IST",
-      "cadence": "OFF (Weekend)"
-    }
-  },
-  {
-    "timestampIST": "19 Sept 2026, 10:57:41 am IST",
-    "epochMs": 1789795661406,
-    "istDate": "19 Sept 2026",
-    "istTime": "10:57:41 am IST",
+    "timestampIST": "21 Sept 2026, 03:51:21 pm IST",
+    "epochMs": 1789986081500,
+    "istDate": "21 Sept 2026",
+    "istTime": "03:51:21 pm IST",
     "status": "SUCCESS",
-    "message": "Synchronized 21 unified IPOs (8 Anchor Reports Released) [Manual / Forced Run].",
+    "message": "Synchronized 22 unified IPOs (8 Anchor Reports Released) [Manual / Forced Run].",
     "details": {
-      "count": 21,
+      "count": 22,
       "anchorCount": 8,
       "activeCadence": "Manual / Forced Run",
-      "timeIST": "19 Sept 2026, 10:57:36 am IST"
+      "timeIST": "21 Sept 2026, 03:51:16 pm IST"
     }
   },
   {
-    "timestampIST": "18 Sept 2026, 11:20:18 pm IST",
-    "epochMs": 1789753818846,
-    "istDate": "18 Sept 2026",
-    "istTime": "11:20:18 pm IST",
-    "status": "SUCCESS",
-    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released) [Manual / Forced Run].",
+    "timestampIST": "21 Sept 2026, 03:51:10 pm IST",
+    "epochMs": 1789986070871,
+    "istDate": "21 Sept 2026",
+    "istTime": "03:51:10 pm IST",
+    "status": "SKIPPED_CADENCE",
+    "message": "15-minute cadence active (15 min Afternoon Cadence (3:00 PM - 6:00 PM IST)). Current minute: 51. Skipping intermediate off-cadence trigger.",
     "details": {
-      "count": 24,
-      "anchorCount": 11,
-      "activeCadence": "Manual / Forced Run",
-      "timeIST": "18 Sept 2026, 11:20:13 pm IST"
-    }
-  },
-  {
-    "timestampIST": "18 Sept 2026, 11:20:04 pm IST",
-    "epochMs": 1789753804588,
-    "istDate": "18 Sept 2026",
-    "istTime": "11:20:04 pm IST",
-    "status": "SKIPPED_WINDOW",
-    "message": "Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: 11:20:04 pm IST. Sync is OFF. Window opens at 3:00 PM IST.",
-    "details": {
-      "day": 5,
-      "timeIST": "18 Sept 2026, 11:20:04 pm IST",
-      "cadence": "OFF (Outside Window)"
-    }
-  },
-  {
-    "timestampIST": "18 Sept 2026, 11:14:57 pm IST",
-    "epochMs": 1789753497254,
-    "istDate": "18 Sept 2026",
-    "istTime": "11:14:57 pm IST",
-    "status": "SUCCESS",
-    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
-    "details": {
-      "count": 24,
-      "anchorCount": 11,
-      "timeIST": "18 Sept 2026, 11:14:51 pm IST"
-    }
-  },
-  {
-    "timestampIST": "18 Sept 2026, 11:14:34 pm IST",
-    "epochMs": 1789753474842,
-    "istDate": "18 Sept 2026",
-    "istTime": "11:14:34 pm IST",
-    "status": "SUCCESS",
-    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
-    "details": {
-      "count": 24,
-      "anchorCount": 11,
-      "timeIST": "18 Sept 2026, 11:14:29 pm IST"
-    }
-  },
-  {
-    "timestampIST": "18 Sept 2026, 11:09:30 pm IST",
-    "epochMs": 1789753170995,
-    "istDate": "18 Sept 2026",
-    "istTime": "11:09:30 pm IST",
-    "status": "SUCCESS",
-    "message": "Synchronized 24 unified IPOs (11 Anchor Reports Released).",
-    "details": {
-      "count": 24,
-      "anchorCount": 11
-    }
-  },
-  {
-    "timestampIST": "18 Sept 2026, 11:09:20 pm IST",
-    "epochMs": 1789753160517,
-    "istDate": "18 Sept 2026",
-    "istTime": "11:09:20 pm IST",
-    "status": "SKIPPED_WINDOW",
-    "message": "Outside monitoring window (Mon-Fri 3:00 PM - 11:00 PM IST). Current time: 23:09:20 IST.",
-    "details": {
-      "day": 5,
-      "timeIST": "2026-09-18 23:09:20"
+      "timeIST": "21 Sept 2026, 03:51:10 pm IST",
+      "cadence": "15 min"
     }
   }
 ]

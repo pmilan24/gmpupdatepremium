@@ -176,6 +176,91 @@ const server = http.createServer(async (req, res) => {
   const pathname = parsedUrl.pathname;
   const force = parsedUrl.searchParams.get('force') === '1';
 
+  // --- DYNAMIC ROUTE: GET /data.json (Live GMP Feed with automatic refresh) ---
+  if (pathname === '/data.json') {
+    const dataPath = path.join(ROOT, 'data.json');
+    let shouldRefresh = force;
+
+    if (!shouldRefresh && fs.existsSync(dataPath)) {
+      try {
+        const stats = fs.statSync(dataPath);
+        const ageSec = (Date.now() - stats.mtimeMs) / 1000;
+        if (ageSec > 120) shouldRefresh = true; // Refresh if older than 2 minutes
+      } catch (e) {
+        shouldRefresh = true;
+      }
+    } else if (!fs.existsSync(dataPath)) {
+      shouldRefresh = true;
+    }
+
+    if (shouldRefresh) {
+      try {
+        console.log('[SERVER] Refreshing Live GMP data from proxy feed...');
+        const { fetchFromWeb } = require('./fetch-gmp');
+        const items = await fetchFromWeb();
+        if (items && items.length > 0) {
+          const result = {
+            lastUpdated: new Date().toISOString(),
+            source: 'Live Market Feed',
+            count: items.length,
+            ipos: items
+          };
+          fs.writeFileSync(dataPath, JSON.stringify(result, null, 2));
+        }
+      } catch (err) {
+        console.warn('[SERVER] GMP fetch failed, serving existing snapshot:', err.message);
+      }
+    }
+
+    if (fs.existsSync(dataPath)) {
+      const content = fs.readFileSync(dataPath, 'utf8');
+      res.writeHead(200, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
+      });
+      res.end(content);
+      return;
+    }
+  }
+
+  // --- DYNAMIC ROUTE: GET /subscription-data.json (Live Subscription Feed with automatic push) ---
+  if (pathname === '/subscription-data.json') {
+    const subPath = path.join(ROOT, 'subscription-data.json');
+    let shouldRefresh = force;
+
+    if (!shouldRefresh && fs.existsSync(subPath)) {
+      try {
+        const stats = fs.statSync(subPath);
+        const ageSec = (Date.now() - stats.mtimeMs) / 1000;
+        if (ageSec > 60) shouldRefresh = true; // Refresh if older than 1 minute
+      } catch (e) {
+        shouldRefresh = true;
+      }
+    } else if (!fs.existsSync(subPath)) {
+      shouldRefresh = true;
+    }
+
+    if (shouldRefresh) {
+      try {
+        console.log('[SERVER] Refreshing live subscription data & syncing to backend...');
+        const { runSyncCycle } = require('./sync-subscription-api');
+        await runSyncCycle();
+      } catch (err) {
+        console.warn('[SERVER] Subscription sync failed, serving existing snapshot:', err.message);
+      }
+    }
+
+    if (fs.existsSync(subPath)) {
+      const content = fs.readFileSync(subPath, 'utf8');
+      res.writeHead(200, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
+      });
+      res.end(content);
+      return;
+    }
+  }
+
   // --- API ROUTE: GET /api/nse/ipo-list (NSE India Only) ---
   if (pathname === '/api/nse/ipo-list') {
     try {
