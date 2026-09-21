@@ -200,7 +200,7 @@ async function main() {
       process.exit(0);
     }
 
-    // Determine Cadence (5 min vs 15 min)
+    // Determine Active Cadence
     if (ist.isEvening5Min) {
       activeCadence = '5 min Peak Cadence (6:00 PM - 10:00 PM IST)';
     } else if (ist.isAfternoon15Min) {
@@ -209,27 +209,8 @@ async function main() {
       activeCadence = '15 min Night Cadence (10:00 PM - 11:00 PM IST)';
     }
 
-    // 3. Cadence check for 15-minute windows (3pm-6pm and 10pm-11pm)
-    if ((ist.isAfternoon15Min || ist.isNight15Min) && !ist.isEvening5Min) {
-      const minMod15 = ist.minutes % 15;
-      if (minMod15 > 3 && minMod15 < 12) {
-        const msg = `15-minute cadence active (${activeCadence}). Current minute: ${ist.minutes}. Skipping intermediate off-cadence trigger.`;
-        console.log(`[SCHEDULE] ⏳ ${msg}`);
-        recordSyncLog('SKIPPED_CADENCE', msg, { timeIST: ist.formattedDateTimeIST, cadence: '15 min' });
-        process.exit(0);
-      }
-    }
-
-    // 4. Check if all today's anchors are already received
     const anchorCheck = checkAllTodayAnchorsReceived();
-    if (anchorCheck.shouldStop) {
-      console.log(`[SCHEDULE] ✨ ${anchorCheck.reason}`);
-      console.log(`[SCHEDULE] All required anchor files for today have arrived. Stopping further refreshes for today.`);
-      recordSyncLog('SKIPPED_ALL_RECEIVED', anchorCheck.reason, { todayCount: anchorCheck.todayCount, timeIST: ist.formattedDateTimeIST, cadence: 'STOPPED (All Received)' });
-      process.exit(0);
-    } else {
-      console.log(`[SCHEDULE] 🎯 Active check: ${anchorCheck.reason}`);
-    }
+    console.log(`[SCHEDULE] 🎯 Active check: ${anchorCheck.reason}`);
   } else {
     console.log(`[SCHEDULE] ⚡ Force flag detected. Bypassing schedule checks.`);
   }

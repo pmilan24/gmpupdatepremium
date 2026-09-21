@@ -1,14 +1,28 @@
 {
-  "lastUpdated": "21 Sept 2026, 03:51:21 pm IST",
+  "lastUpdated": "21 Sept 2026, 04:47:34 pm IST",
   "scheduleStatus": {
-    "lastRunIST": "21 Sept 2026, 03:51:21 pm IST",
+    "lastRunIST": "21 Sept 2026, 04:47:34 pm IST",
     "activeCadence": "Manual / Forced Run",
     "activeWindow": "Mon-Fri 3:00 PM - 11:00 PM IST (Saturday & Sunday OFF)",
     "isWeekend": false
   },
-  "count": 22,
+  "count": 23,
   "anchorCount": 8,
   "recentLogs": [
+    {
+      "timestampIST": "21 Sept 2026, 04:47:34 pm IST",
+      "epochMs": 1789989454428,
+      "istDate": "21 Sept 2026",
+      "istTime": "04:47:34 pm IST",
+      "status": "SUCCESS",
+      "message": "Synchronized 23 unified IPOs (8 Anchor Reports Released) [Manual / Forced Run].",
+      "details": {
+        "count": 23,
+        "anchorCount": 8,
+        "activeCadence": "Manual / Forced Run",
+        "timeIST": "21 Sept 2026, 04:47:29 pm IST"
+      }
+    },
     {
       "timestampIST": "21 Sept 2026, 03:51:21 pm IST",
       "epochMs": 1789986081500,
@@ -52,7 +66,7 @@
       "issueEndDate": "21-Sep-2026",
       "issuePrice": "Rs.1700 to Rs.1785",
       "issueSize": "88642911",
-      "noOfTime": 3.7335115946271213,
+      "noOfTime": 3.764497851384867,
       "registrar": "MUFG Intime India Private Limited (formerly Link Intime India Private Limited)",
       "anchorEligibility": {
         "eligible": true,
@@ -67,6 +81,7 @@
         "available": true,
         "source": "NSE",
         "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_NSE.zip",
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -77,7 +92,7 @@
         "scripCode": 4827,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.498Z"
+      "updatedAt": "2026-09-21T11:17:34.426Z"
     },
     {
       "id": "NSE_SONA",
@@ -94,7 +109,7 @@
       "issueEndDate": "21-Sep-2026",
       "issuePrice": "Rs.94 to Rs.99",
       "issueSize": "10010000",
-      "noOfTime": 1.408066933066933,
+      "noOfTime": 1.4462487512487512,
       "registrar": "KFin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
@@ -109,6 +124,7 @@
         "available": true,
         "source": "NSE",
         "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SONA.zip",
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -119,7 +135,7 @@
         "scripCode": 4824,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.498Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "NSE_AXIOMGAS",
@@ -135,7 +151,7 @@
       "issueEndDate": "22-Sep-2026",
       "issuePrice": "—",
       "issueSize": "—",
-      "noOfTime": 0.82,
+      "noOfTime": 0.83,
       "registrar": "KFin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
@@ -150,13 +166,14 @@
         "available": true,
         "source": "NSE",
         "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_AXIOMGAS.zip",
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "NSE_KHERIAAUTO",
@@ -172,7 +189,7 @@
       "issueEndDate": "21-Sep-2026",
       "issuePrice": "—",
       "issueSize": "—",
-      "noOfTime": 2.16,
+      "noOfTime": 2.33,
       "registrar": "Kfin Technologies Limited",
       "anchorEligibility": {
         "eligible": true,
@@ -187,13 +204,14 @@
         "available": true,
         "source": "NSE",
         "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_KHERIAAUTO.zip",
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "NSE_SPECTRAA",
@@ -209,7 +227,7 @@
       "issueEndDate": "21-Sep-2026",
       "issuePrice": "—",
       "issueSize": "—",
-      "noOfTime": 273.34,
+      "noOfTime": 281.76,
       "registrar": "Maashitla Securities Private Limited",
       "anchorEligibility": {
         "eligible": true,
@@ -224,13 +242,14 @@
         "available": true,
         "source": "NSE",
         "nseZipUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SPECTRAA.zip",
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_SHANKARA",
@@ -261,6 +280,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -271,7 +291,7 @@
         "scripCode": 540425,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_HIMALAYANU",
@@ -302,6 +322,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -312,7 +333,7 @@
         "scripCode": 4834,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_VARMORAGRA",
@@ -343,6 +364,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -353,7 +375,49 @@
         "scripCode": 4837,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
+    },
+    {
+      "id": "BSE_ANANDSEAML",
+      "symbol": "ANANDSEAML",
+      "companyName": "ANAND SEAMLESS LIMITED",
+      "exchange": "BSE SME",
+      "platforms": [
+        "BSE"
+      ],
+      "status": "Upcoming",
+      "series": "SME",
+      "issueStartDate": "2026-09-22",
+      "issueEndDate": "2026-09-24",
+      "issuePrice": "72.00",
+      "issueSize": "—",
+      "noOfTime": 0,
+      "registrar": "—",
+      "anchorEligibility": {
+        "eligible": true,
+        "isToday": true,
+        "isUpcoming": false,
+        "diffDays": 0,
+        "daysToGo": 0,
+        "expectedDate": "2026-09-20",
+        "message": "Due Today (21 Sept)"
+      },
+      "anchor": {
+        "available": false,
+        "source": "NONE",
+        "nseZipUrl": null,
+        "nsePdfUrl": null,
+        "bseNoticePdfUrl": null,
+        "bseIntimationPdfUrl": null,
+        "bseNoticeNo": null,
+        "hasBseAttachment": false
+      },
+      "bseData": {
+        "ipoNo": 7990,
+        "scripCode": 4841,
+        "platform": "SME"
+      },
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_FXMULTITEC",
@@ -384,6 +448,7 @@
         "available": true,
         "source": "BSE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-46/20260918-46.pdf",
         "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation_letter$97dab3e1-402a-4744-b035-feeb89c87b3a.pdf",
         "bseNoticeNo": "20260918-46",
@@ -394,7 +459,7 @@
         "scripCode": 4831,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_VIVEKANAND",
@@ -425,6 +490,7 @@
         "available": true,
         "source": "BSE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-28/20260918-28.pdf",
         "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Company$2f07ca52-e256-4c47-b9e9-f271b93fae34.pdf",
         "bseNoticeNo": "20260918-28",
@@ -435,7 +501,7 @@
         "scripCode": 4832,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_ROBOKIDZED",
@@ -466,6 +532,7 @@
         "available": true,
         "source": "BSE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260918-29/20260918-29.pdf",
         "bseIntimationPdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Intimation$bade89aa-7f1c-4061-85fe-664590198319.pdf",
         "bseNoticeNo": "20260918-29",
@@ -476,7 +543,7 @@
         "scripCode": 4833,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_ELEVATECAM",
@@ -507,6 +574,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -517,7 +585,7 @@
         "scripCode": 4838,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_UNITECFIBR",
@@ -548,6 +616,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -558,7 +627,7 @@
         "scripCode": 4839,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_LIQVDDIGIT",
@@ -589,6 +658,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -599,7 +669,7 @@
         "scripCode": 4840,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_SKOFFSETLI",
@@ -630,6 +700,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -640,7 +711,7 @@
         "scripCode": 4836,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_SPANDANASP",
@@ -671,6 +742,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -681,7 +753,7 @@
         "scripCode": 4815,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_CONTAINETE",
@@ -712,6 +784,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -722,7 +795,7 @@
         "scripCode": 4778,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_MANOJJEWEL",
@@ -753,6 +826,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -763,7 +837,7 @@
         "scripCode": 4779,
         "platform": "SME"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_CUBI FIN SER",
@@ -794,6 +868,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -804,7 +879,7 @@
         "scripCode": 511710,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_ECS",
@@ -835,6 +910,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -845,7 +921,7 @@
         "scripCode": 540063,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_SALEMERODE",
@@ -876,6 +952,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -886,7 +963,7 @@
         "scripCode": 4821,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     },
     {
       "id": "BSE_INDRAYANIB",
@@ -917,6 +994,7 @@
         "available": false,
         "source": "NONE",
         "nseZipUrl": null,
+        "nsePdfUrl": null,
         "bseNoticePdfUrl": null,
         "bseIntimationPdfUrl": null,
         "bseNoticeNo": null,
@@ -927,7 +1005,7 @@
         "scripCode": 4822,
         "platform": "MainBoard"
       },
-      "updatedAt": "2026-09-21T10:21:21.499Z"
+      "updatedAt": "2026-09-21T11:17:34.427Z"
     }
   ]
 }

@@ -46,7 +46,7 @@ jobs:
           NSE_BASE_URL: ${{ secrets.NSE_BASE_URL }}
           BSE_BASE_URL: ${{ secrets.BSE_BASE_URL }}
         run: |
-          node update-anchor-data.js
+          node update-anchor-data.js --force
 
       - name: Commit and push if anchor data changed
         run: |
