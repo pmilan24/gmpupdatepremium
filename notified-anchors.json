@@ -53,5 +53,17 @@
     "symbol": "ROBOKIDZED",
     "notifiedAtIST": "Initial Baseline",
     "notifiedAtEpoch": 1789795623706
+  },
+  "BSE_HIMALAYANU": {
+    "symbol": "HIMALAYANU",
+    "notifiedAtIST": "21 Sept 2026, 09:28:21 pm IST",
+    "notifiedAtEpoch": 1790006303577,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation$355f83e0-630b-4b40-ae4e-eaa689296d85.pdf"
+  },
+  "BSE_VARMORAGRA": {
+    "symbol": "VARMORAGRA",
+    "notifiedAtIST": "21 Sept 2026, 09:28:23 pm IST",
+    "notifiedAtEpoch": 1790006305544,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$029f5575-a9fd-48de-b7ba-b6da4192f049.pdf"
   }
 }
