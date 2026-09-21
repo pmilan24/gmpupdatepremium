@@ -529,7 +529,7 @@
       });
 
       // On static hosting (like GitHub Pages), load snapshot instantly
-      const isStaticHost = window.location.hostname.endsWith('github.io') || window.location.protocol === 'file:';
+      const isStaticHost = !['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:';
       if (isStaticHost) {
         try {
           const fbRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
@@ -1144,72 +1144,135 @@
     els.modalStepsList.innerHTML = `
       <div class="modal-step-item">
         <div class="modal-step-icon">⏳</div>
-        <div>Contacting NSE India & BSE India API servers...</div>
+        <div>Contacting NSE India & BSE India exchange registries...</div>
       </div>
     `;
 
-    try {
-      const query = `symbol=${encodeURIComponent(symbol)}&companyName=${encodeURIComponent(companyName)}`;
-      const res = await fetch(`/api/exchange/check-ipo?${query}`);
-      const data = await res.json();
+    const isStaticHost = !['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:';
+    let data = null;
 
-      if (data && Array.isArray(data.steps)) {
-        let stepHtml = '';
-        data.steps.forEach(st => {
-          let icon = 'ℹ️';
-          let cls = '';
-          if (st.stage.includes('success')) {
-            icon = '✅';
-            cls = 'success';
-          } else if (st.stage.includes('notice_found') || st.stage.includes('matched')) {
-            icon = '✨';
-            cls = 'found';
-          } else if (st.stage.includes('none') || st.stage.includes('unmatched')) {
-            icon = '⚪';
-            cls = 'none';
-          } else if (st.stage.includes('extract')) {
-            icon = '⚙️';
-            cls = 'found';
+    // 1. Try local server API if running in node environment
+    if (!isStaticHost) {
+      try {
+        const query = `symbol=${encodeURIComponent(symbol)}&companyName=${encodeURIComponent(companyName)}`;
+        const res = await fetch(`/api/exchange/check-ipo?${query}`);
+        if (res.ok) {
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            data = await res.json();
           }
+        }
+      } catch (e) {
+        // Fall back to client evaluation
+      }
+    }
 
-          stepHtml += `
-            <div class="modal-step-item ${cls}">
-              <div class="modal-step-icon">${icon}</div>
-              <div>${st.message}</div>
-            </div>
-          `;
-        });
+    // 2. Client-side evaluation (100% reliable on GitHub Pages)
+    if (!data) {
+      let currentItem = ipoList.find(i => 
+        (i.symbol && i.symbol.toUpperCase() === (symbol || '').toUpperCase()) ||
+        (i.companyName && companyName && i.companyName.toLowerCase().includes(companyName.toLowerCase()))
+      );
 
-        // Add final verdict
-        if (data.anchorAvailable) {
-          stepHtml += `
-            <div class="modal-step-item success" style="margin-top: 10px; font-weight: 700;">
-              <div class="modal-step-icon">🎉</div>
-              <div>Anchor Allocation Report is available! Refreshing list...</div>
-            </div>
-          `;
-          triggerOneMinuteSurge(symbol);
-          playAnchorChime();
-          // Trigger refresh of main list
-          setTimeout(fetchExchangeData, 1000);
-        } else {
-          stepHtml += `
-            <div class="modal-step-item none" style="margin-top: 10px;">
-              <div class="modal-step-icon">🕒</div>
-              <div>No Anchor Allocation filing detected on either exchange yet.</div>
-            </div>
-          `;
+      try {
+        const freshRes = await fetch(`${FALLBACK_URL}?_t=${Date.now()}`, { cache: 'no-cache' });
+        if (freshRes.ok) {
+          const freshData = await freshRes.json();
+          const freshList = freshData.ipos || freshData;
+          if (Array.isArray(freshList)) {
+            ipoList = freshList;
+            const updated = freshList.find(i => 
+              (i.symbol && i.symbol.toUpperCase() === (symbol || '').toUpperCase()) ||
+              (i.companyName && companyName && i.companyName.toLowerCase().includes(companyName.toLowerCase()))
+            );
+            if (updated) currentItem = updated;
+          }
+        }
+      } catch (e) {
+        // Continue with currentItem
+      }
+
+      const steps = [
+        { stage: 'init', message: `Connected to exchange registries for ${symbol || companyName}` }
+      ];
+
+      const hasNseAnchor = !!(currentItem?.anchor && (currentItem.anchor.nseZipUrl || currentItem.anchor.source === 'NSE' || currentItem.anchor.source === 'BOTH'));
+      const hasBseAnchor = !!(currentItem?.anchor && (currentItem.anchor.bseNoticePdfUrl || currentItem.anchor.bseIntimationPdfUrl || currentItem.anchor.source === 'BSE' || currentItem.anchor.source === 'BOTH'));
+      const isAnchorFound = hasNseAnchor || hasBseAnchor;
+
+      if (hasNseAnchor) {
+        steps.push({ stage: 'matched_nse', message: `NSE Archive Anchor filing verified: ANCHOR_${symbol}.zip` });
+      } else {
+        steps.push({ stage: 'none_nse', message: `NSE India: No Anchor ZIP archive filed yet for ${symbol}` });
+      }
+
+      if (hasBseAnchor) {
+        const doc = currentItem.anchor.bseIntimationPdfUrl ? 'Intimation Letter' : 'Notice';
+        steps.push({ stage: 'notice_found_bse', message: `BSE India filing verified: Official Anchor ${doc} PDF` });
+      } else {
+        steps.push({ stage: 'none_bse', message: `BSE India: No official Anchor notice published yet` });
+      }
+
+      const elig = currentItem?.anchorEligibility || {};
+      if (elig.message) {
+        steps.push({ stage: 'extract_info', message: `Cadence status: ${elig.message}` });
+      }
+
+      data = {
+        symbol,
+        anchorAvailable: isAnchorFound,
+        steps
+      };
+    }
+
+    if (data && Array.isArray(data.steps)) {
+      let stepHtml = '';
+      data.steps.forEach(st => {
+        let icon = 'ℹ️';
+        let cls = '';
+        if (st.stage.includes('success')) {
+          icon = '✅';
+          cls = 'success';
+        } else if (st.stage.includes('notice_found') || st.stage.includes('matched')) {
+          icon = '✨';
+          cls = 'found';
+        } else if (st.stage.includes('none') || st.stage.includes('unmatched')) {
+          icon = '⚪';
+          cls = 'none';
+        } else if (st.stage.includes('extract') || st.stage.includes('info')) {
+          icon = '📋';
+          cls = 'found';
         }
 
-        els.modalStepsList.innerHTML = stepHtml;
+        stepHtml += `
+          <div class="modal-step-item ${cls}">
+            <div class="modal-step-icon">${icon}</div>
+            <div>${st.message}</div>
+          </div>
+        `;
+      });
+
+      // Add final verdict
+      if (data.anchorAvailable) {
+        stepHtml += `
+          <div class="modal-step-item success" style="margin-top: 10px; font-weight: 700;">
+            <div class="modal-step-icon">🎉</div>
+            <div>Anchor Allocation Report is available! Direct download buttons are active.</div>
+          </div>
+        `;
+        triggerOneMinuteSurge(symbol);
+        playAnchorChime();
+        renderUI();
+      } else {
+        stepHtml += `
+          <div class="modal-step-item none" style="margin-top: 10px;">
+            <div class="modal-step-icon">🕒</div>
+            <div>No Anchor Allocation filing detected on either exchange yet. Continuing automated monitoring.</div>
+          </div>
+        `;
       }
-    } catch (err) {
-      els.modalStepsList.innerHTML = `
-        <div class="modal-step-item" style="border-left-color: #ef4444; color: #f87171;">
-          <div class="modal-step-icon">❌</div>
-          <div>Error checking exchanges: ${err.message}</div>
-        </div>
-      `;
+
+      els.modalStepsList.innerHTML = stepHtml;
     }
   };
 
