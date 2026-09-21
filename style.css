@@ -115,6 +115,27 @@ body {
   gap: 5px;
 }
 
+.title-group .live-pill.closing {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.title-group .live-pill.closing::before {
+  background-color: #f59e0b;
+}
+
+.title-group .live-pill.closed {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+  border-color: rgba(100, 116, 139, 0.4);
+}
+
+.title-group .live-pill.closed::before {
+  background-color: #94a3b8;
+  animation: none;
+}
+
 .live-pill::before {
   content: "";
   width: 6px;
@@ -1980,6 +2001,106 @@ body {
   color: var(--text-secondary);
   line-height: 1.4;
 }
+
+/* Modal Exchange Specific Tabs */
+.modal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.modal-tab {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.modal-tab.active {
+  background: var(--accent-blue);
+  color: #fff;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+
+/* Sub-check exchange buttons on IPO row */
+.check-actions-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-check-exchange-sub {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.btn-check-exchange-sub:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+/* Tap to Dismiss Highlight */
+.anchor-timer-tag {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.anchor-timer-tag:hover {
+  background: rgba(239, 68, 68, 0.35);
+  transform: scale(1.02);
+}
+
+.anchor-timer-tag .dismiss-tag {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  margin-left: 3px;
+}
+
+.btn-nse-zip {
+  background: rgba(147, 51, 234, 0.2) !important;
+  color: #c084fc !important;
+  border-color: rgba(147, 51, 234, 0.4) !important;
+}
+
+.btn-nse-zip:hover {
+  background: rgba(147, 51, 234, 0.35) !important;
+  color: #e9d5ff !important;
+}
+
 
 
 

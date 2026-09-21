@@ -22,6 +22,7 @@
   const els = {
     subsGrid: document.getElementById('subsGrid'),
     lastUpdatedText: document.getElementById('lastUpdatedText'),
+    marketStatusPill: document.getElementById('marketStatusPill'),
     countdownText: document.getElementById('countdownText'),
     countdownFill: document.getElementById('countdownFill'),
     refreshBtn: document.getElementById('refreshBtn'),
@@ -720,9 +721,89 @@
     }
   }
 
+  // --- Indian Standard Time (IST) Market Schedule Engine ---
+  function getISTMarketSchedule() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hourCycle: 'h23',
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const parts = Object.fromEntries(formatter.formatToParts(now).map(p => [p.type, p.value]));
+    const day = parts.weekday; // 'Mon', 'Tue', etc.
+    const hour = parseInt(parts.hour, 10);
+    const min = parseInt(parts.minute, 10);
+    const totalMins = hour * 60 + min;
+
+    const isWeekend = day === 'Sat' || day === 'Sun';
+
+    // Mon - Fri:
+    // 09:55 AM (595 mins) to 05:00 PM (1020 mins) -> Active Market Hours (1 min auto-refresh)
+    // 05:00 PM (1020 mins) to 06:00 PM (1080 mins) -> Closing Tally (10 min auto-refresh)
+    // Outside -> Market Closed (Pause auto-refresh countdown)
+    if (!isWeekend && totalMins >= 595 && totalMins < 1020) {
+      return {
+        status: 'open',
+        text: 'LIVE BIDDING',
+        pillClass: 'live-pill open',
+        intervalSeconds: 60,
+        desc: 'Market open (1 min refresh)'
+      };
+    } else if (!isWeekend && totalMins >= 1020 && totalMins < 1080) {
+      return {
+        status: 'closing',
+        text: 'CLOSING TALLY',
+        pillClass: 'live-pill closing',
+        intervalSeconds: 600,
+        desc: 'Post-market closing tally (10 min refresh)'
+      };
+    } else {
+      return {
+        status: 'closed',
+        text: isWeekend ? 'WEEKEND (CLOSED)' : 'MARKET CLOSED',
+        pillClass: 'live-pill closed',
+        intervalSeconds: 0,
+        desc: isWeekend ? 'Market closed on weekend' : 'Market closed (Opens 09:55 AM IST)'
+      };
+    }
+  }
+
+  function applyMarketSchedule() {
+    const schedule = getISTMarketSchedule();
+    if (els.marketStatusPill) {
+      els.marketStatusPill.textContent = schedule.text;
+      els.marketStatusPill.className = schedule.pillClass;
+    }
+    return schedule;
+  }
+
   // Countdown & Timer Handling
   function startCountdown() {
     if (countdownTimer) clearInterval(countdownTimer);
+
+    const schedule = applyMarketSchedule();
+    const selectedVal = els.intervalSelect ? els.intervalSelect.value : 'auto';
+    let effectiveInterval = 60;
+
+    if (selectedVal === 'auto') {
+      if (schedule.status === 'closed') {
+        if (els.countdownText) els.countdownText.textContent = 'Closed';
+        if (els.countdownFill) els.countdownFill.style.width = '0%';
+        return; // Don't run auto timer when market is closed
+      }
+      effectiveInterval = schedule.intervalSeconds;
+    } else {
+      effectiveInterval = parseInt(selectedVal, 10);
+      if (effectiveInterval <= 0) {
+        if (els.countdownText) els.countdownText.textContent = 'Paused';
+        if (els.countdownFill) els.countdownFill.style.width = '0%';
+        return;
+      }
+    }
+
+    refreshIntervalSeconds = effectiveInterval;
     secondsRemaining = refreshIntervalSeconds;
     updateCountdownUI();
 
@@ -737,8 +818,7 @@
   }
 
   function resetCountdown() {
-    secondsRemaining = refreshIntervalSeconds;
-    updateCountdownUI();
+    startCountdown();
   }
 
   function updateCountdownUI() {

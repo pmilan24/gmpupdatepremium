@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getUnifiedExchangeIpos } = require('./merge-exchanges');
+const { downloadAnchorZip, extractPdfFromZipBuffer } = require('./fetch-nse-anchor');
 const { checkAndNotifyNewAnchors } = require('./notifications');
 
 const SNAPSHOT_PATH = path.join(__dirname, 'nse-ipo-data.json');
@@ -222,6 +223,33 @@ async function main() {
     console.log(`[CRON] Successfully fetched ${ipos.length} unified IPOs.`);
     const anchorCount = ipos.filter(i => i.anchor && i.anchor.available).length;
     console.log(`[CRON] Found ${anchorCount} IPOs with released Anchor Allocation reports.`);
+
+    // Ensure extracted PDF exists in ./anchors for all available NSE anchors
+    const anchorsDir = path.join(__dirname, 'anchors');
+    if (!fs.existsSync(anchorsDir)) {
+      fs.mkdirSync(anchorsDir, { recursive: true });
+    }
+
+    for (const item of ipos) {
+      if (item.anchor && item.anchor.nseZipUrl && item.symbol) {
+        const targetPdfPath = path.join(anchorsDir, `ANCHOR_${item.symbol.toUpperCase()}.pdf`);
+        if (!fs.existsSync(targetPdfPath)) {
+          try {
+            console.log(`[ANCHOR] Downloading & extracting PDF for ${item.symbol}...`);
+            const zipBuffer = await downloadAnchorZip(item.anchor.nseZipUrl, item.symbol);
+            if (zipBuffer) {
+              const pdfBuffer = extractPdfFromZipBuffer(zipBuffer);
+              if (pdfBuffer && pdfBuffer.length > 0) {
+                fs.writeFileSync(targetPdfPath, pdfBuffer);
+                console.log(`[ANCHOR] ✅ Saved extracted PDF: ${targetPdfPath} (${pdfBuffer.length} bytes)`);
+              }
+            }
+          } catch (e) {
+            console.warn(`[ANCHOR] Could not extract PDF for ${item.symbol}:`, e.message);
+          }
+        }
+      }
+    }
 
     // Check for newly released Anchor reports and trigger instant Telegram & NTFY alerts
     const alerts = await checkAndNotifyNewAnchors(ipos);

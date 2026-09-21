@@ -19,7 +19,7 @@
         <div class="title-group">
           <h1>
             IPO Subscription Tracker
-            <span class="live-pill">LIVE BIDDING</span>
+            <span id="marketStatusPill" class="live-pill">LIVE BIDDING</span>
           </h1>
           <p>
             Real-time multi-category subscription bidding rates · 
@@ -37,15 +37,15 @@
         <!-- Auto Refresh Countdown Box -->
         <div class="timer-box" title="Auto-refresh timer (fast updates for live market)">
           <span>Auto-refresh:</span>
-          <strong id="countdownText">1:00</strong>
+          <strong id="countdownText">Auto</strong>
           <div class="countdown-bar">
             <div id="countdownFill" class="countdown-fill" style="background: #10b981;"></div>
           </div>
           <select id="intervalSelect" class="sort-select" style="padding: 2px 6px; font-size: 0.78rem;">
-            <option value="30">30 sec</option>
-            <option value="60" selected>1 min</option>
-            <option value="180">3 min</option>
-            <option value="300">5 min</option>
+            <option value="auto" selected>Auto (IST Hours)</option>
+            <option value="60">1 min</option>
+            <option value="600">10 min</option>
+            <option value="0">Stop / Pause</option>
           </select>
         </div>
 

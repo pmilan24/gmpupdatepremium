@@ -51,7 +51,34 @@ async function sendTelegramAlert({ token, chatId, ipo, pdfUrl, caption }) {
   const docApi = "https://api.telegram.org/bot" + token + "/sendDocument";
 
   try {
-    // 1. Attempt to send actual PDF as a native document via URL
+    // 1. If local PDF file exists, upload directly via multipart FormData (100% reliable, zero Akamai 503 issues)
+    const localPdfPath = path.join(__dirname, "anchors", `ANCHOR_${ipo.symbol}.pdf`);
+    if (fs.existsSync(localPdfPath)) {
+      try {
+        const fileBuffer = fs.readFileSync(localPdfPath);
+        const formData = new FormData();
+        formData.append("chat_id", chatId);
+        formData.append("document", new Blob([fileBuffer], { type: "application/pdf" }), `ANCHOR_${ipo.symbol}.pdf`);
+        formData.append("caption", caption);
+        formData.append("parse_mode", "HTML");
+
+        const res = await fetch(docApi, {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          console.log("[TELEGRAM] ✅ Sent local Anchor PDF file to chat " + chatId);
+          return { success: true, method: "sendDocument-file" };
+        } else {
+          console.warn("[TELEGRAM] Direct file upload failed: " + data.description + ". Retrying with URL...");
+        }
+      } catch (fileErr) {
+        console.warn("[TELEGRAM] Local file send error: " + fileErr.message);
+      }
+    }
+
+    // 2. Attempt to send PDF as document via URL
     if (pdfUrl && pdfUrl.startsWith("http")) {
       const payload = {
         chat_id: chatId,
@@ -69,7 +96,7 @@ async function sendTelegramAlert({ token, chatId, ipo, pdfUrl, caption }) {
 
       if (data.ok) {
         console.log("[TELEGRAM] ✅ Sent Anchor PDF document to chat " + chatId);
-        return { success: true, method: "sendDocument" };
+        return { success: true, method: "sendDocument-url" };
       } else {
         console.warn("[TELEGRAM] sendDocument returned: " + data.description + ". Falling back to sendMessage...");
       }

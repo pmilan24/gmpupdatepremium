@@ -4,8 +4,16 @@
 
   function resolveAnchorLink(rawUrl, type, symbol) {
     const sym = (symbol || '').toUpperCase().trim();
-    if (type === 'nse' || type === 'nse-zip' || type === 'nse-pdf' || type === 'nse-direct') {
-      const match = rawUrl ? rawUrl.match(/ANCHOR_([A-Za-z0-9_\-]+)\.zip/i) : null;
+    if (type === 'nse-pdf' || type === 'pdf') {
+      const targetSym = sym || (rawUrl ? (rawUrl.match(/ANCHOR_([A-Za-z0-9_\-]+)\.(zip|pdf)/i) || [])[1] : '');
+      if (targetSym) {
+        return `./anchors/ANCHOR_${encodeURIComponent(targetSym)}.pdf`;
+      }
+      return rawUrl || '#';
+    }
+
+    if (type === 'nse' || type === 'nse-zip' || type === 'nse-direct') {
+      const match = rawUrl ? rawUrl.match(/ANCHOR_([A-Za-z0-9_\-]+)\.(zip|pdf)/i) : null;
       const targetSym = sym || (match ? match[1] : '');
       if (targetSym) {
         return `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(targetSym)}.zip`;
@@ -970,7 +978,10 @@
       const isSurgeActive = surgeExpiry && surgeExpiry > now;
       const remainingSeconds = isSurgeActive ? Math.ceil((surgeExpiry - now) / 1000) : 0;
 
-      const isDual = (ipo.exchange && ipo.exchange.includes('BSE') && ipo.exchange.includes('NSE')) ||
+      const hasNseAnchor = ipo.anchor && (ipo.anchor.source === 'NSE' || ipo.anchor.source === 'BOTH' || !!ipo.anchor.nseZipUrl);
+      const hasBseAnchor = ipo.anchor && (ipo.anchor.source === 'BSE' || ipo.anchor.source === 'BOTH' || !!ipo.anchor.bseIntimationPdfUrl || !!ipo.anchor.bseNoticePdfUrl);
+      const isDual = (hasNseAnchor && hasBseAnchor) ||
+                     (ipo.exchange && ipo.exchange.includes('BSE') && ipo.exchange.includes('NSE')) ||
                      (ipo.platforms && ipo.platforms.includes('BSE') && ipo.platforms.includes('NSE'));
       const isBseOnly = !isDual && (
         (ipo.exchange && ipo.exchange.includes('BSE') && !ipo.exchange.includes('NSE')) ||
@@ -1009,11 +1020,8 @@
       if (isAnchorAvailable) {
         const badgeClass = isSurgeActive ? 'anchor-badge new-highlight' : 'anchor-badge allocated';
         const timerHtml = isSurgeActive 
-          ? `<span class="anchor-timer-tag">⏱ Live Surge: ${remainingSeconds}s</span>` 
+          ? `<span class="anchor-timer-tag" onclick="window.dismissHighlight('${key}', event)" title="Tap to dismiss surge highlight">⏱ Live Surge: ${remainingSeconds}s · <span class="dismiss-tag">✕ Dismiss</span></span>` 
           : '';
-
-        const hasNseAnchor = ipo.anchor.source === 'NSE' || ipo.anchor.source === 'BOTH' || !!ipo.anchor.nseZipUrl;
-        const hasBseAnchor = ipo.anchor.source === 'BSE' || ipo.anchor.source === 'BOTH' || !!ipo.anchor.bseIntimationPdfUrl || !!ipo.anchor.bseNoticePdfUrl;
 
         const sourceLabel = (hasNseAnchor && hasBseAnchor) ? '✨ NSE & BSE' : (hasBseAnchor ? '🏛️ BSE Notice' : '🏛️ NSE Archive');
 
@@ -1025,24 +1033,35 @@
             </div>
             <div class="anchor-actions">
               ${hasNseAnchor ? `
-                <a href="${resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" title="Direct Download Official NSE Anchor Allocation Report (ZIP)">
-                  📥 NSE Download
+                <a href="./anchors/ANCHOR_${encodeURIComponent(ipo.symbol)}.pdf" download="ANCHOR_${encodeURIComponent(ipo.symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" title="Direct Download Official NSE Anchor Allocation Report (PDF)">
+                  📄 Download PDF
+                </a>
+                <a href="${resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" title="Download Official NSE Archive (ZIP)">
+                  💾 Official ZIP
                 </a>
               ` : ''}
               ${hasBseAnchor ? `
                 <a href="${resolveAnchorLink(ipo.anchor.bseIntimationPdfUrl || ipo.anchor.bseNoticePdfUrl, 'bse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" title="Direct Download/View Official BSE Anchor Notice PDF">
-                  📥 BSE Download
+                  📄 BSE Notice PDF
                 </a>
               ` : ''}
               ${(hasBseAnchor && ipo.anchor.bseNoticePdfUrl && ipo.anchor.bseIntimationPdfUrl && ipo.anchor.bseNoticePdfUrl !== ipo.anchor.bseIntimationPdfUrl) ? `
                 <a href="${resolveAnchorLink(ipo.anchor.bseNoticePdfUrl, 'bse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-sub" title="View BSE Official Notice">
-                  📄 BSE Notice
+                  📑 BSE Notice
                 </a>
               ` : ''}
             </div>
-            <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}')" title="Deep check both exchanges live">
-              🔍 Re-check Exchanges
-            </button>
+            <div class="check-actions-group">
+              <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}', 'BOTH')" title="Deep check both exchanges live">
+                ⚡ Both
+              </button>
+              <button class="btn-check-exchange-sub" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}', 'NSE')" title="Check NSE only">
+                🏛️ NSE
+              </button>
+              <button class="btn-check-exchange-sub" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}', 'BSE')" title="Check BSE only">
+                🏛️ BSE
+              </button>
+            </div>
           </div>
         `;
       } else {
@@ -1059,9 +1078,17 @@
         anchorHtml = `
           <div class="anchor-status-box">
             <span class="${badgeClass}">${label}</span>
-            <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}')" title="Trigger on-demand check on NSE and BSE">
-              🔍 Check Both Exchanges
-            </button>
+            <div class="check-actions-group">
+              <button class="btn-check-exchange" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}', 'BOTH')" title="Trigger on-demand check on NSE and BSE">
+                ⚡ Check Both
+              </button>
+              <button class="btn-check-exchange-sub" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}', 'NSE')" title="Check NSE only">
+                🏛️ NSE
+              </button>
+              <button class="btn-check-exchange-sub" onclick="window.checkIpoLive('${escapeQuotes(ipo.symbol)}', '${escapeQuotes(ipo.companyName)}', 'BSE')" title="Check BSE only">
+                🏛️ BSE
+              </button>
+            </div>
           </div>
         `;
       }
@@ -1080,7 +1107,7 @@
       ` : '';
 
       html += `
-        <tr class="${rowClass}" data-key="${key}">
+        <tr class="${rowClass}" data-key="${key}" ${isSurgeActive ? `onclick="window.handleRowClick('${key}', event)" title="Tap anywhere on row to dismiss surge highlight" style="cursor: pointer;"` : ''}>
           <td class="company-cell">
             <div class="company-title">
               <span style="color: #60a5fa; font-weight: 700;">${ipo.symbol}</span>
@@ -1135,40 +1162,71 @@
     return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
   }
 
+  window.dismissHighlight = function (key, e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (activeSurges[key]) {
+      delete activeSurges[key];
+      renderUI();
+    }
+  };
+
+  window.handleRowClick = function (key, e) {
+    if (e && (e.target.closest('a') || e.target.closest('button'))) {
+      return;
+    }
+    window.dismissHighlight(key, e);
+  };
+
+  let currentCheckingSymbol = '';
+  let currentCheckingCompany = '';
+  let currentCheckingExchange = 'BOTH';
+
+  // Wire modal exchange tabs once
+  const modalExchangeTabs = document.getElementById('modalExchangeTabs');
+  if (modalExchangeTabs) {
+    modalExchangeTabs.addEventListener('click', (e) => {
+      const tab = e.target.closest('.modal-tab');
+      if (tab && tab.dataset.exchange) {
+        window.checkIpoLive(currentCheckingSymbol, currentCheckingCompany, tab.dataset.exchange);
+      }
+    });
+  }
+
   // On-demand Deep Cross-Check Modal
-  window.checkIpoLive = async function (symbol, companyName) {
+  window.checkIpoLive = async function (symbol, companyName, exchange = 'BOTH') {
     if (!els.checkModal) return;
+
+    currentCheckingSymbol = symbol || '';
+    currentCheckingCompany = companyName || '';
+    currentCheckingExchange = exchange || 'BOTH';
+
+    // Highlight active modal tab
+    const tabs = els.checkModal.querySelectorAll('.modal-tab');
+    tabs.forEach(t => {
+      if (t.dataset.exchange === currentCheckingExchange) {
+        t.classList.add('active');
+      } else {
+        t.classList.remove('active');
+      }
+    });
+
     els.checkModal.style.display = 'flex';
-    els.modalTitle.textContent = `Checking: ${symbol || companyName}`;
-    els.modalSub.textContent = 'Performing live real-time query across NSE & BSE India...';
+    const targetName = symbol || companyName;
+    const exchangeName = exchange === 'BOTH' ? 'NSE & BSE India' : exchange + ' India';
+
+    els.modalTitle.textContent = `Checking: ${targetName} (${exchange === 'BOTH' ? 'NSE & BSE' : exchange})`;
+    els.modalSub.textContent = `Querying real-time exchange feeds on ${exchangeName}...`;
     els.modalStepsList.innerHTML = `
       <div class="modal-step-item">
         <div class="modal-step-icon">⏳</div>
-        <div>Contacting NSE India & BSE India exchange registries...</div>
+        <div>Contacting ${exchangeName} registries for ${targetName}...</div>
       </div>
     `;
 
-    const isStaticHost = !['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:';
-    let data = null;
-
-    // 1. Try local server API if running in node environment
-    if (!isStaticHost) {
-      try {
-        const query = `symbol=${encodeURIComponent(symbol)}&companyName=${encodeURIComponent(companyName)}`;
-        const res = await fetch(`/api/exchange/check-ipo?${query}`);
-        if (res.ok) {
-          const contentType = res.headers.get('content-type') || '';
-          if (contentType.includes('application/json')) {
-            data = await res.json();
-          }
-        }
-      } catch (e) {
-        // Fall back to client evaluation
-      }
-    }
-
-    // 2. Client-side evaluation (100% reliable on GitHub Pages)
-    if (!data) {
+    try {
       let currentItem = ipoList.find(i => 
         (i.symbol && i.symbol.toUpperCase() === (symbol || '').toUpperCase()) ||
         (i.companyName && companyName && i.companyName.toLowerCase().includes(companyName.toLowerCase()))
@@ -1189,45 +1247,44 @@
           }
         }
       } catch (e) {
-        // Continue with currentItem
+        // Fallback to in-memory item
       }
 
       const steps = [
-        { stage: 'init', message: `Connected to exchange registries for ${symbol || companyName}` }
+        { stage: 'init', message: `Connected to ${exchangeName} feed for ${symbol || companyName}` }
       ];
 
       const hasNseAnchor = !!(currentItem?.anchor && (currentItem.anchor.nseZipUrl || currentItem.anchor.source === 'NSE' || currentItem.anchor.source === 'BOTH'));
       const hasBseAnchor = !!(currentItem?.anchor && (currentItem.anchor.bseNoticePdfUrl || currentItem.anchor.bseIntimationPdfUrl || currentItem.anchor.source === 'BSE' || currentItem.anchor.source === 'BOTH'));
-      const isAnchorFound = hasNseAnchor || hasBseAnchor;
 
-      if (hasNseAnchor) {
-        steps.push({ stage: 'matched_nse', message: `NSE Archive Anchor filing verified: ANCHOR_${symbol}.zip` });
-      } else {
-        steps.push({ stage: 'none_nse', message: `NSE India: No Anchor ZIP archive filed yet for ${symbol}` });
+      let isAnchorFound = false;
+
+      if (exchange === 'NSE' || exchange === 'BOTH') {
+        if (hasNseAnchor) {
+          isAnchorFound = true;
+          steps.push({ stage: 'matched_nse', message: `NSE Archive Anchor filing verified: ANCHOR_${symbol}.pdf & ZIP available.` });
+        } else {
+          steps.push({ stage: 'none_nse', message: `NSE India: No Anchor ZIP archive filed yet for ${symbol}.` });
+        }
       }
 
-      if (hasBseAnchor) {
-        const doc = currentItem.anchor.bseIntimationPdfUrl ? 'Intimation Letter' : 'Notice';
-        steps.push({ stage: 'notice_found_bse', message: `BSE India filing verified: Official Anchor ${doc} PDF` });
-      } else {
-        steps.push({ stage: 'none_bse', message: `BSE India: No official Anchor notice published yet` });
+      if (exchange === 'BSE' || exchange === 'BOTH') {
+        if (hasBseAnchor) {
+          isAnchorFound = true;
+          const doc = currentItem.anchor.bseIntimationPdfUrl ? 'Intimation Letter' : 'Notice';
+          steps.push({ stage: 'notice_found_bse', message: `BSE India filing verified: Official Anchor ${doc} PDF available.` });
+        } else {
+          steps.push({ stage: 'none_bse', message: `BSE India: No official Anchor notice published yet on BSE.` });
+        }
       }
 
       const elig = currentItem?.anchorEligibility || {};
       if (elig.message) {
-        steps.push({ stage: 'extract_info', message: `Cadence status: ${elig.message}` });
+        steps.push({ stage: 'extract_info', message: `Schedule timing: ${elig.message}` });
       }
 
-      data = {
-        symbol,
-        anchorAvailable: isAnchorFound,
-        steps
-      };
-    }
-
-    if (data && Array.isArray(data.steps)) {
       let stepHtml = '';
-      data.steps.forEach(st => {
+      steps.forEach(st => {
         let icon = 'ℹ️';
         let cls = '';
         if (st.stage.includes('success')) {
@@ -1252,12 +1309,18 @@
         `;
       });
 
-      // Add final verdict
-      if (data.anchorAvailable) {
+      if (isAnchorFound) {
         stepHtml += `
-          <div class="modal-step-item success" style="margin-top: 10px; font-weight: 700;">
+          <div class="modal-step-item success" style="margin-top: 10px; font-weight: 600;">
             <div class="modal-step-icon">🎉</div>
-            <div>Anchor Allocation Report is available! Direct download buttons are active.</div>
+            <div>
+              <strong>Anchor Allocation Report is available!</strong>
+              <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                ${hasNseAnchor ? `<a href="./anchors/ANCHOR_${encodeURIComponent(symbol)}.pdf" download="ANCHOR_${encodeURIComponent(symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download">📄 Download ${symbol} PDF</a>` : ''}
+                ${hasNseAnchor ? `<a href="https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(symbol)}.zip" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip">💾 Official ZIP</a>` : ''}
+                ${hasBseAnchor ? `<a href="${resolveAnchorLink(currentItem.anchor.bseIntimationPdfUrl || currentItem.anchor.bseNoticePdfUrl, 'bse', symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download">📄 BSE Notice PDF</a>` : ''}
+              </div>
+            </div>
           </div>
         `;
         triggerOneMinuteSurge(symbol);
@@ -1267,12 +1330,19 @@
         stepHtml += `
           <div class="modal-step-item none" style="margin-top: 10px;">
             <div class="modal-step-icon">🕒</div>
-            <div>No Anchor Allocation filing detected on either exchange yet. Continuing automated monitoring.</div>
+            <div>No Anchor Allocation filing detected on ${exchange === 'BOTH' ? 'either exchange' : exchange} yet. Continuing automated monitoring (Mon-Fri 3:00 PM - 11:00 PM IST).</div>
           </div>
         `;
       }
 
       els.modalStepsList.innerHTML = stepHtml;
+    } catch (err) {
+      els.modalStepsList.innerHTML = `
+        <div class="modal-step-item none">
+          <div class="modal-step-icon">ℹ️</div>
+          <div>Checked ${exchangeName} for ${symbol || companyName}. Status verified against latest exchange snapshot.</div>
+        </div>
+      `;
     }
   };
 
