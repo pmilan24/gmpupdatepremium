@@ -1,9 +1,13 @@
-// sync-subscription-api.js - Automated Subscription Data Sync to Backend API
-// Runs Monday - Friday between 9:55 AM and 6:00 PM IST every 1-2 minutes.
-// Supports multi-proxy scraping, symbol matching, and verbose test logging.
+// sync-subscription-api.js - Automated Subscription Data Sync to Backend API & GitHub Pages
+// Fully automated with Indian Time (IST) schedule:
+// - 09:55 AM to 05:00 PM IST: 1-minute live sync
+// - 05:00 PM to 06:00 PM IST: 10-minute closing tally
+// - After 06:00 PM IST & Weekends: Sleeps until next market session
+// No browser or website opening required.
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const SOURCES = require('./sources');
 const { parseHtmlSubscription, fetchLiveSubscription } = require('./fetch-subscription');
 const { proxyRotator } = require('./proxy-rotator');
@@ -22,54 +26,32 @@ if (fs.existsSync(envPath)) {
   } catch (e) {}
 }
 
-// --- Configuration ---
-const rawIpoListUrl = (SOURCES.BACKEND_IPO_LIST_URL || process.env.BACKEND_IPO_LIST_URL || '').trim();
-const rawUpdateSubUrl = (SOURCES.BACKEND_UPDATE_SUB_URL || process.env.BACKEND_UPDATE_SUB_URL || '').trim();
-
-const CONFIG = {
-  // Backend endpoints - strictly from SOURCES / env
-  IPO_LIST_URL: rawIpoListUrl ? (rawIpoListUrl.endsWith('/') || rawIpoListUrl.includes('?') ? rawIpoListUrl : `${rawIpoListUrl}/`) : '',
-  UPDATE_SUB_URL: rawUpdateSubUrl.replace(/\/+$/, ''),
-  
-  // Auth Token (override via .env BACKEND_API_TOKEN or CLI --token, otherwise dynamically fetched)
-  AUTH_TOKEN: SOURCES.BACKEND_API_TOKEN || process.env.BACKEND_API_TOKEN || '',
-  AUTH_HEADER_NAME: process.env.BACKEND_AUTH_HEADER || 'Authorization',
-  
-  // Schedule (IST = UTC + 5:30)
-  START_HOUR: 9,
-  START_MINUTE: 55,
-  END_HOUR: 18,
-  END_MINUTE: 0,
-  POLL_INTERVAL_SEC: parseInt(process.env.POLL_INTERVAL_SEC, 10) || 60, // 1 minute default
-  IPO_LIST_CACHE_TTL_MS: 15 * 60 * 1000, // Refresh backend IPO list every 15 mins
-  
-  // Logging
-  LOG_FILE: path.join(__dirname, 'subscription-sync.log'),
-  SNAPSHOT_FILE: path.join(__dirname, 'subscription-data.json')
-};
-
 // Parse CLI flags
 const args = process.argv.slice(2);
 const IS_FORCE = args.includes('--force');
 const RUN_ONCE = args.includes('--once');
+const IS_VERBOSE = args.includes('--verbose') || process.env.DEBUG === 'true';
+
+const rawIpoListUrl = (SOURCES.BACKEND_IPO_LIST_URL || process.env.BACKEND_IPO_LIST_URL || '').trim();
+const rawUpdateSubUrl = (SOURCES.BACKEND_UPDATE_SUB_URL || process.env.BACKEND_UPDATE_SUB_URL || '').trim();
+
+// --- Configuration ---
+const CONFIG = {
+  IPO_LIST_URL: rawIpoListUrl ? (rawIpoListUrl.endsWith('/') || rawIpoListUrl.includes('?') ? rawIpoListUrl : `${rawIpoListUrl}/`) : '',
+  UPDATE_SUB_URL: rawUpdateSubUrl.replace(/\/+$/, ''),
+  AUTH_TOKEN: SOURCES.BACKEND_API_TOKEN || process.env.BACKEND_API_TOKEN || '',
+  AUTH_HEADER_NAME: process.env.BACKEND_AUTH_HEADER || 'Authorization',
+  IPO_LIST_CACHE_TTL_MS: 15 * 60 * 1000,
+  LOG_FILE: path.join(__dirname, 'subscription-sync.log'),
+  SNAPSHOT_FILE: path.join(__dirname, 'subscription-data.json')
+};
+
 const tokenArgIndex = args.indexOf('--token');
 if (tokenArgIndex !== -1 && args[tokenArgIndex + 1]) {
   CONFIG.AUTH_TOKEN = args[tokenArgIndex + 1].trim();
 }
 
-// User-Agent Pool for proxy rotation
-const USER_AGENTS = [
-  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.6367.82 Mobile Safari/537.36'
-];
-
-function getRandomUserAgent() {
-  return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-}
-
-// --- Logging Utilities ---
+// --- Logging Utilities (Clean, Compact, Auto-Pruned) ---
 function log(msg, level = 'INFO') {
   const istStr = new Intl.DateTimeFormat('en-IN', {
     timeZone: 'Asia/Kolkata',
@@ -82,17 +64,34 @@ function log(msg, level = 'INFO') {
     hour12: true
   }).format(new Date());
 
-  const prefix = `[${istStr} IST] [${level}]`;
-  const consoleMsg = `${prefix} ${msg}`;
+  const consoleMsg = `[${istStr} IST] [${level}] ${msg}`;
   console.log(consoleMsg);
 
   try {
     fs.appendFileSync(CONFIG.LOG_FILE, consoleMsg + '\n', 'utf8');
+
+    // Keep log file bounded to last 200 lines to prevent disk bloat
+    if (Math.random() < 0.05) {
+      pruneLogFile();
+    }
   } catch (e) {}
 }
 
-// --- IST Schedule Checker ---
-function isMarketOpenNow() {
+function pruneLogFile() {
+  try {
+    if (fs.existsSync(CONFIG.LOG_FILE)) {
+      const content = fs.readFileSync(CONFIG.LOG_FILE, 'utf8');
+      const lines = content.split('\n').filter(l => l.trim().length > 0);
+      if (lines.length > 250) {
+        const kept = lines.slice(-200);
+        fs.writeFileSync(CONFIG.LOG_FILE, kept.join('\n') + '\n', 'utf8');
+      }
+    }
+  } catch (e) {}
+}
+
+// --- Adaptive Indian Time (IST) Schedule Checker ---
+function getMarketScheduleStatus() {
   const now = new Date();
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Kolkata',
@@ -112,36 +111,66 @@ function isMarketOpenNow() {
     if (p.type === 'minute') minute = parseInt(p.value, 10);
   }
 
-  // Monday to Friday only
+  // Weekends (Saturday & Sunday): Market closed
   if (['Sat', 'Sun'].includes(day)) {
-    return { open: false, reason: `Weekend (${day})` };
+    return {
+      open: false,
+      intervalSec: 15 * 60, // Check every 15m on weekends
+      reason: `Weekend (${day}) - Market closed`
+    };
   }
 
   const currentMinutes = hour * 60 + minute;
-  const startMinutes = CONFIG.START_HOUR * 60 + CONFIG.START_MINUTE; // 9:55 AM = 595
-  const endMinutes = CONFIG.END_HOUR * 60 + CONFIG.END_MINUTE;       // 6:00 PM = 1080
+  const startMinutes = 9 * 60 + 55; // 09:55 AM IST
+  const peakEndMinutes = 17 * 60;   // 05:00 PM IST
+  const closeMinutes = 18 * 60;     // 06:00 PM IST
 
+  // Pre-market (Before 09:55 AM IST)
   if (currentMinutes < startMinutes) {
-    return { open: false, reason: `Before market start (Opens at 09:55 AM IST, currently ${hour}:${String(minute).padStart(2, '0')})` };
-  }
-  if (currentMinutes > endMinutes) {
-    return { open: false, reason: `After market close (Closed at 06:00 PM IST, currently ${hour}:${String(minute).padStart(2, '0')})` };
+    return {
+      open: false,
+      intervalSec: 5 * 60,
+      reason: `Pre-market (Opens at 09:55 AM IST, current: ${hour}:${String(minute).padStart(2, '0')})`
+    };
   }
 
-  return { open: true, reason: 'Market hours active (09:55 AM - 06:00 PM IST)' };
+  // Post-market (After 06:00 PM IST)
+  if (currentMinutes > closeMinutes) {
+    return {
+      open: false,
+      intervalSec: 15 * 60,
+      reason: `Post-market (Closed at 06:00 PM IST, current: ${hour}:${String(minute).padStart(2, '0')})`
+    };
+  }
+
+  // Active Bidding Session (09:55 AM - 05:00 PM IST): 1-minute interval
+  if (currentMinutes <= peakEndMinutes) {
+    return {
+      open: true,
+      phase: 'LIVE_TRADING',
+      intervalSec: 60, // 1 minute
+      reason: 'Active Bidding Session (09:55 AM - 05:00 PM IST) [Cadence: 1 min]'
+    };
+  }
+
+  // Final Tally & Closing Window (05:00 PM - 06:00 PM IST): 10-minute interval
+  return {
+    open: true,
+    phase: 'CLOSING_TALLY',
+    intervalSec: 10 * 60, // 10 minutes
+    reason: 'Final Closing Tally (05:00 PM - 06:00 PM IST) [Cadence: 10 min]'
+  };
 }
 
-// --- Multi-Proxy Scraper for Subscription Data ---
+// --- Multi-Proxy Scraper ---
 async function fetchSubscriptionWithProxyRotation() {
-  log('[PROXY] Fetching live subscription data with IP rotation & blacklist check...', 'INFO');
   try {
     const companies = await fetchLiveSubscription();
     if (companies && companies.length > 0) {
-      log(`[PROXY] ✅ Successfully retrieved ${companies.length} companies with active proxy.`, 'SUCCESS');
       return companies;
     }
   } catch (err) {
-    log(`[PROXY] ❌ Error during proxy fetch: ${err.message}`, 'ERROR');
+    log(`[PROXY] ❌ Scrape error: ${err.message}`, 'WARN');
   }
   return [];
 }
@@ -152,17 +181,15 @@ let lastIpoListFetchTime = 0;
 
 async function getBackendIpoList(activeToken) {
   if (!CONFIG.IPO_LIST_URL) {
-    log('[API] ⚠️ BACKEND_IPO_LIST_URL is not configured. Please set in GitHub Secrets or .env.', 'WARN');
+    log('[API] ⚠️ BACKEND_IPO_LIST_URL not configured. Check GitHub Secrets or .env.', 'WARN');
     return cachedIpoList || [];
   }
 
   const now = Date.now();
   if (cachedIpoList && (now - lastIpoListFetchTime < CONFIG.IPO_LIST_CACHE_TTL_MS)) {
-    log(`[CACHE] Using cached backend IPO list (${cachedIpoList.length} items)`, 'DEBUG');
     return cachedIpoList;
   }
 
-  log('[API] Fetching live & upcoming IPO list from backend...', 'INFO');
   try {
     const headers = {
       'Accept': 'application/json',
@@ -180,7 +207,7 @@ async function getBackendIpoList(activeToken) {
     });
 
     if (!res.ok) {
-      log(`[API] ❌ Failed to fetch IPO list: HTTP ${res.status} ${res.statusText}`, 'ERROR');
+      log(`[API] ❌ Failed to fetch backend IPO list: HTTP ${res.status}`, 'WARN');
       return cachedIpoList || [];
     }
 
@@ -188,58 +215,82 @@ async function getBackendIpoList(activeToken) {
     if (json && json.data && Array.isArray(json.data)) {
       cachedIpoList = json.data;
       lastIpoListFetchTime = now;
-      log(`[API] ✅ Successfully fetched ${cachedIpoList.length} IPOs from backend!`, 'SUCCESS');
       return cachedIpoList;
     }
   } catch (err) {
-    log(`[API] ❌ Error fetching IPO list: ${err.message}`, 'ERROR');
+    log(`[API] ❌ Backend IPO list error: ${err.message}`, 'WARN');
   }
 
   return cachedIpoList || [];
 }
 
-// --- Company Name to Symbol Normalizer & Matcher ---
-function normalizeName(str) {
-  if (!str) return '';
+// --- Smart, Resilient IPO Matching Engine ---
+function getTokenWords(str) {
+  if (!str) return [];
+  const noise = new Set([
+    'limited', 'ltd', 'private', 'pvt', 'india', 'solutions', 'solution',
+    'services', 'service', 'technologies', 'technology', 'tech', 'enterprises',
+    'enterprise', 'industries', 'industry', 'international', 'infra',
+    'infrastructure', 'holdings', 'holding', 'corporation', 'corp', 'group',
+    'company', 'co', 'mainboard', 'sme', 'nse', 'bse'
+  ]);
+
   return str
     .toLowerCase()
-    .replace(/\s*\((?:mainboard|main board|nse sme|bse sme|sme)\s*\)/gi, '')
-    .replace(/\b(limited|ltd|india|healthcare|hospital|seeds|services|ayurveda|agritech)\b/gi, '')
-    .replace(/[^a-z0-9]/g, '')
-    .trim();
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 1 && !noise.has(w));
+}
+
+function calculateSimilarity(str1, str2) {
+  const words1 = getTokenWords(str1);
+  const words2 = getTokenWords(str2);
+  if (words1.length === 0 || words2.length === 0) return 0;
+
+  let common = 0;
+  for (const w1 of words1) {
+    if (words2.some(w2 => w1 === w2 || (w1.length >= 4 && (w2.includes(w1) || w1.includes(w2))))) {
+      common++;
+    }
+  }
+  return (2 * common) / (words1.length + words2.length);
 }
 
 function findMatchingIpo(scrapedCompany, backendIpoList) {
-  const scrapedRaw = scrapedCompany.companyName || '';
-  const scrapedNorm = normalizeName(scrapedRaw);
-  if (!scrapedNorm || scrapedNorm.length < 3) return null;
+  const scrapedName = scrapedCompany.companyName || '';
+  if (!scrapedName || scrapedName.length < 3) return null;
+
+  let bestMatch = null;
+  let highestScore = 0;
 
   for (const ipo of backendIpoList) {
-    const backendRaw = ipo.company_name || '';
+    const backendName = ipo.company_name || '';
     const backendSymbol = (ipo.symbol || '').toLowerCase().trim();
-    const backendNorm = normalizeName(backendRaw);
 
-    // 1. Direct symbol match (only if symbol length >= 3 and not generic)
-    if (backendSymbol && backendSymbol.length >= 3 && scrapedNorm.includes(backendSymbol)) {
-      return ipo;
-    }
-
-    // 2. Normalized name match (require at least 4 characters to prevent false positives)
-    if (backendNorm && backendNorm.length >= 4) {
-      if (scrapedNorm.includes(backendNorm) || backendNorm.includes(scrapedNorm)) {
+    // 1. Direct symbol containment in scraped company name
+    if (backendSymbol && backendSymbol.length >= 3) {
+      const lowerScraped = scrapedName.toLowerCase();
+      if (lowerScraped.includes(backendSymbol)) {
         return ipo;
       }
     }
+
+    // 2. Token overlap similarity
+    const score = calculateSimilarity(scrapedName, backendName);
+    if (score > highestScore && score >= 0.5) {
+      highestScore = score;
+      bestMatch = ipo;
+    }
   }
 
-  return null;
+  return bestMatch;
 }
 
 // Map category strings for Subscription Details (No. of Shares)
 function mapCategorySub(raw) {
   if (!raw) return null;
   const c = raw.trim();
-  if (/^total$/i.test(c)) return null; // Never pass Total
+  if (/^total$/i.test(c)) return null; // Exclude Total
   if (/^qib/i.test(c)) return 'QIBs';
   if (/^(hnis?\s*10\+|bhni|b-hni)/i.test(c)) return 'HNIs 10+';
   if (/^(hnis?\s*2\+|shni|s-hni)/i.test(c)) return 'HNIs 2+';
@@ -253,7 +304,7 @@ function mapCategorySub(raw) {
 function mapCategoryApp(raw) {
   if (!raw) return null;
   const c = raw.trim();
-  if (/^total$/i.test(c)) return null; // Never pass Total
+  if (/^total$/i.test(c)) return null; // Exclude Total
   if (/10l\+/i.test(c)) return 'HNIs (10L+)';
   if (/(2-10l|3-10l)/i.test(c)) return 'HNIs (2-10L)';
   if (/^(retail|individual|rii)/i.test(c)) return 'Retail';
@@ -261,7 +312,6 @@ function mapCategoryApp(raw) {
   return null;
 }
 
-// --- Format Scraped Data to User's Exact Backend Payload ---
 function formatPayloadForBackend(company) {
   const subscription = [];
   if (Array.isArray(company.sharesBreakup)) {
@@ -291,19 +341,16 @@ function formatPayloadForBackend(company) {
     }
   }
 
-  return {
-    subscription,
-    application_wise_breakup
-  };
+  return { subscription, application_wise_breakup };
 }
 
 // --- Send PUT Update to Backend API ---
 async function pushSubscriptionUpdate(symbol, payload, activeToken) {
   if (!CONFIG.UPDATE_SUB_URL) {
-    return { success: false, error: 'BACKEND_UPDATE_SUB_URL is not configured.' };
+    return { success: false, error: 'BACKEND_UPDATE_SUB_URL not configured' };
   }
   const url = `${CONFIG.UPDATE_SUB_URL.replace(/\/+$/, '')}/${encodeURIComponent(symbol)}/`;
-  
+
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -312,11 +359,7 @@ async function pushSubscriptionUpdate(symbol, payload, activeToken) {
 
   const token = activeToken || CONFIG.AUTH_TOKEN;
   if (token) {
-    if (token.toLowerCase().startsWith('bearer ') || token.toLowerCase().startsWith('token ')) {
-      headers[CONFIG.AUTH_HEADER_NAME] = token;
-    } else {
-      headers[CONFIG.AUTH_HEADER_NAME] = `Bearer ${token}`;
-    }
+    headers[CONFIG.AUTH_HEADER_NAME] = token.toLowerCase().startsWith('bearer ') ? token : `Bearer ${token}`;
   }
 
   try {
@@ -345,29 +388,14 @@ async function pushSubscriptionUpdate(symbol, payload, activeToken) {
 
 // --- Main Execution Cycle ---
 async function runSyncCycle() {
-  log('====================================================', 'INFO');
-  log('🚀 Starting Subscription Sync & API Push Cycle...', 'INFO');
-
-  // 1. Schedule check
-  if (!IS_FORCE) {
-    const schedule = isMarketOpenNow();
-    if (!schedule.open) {
-      log(`[SCHEDULE] ⏸️ ${schedule.reason}. Sleeping until next active window.`, 'INFO');
-      log('Use --force flag to bypass schedule and run immediately for testing.', 'INFO');
-      return;
-    }
-  } else {
-    log('[SCHEDULE] ⚡ Force flag active: Bypassing market hour checks.', 'INFO');
-  }
-
-  // 2. Fetch fresh subscription data via proxy rotation
+  // 1. Fetch fresh subscription data via proxy rotation
   const companies = await fetchSubscriptionWithProxyRotation();
   if (!companies || companies.length === 0) {
-    log('⚠️ No subscription data could be retrieved this cycle. Preserving previous state.', 'WARN');
+    log('⚠️ No subscription data scraped this cycle.', 'WARN');
     return;
   }
 
-  // Save local JSON snapshot for the website UI
+  // 2. Save local JSON snapshot & auto-push to GitHub Pages if changed
   try {
     const result = {
       lastUpdated: new Date().toISOString(),
@@ -375,7 +403,14 @@ async function runSyncCycle() {
       companies
     };
     fs.writeFileSync(CONFIG.SNAPSHOT_FILE, JSON.stringify(result, null, 2));
-    log(`[SNAPSHOT] Saved ${companies.length} companies to ${CONFIG.SNAPSHOT_FILE}`, 'INFO');
+
+    try {
+      const gitStatus = execSync('git status --porcelain subscription-data.json', { encoding: 'utf8' }).trim();
+      if (gitStatus) {
+        execSync('git add subscription-data.json && git commit -m "chore(subscription): auto-sync live snapshot" && git push origin main', { stdio: 'pipe' });
+        log('[GITHUB] 🚀 Auto-pushed fresh snapshot to GitHub Pages!', 'SUCCESS');
+      }
+    } catch (gitErr) {}
   } catch (e) {}
 
   // 3. Resolve active Bearer token dynamically
@@ -391,81 +426,77 @@ async function runSyncCycle() {
   // 4. Get backend IPO list
   const backendIpos = await getBackendIpoList(activeToken);
   if (!backendIpos || backendIpos.length === 0) {
-    log('⚠️ Backend IPO list is empty. Cannot match symbols to send updates.', 'WARN');
+    log('⚠️ Backend IPO list is empty. Waiting for live IPOs.', 'WARN');
     return;
   }
 
   // 5. Match companies and send PUT requests
-  let matchedCount = 0;
   let pushedCount = 0;
 
   for (const comp of companies) {
     const matchedIpo = findMatchingIpo(comp, backendIpos);
-    if (!matchedIpo) {
-      log(`[MATCH] No backend match found for: "${comp.companyName}"`, 'DEBUG');
-      continue;
-    }
+    if (!matchedIpo) continue;
 
-    matchedCount++;
     const symbol = matchedIpo.symbol;
     const payload = formatPayloadForBackend(comp);
 
-    log('----------------------------------------------------', 'INFO');
-    log(`🏢 [IPO MATCH] "${comp.companyName}" -> Symbol: [${symbol}] (Backend ID: ${matchedIpo.id})`, 'INFO');
-    
-    // Log RAW GET DATA from source
-    log(`📥 [RAW GET DATA - SHARES BREAKUP ARRAY]:\n${JSON.stringify(comp.sharesBreakup, null, 2)}`, 'INFO');
-    log(`📥 [RAW GET DATA - APPLICATION BREAKUP ARRAY]:\n${JSON.stringify(comp.applicationsBreakup, null, 2)}`, 'INFO');
+    if (IS_VERBOSE) {
+      log(`[MATCH] "${comp.companyName}" -> [${symbol}]`, 'DEBUG');
+      log(`[PAYLOAD] ${JSON.stringify(payload)}`, 'DEBUG');
+    }
 
-    // Log PASS DATA to Backend API
-    log(`📤 [PASS DATA - TO BACKEND API (PUT /ipo/update-subscription-data/${symbol}/)]:\n${JSON.stringify(payload, null, 2)}`, 'INFO');
-
-    // Check if auth token is available
     if (!activeToken) {
-      log(`[AUTH] ⚠️ No active auth token available. Skipping actual PUT request.`, 'WARN');
-      log('----------------------------------------------------', 'INFO');
+      log(`[AUTH] ⚠️ No active token for [${symbol}]. Skipping PUT.`, 'WARN');
       continue;
     }
 
-    // Push PUT request
     const result = await pushSubscriptionUpdate(symbol, payload, activeToken);
     if (result.success) {
       pushedCount++;
-      log(`✅ [API RESULT] [${symbol}] Successfully Updated! Status: ${result.status} | Response: ${result.message}`, 'SUCCESS');
+      const subTimes = comp.summary?.totalTimes || 0;
+      const retailTimes = comp.summary?.retailTimes || 0;
+      const hniTimes = comp.summary?.hniTimes || 0;
+      log(`[SYNC] ✅ [${symbol}] "${comp.companyName}" -> Subscribed: ${subTimes}x (Retail: ${retailTimes}x, HNIs: ${hniTimes}x) | HTTP ${result.status}`, 'SUCCESS');
     } else {
-      log(`❌ [API RESULT] [${symbol}] Update Failed! Status: ${result.status} | Error: ${result.error}`, 'WARN');
+      log(`[SYNC] ❌ [${symbol}] Update Failed: HTTP ${result.status} | ${result.error}`, 'WARN');
     }
-    log('----------------------------------------------------', 'INFO');
 
-    // Delay 500ms between PUT calls to be gentle on server
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 400));
   }
 
-  log(`[SUMMARY] Finished cycle: ${companies.length} scraped, ${matchedCount} matched, ${pushedCount} successfully pushed.`, 'INFO');
-  log('====================================================', 'INFO');
+  if (pushedCount === 0) {
+    log(`[CYCLE] Scraped ${companies.length} IPOs. None matched active backend list.`, 'INFO');
+  }
 }
 
-// --- Continuous Scheduler / Daemon Loop ---
+// --- Automated Scheduler Loop ---
 async function startDaemon() {
-  log(`Starting Subscription Sync Daemon (Interval: ${CONFIG.POLL_INTERVAL_SEC}s, Hours: 09:55 AM - 06:00 PM IST Mon-Fri)`, 'INFO');
-  log(`Log file: ${CONFIG.LOG_FILE}`, 'INFO');
+  log('🤖 Starting Automated Subscription Sync Daemon (Mon-Fri IST)', 'INFO');
 
-  // Initial immediate run
-  await runSyncCycle();
+  async function nextLoop() {
+    let nextWaitSec = 60;
+    try {
+      const schedule = getMarketScheduleStatus();
+      nextWaitSec = schedule.intervalSec;
 
-  if (RUN_ONCE) {
-    log('Single run complete (--once flag). Exiting.', 'INFO');
-    process.exit(0);
+      if (!IS_FORCE && !schedule.open) {
+        log(`[SCHEDULE] ⏸️ ${schedule.reason}. Sleeping for ${Math.round(nextWaitSec / 60)} min.`, 'INFO');
+      } else {
+        await runSyncCycle();
+      }
+    } catch (err) {
+      log(`[DAEMON] Error: ${err.message}`, 'ERROR');
+    }
+
+    if (RUN_ONCE) {
+      log('Single run complete (--once flag). Exiting.', 'INFO');
+      process.exit(0);
+    }
+
+    setTimeout(nextLoop, nextWaitSec * 1000);
   }
 
-  // Recurring loop every POLL_INTERVAL_SEC
-  setInterval(async () => {
-    try {
-      await runSyncCycle();
-    } catch (err) {
-      log(`Unexpected error in sync cycle: ${err.message}`, 'ERROR');
-    }
-  }, CONFIG.POLL_INTERVAL_SEC * 1000);
+  await nextLoop();
 }
 
 if (require.main === module) {
@@ -476,5 +507,5 @@ module.exports = {
   runSyncCycle,
   formatPayloadForBackend,
   findMatchingIpo,
-  isMarketOpenNow
+  getMarketScheduleStatus
 };
