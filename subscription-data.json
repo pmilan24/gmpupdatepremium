@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-22T07:24:48.044Z",
+  "lastUpdated": "2026-09-22T07:25:48.089Z",
   "count": 7,
   "companies": [
     {
@@ -13,8 +13,8 @@
         "sHNI": 1414,
         "bHNI": 6767
       },
-      "lastUpdatedSource": "22-Sep-2026 12:54:14",
-      "totalApplications": 17263,
+      "lastUpdatedSource": "22-Sep-2026 12:55:11",
+      "totalApplications": 17295,
       "summary": {
         "totalTimes": 0.07,
         "qibTimes": 0,
@@ -49,13 +49,13 @@
         {
           "category": "Retail",
           "offered": 16743599,
-          "applied": 2206244,
+          "applied": 2210890,
           "times": 0.13
         },
         {
           "category": "Total",
           "offered": 33487080,
-          "applied": 2394912,
+          "applied": 2399558,
           "times": 0.07
         }
       ],
@@ -69,7 +69,7 @@
         {
           "category": "Retail",
           "reserved": 165778,
-          "applied": 17158,
+          "applied": 17190,
           "times": 0.1
         }
       ],
@@ -125,13 +125,13 @@
         {
           "category": "Retail",
           "offered": 247.81,
-          "applied": 32.65,
+          "applied": 32.72,
           "times": 0.13
         },
         {
           "category": "Total",
           "offered": 495.61,
-          "applied": 35.44,
+          "applied": 35.51,
           "times": 0.07
         }
       ]
@@ -147,7 +147,7 @@
         "sHNI": 6000,
         "bHNI": 20000
       },
-      "lastUpdatedSource": "22-Sep-2026 12:53:02",
+      "lastUpdatedSource": "22-Sep-2026 12:55:02",
       "totalApplications": 0,
       "summary": {
         "totalTimes": 1.12,
@@ -183,13 +183,13 @@
         {
           "category": "Individual",
           "offered": 3568000,
-          "applied": 5100000,
+          "applied": 5108000,
           "times": 1.43
         },
         {
           "category": "Total",
           "offered": 7850000,
-          "applied": 8798000,
+          "applied": 8806000,
           "times": 1.12
         }
       ],
@@ -209,7 +209,7 @@
         {
           "category": "Individual",
           "reserved": 892,
-          "applied": 1275,
+          "applied": 1277,
           "times": 1.43
         }
       ],
@@ -271,13 +271,13 @@
         {
           "category": "Individual",
           "offered": 19.27,
-          "applied": 27.54,
+          "applied": 27.58,
           "times": 1.43
         },
         {
           "category": "Total",
           "offered": 42.39,
-          "applied": 47.51,
+          "applied": 47.55,
           "times": 1.12
         }
       ]
