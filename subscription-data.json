@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-22T10:54:54.609Z",
+  "lastUpdated": "2026-09-22T10:55:54.656Z",
   "count": 7,
   "companies": [
     {
@@ -13,8 +13,8 @@
         "sHNI": 1414,
         "bHNI": 6767
       },
-      "lastUpdatedSource": "22-Sep-2026 16:24:22",
-      "totalApplications": 25698,
+      "lastUpdatedSource": "22-Sep-2026 16:25:14",
+      "totalApplications": 25720,
       "summary": {
         "totalTimes": 0.11,
         "qibTimes": 0,
@@ -49,13 +49,13 @@
         {
           "category": "Retail",
           "offered": 16743599,
-          "applied": 3252503,
+          "applied": 3254624,
           "times": 0.19
         },
         {
           "category": "Total",
           "offered": 33487080,
-          "applied": 3589035,
+          "applied": 3591156,
           "times": 0.11
         }
       ],
@@ -75,7 +75,7 @@
         {
           "category": "Retail",
           "reserved": 165778,
-          "applied": 25526,
+          "applied": 25548,
           "times": 0.15
         }
       ],
@@ -131,13 +131,13 @@
         {
           "category": "Retail",
           "offered": 247.81,
-          "applied": 48.14,
+          "applied": 48.17,
           "times": 0.19
         },
         {
           "category": "Total",
           "offered": 495.61,
-          "applied": 53.12,
+          "applied": 53.15,
           "times": 0.11
         }
       ]
@@ -536,7 +536,7 @@
         "sHNI": 3600,
         "bHNI": 9600
       },
-      "lastUpdatedSource": "22-Sep-2026 16:21:12",
+      "lastUpdatedSource": "22-Sep-2026 16:25:16",
       "totalApplications": 65,
       "summary": {
         "totalTimes": 0.11,
@@ -572,13 +572,13 @@
         {
           "category": "Individual",
           "offered": 832800,
-          "applied": 129600,
+          "applied": 132000,
           "times": 0.16
         },
         {
           "category": "Total",
           "offered": 1663200,
-          "applied": 178800,
+          "applied": 181200,
           "times": 0.11
         }
       ],
