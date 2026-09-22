@@ -107,5 +107,35 @@
     "notifiedAtIST": "22 Sept 2026, 09:39:28 pm IST",
     "notifiedAtEpoch": 1790093369373,
     "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$41eb3aca-ecde-4e51-83f8-eb7326effcad.pdf"
+  },
+  "NSE_ELEVATE": {
+    "symbol": "ELEVATE",
+    "notifiedAtIST": "23 Sept 2026, 12:51:13 am IST",
+    "notifiedAtEpoch": 1790104874568,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_intimation_letter$64ac0bda-e41b-4061-b185-0f563c997d29.pdf"
+  },
+  "NSE_ADROITIND": {
+    "symbol": "ADROITIND",
+    "notifiedAtIST": "23 Sept 2026, 12:51:14 am IST",
+    "notifiedAtEpoch": 1790104876996,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$21b3fdd9-9e86-4d4b-9760-7e639a423fe4.pdf"
+  },
+  "NSE_SWASTIKAIN": {
+    "symbol": "SWASTIKAIN",
+    "notifiedAtIST": "23 Sept 2026, 12:51:16 am IST",
+    "notifiedAtEpoch": 1790104878098,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation$e1648c5b-62ee-4bca-808b-e2fd3438ec0b.pdf"
+  },
+  "NSE_ARMEE": {
+    "symbol": "ARMEE",
+    "notifiedAtIST": "23 Sept 2026, 12:51:18 am IST",
+    "notifiedAtEpoch": 1790104879635,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$8ce6135d-87d4-4ac2-aebb-6dc60dcf444d.pdf"
+  },
+  "NSE_POOJALOGIS": {
+    "symbol": "POOJALOGIS",
+    "notifiedAtIST": "23 Sept 2026, 12:51:19 am IST",
+    "notifiedAtEpoch": 1790104880639,
+    "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_POOJALOGIS.zip"
   }
 }
