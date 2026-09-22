@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-22T09:40:52.281Z",
+  "lastUpdated": "2026-09-22T09:41:52.308Z",
   "count": 7,
   "companies": [
     {
@@ -13,8 +13,8 @@
         "sHNI": 1414,
         "bHNI": 6767
       },
-      "lastUpdatedSource": "22-Sep-2026 15:10:12",
-      "totalApplications": 23533,
+      "lastUpdatedSource": "22-Sep-2026 15:11:13",
+      "totalApplications": 23559,
       "summary": {
         "totalTimes": 0.1,
         "qibTimes": 0,
@@ -49,13 +49,13 @@
         {
           "category": "Retail",
           "offered": 16743599,
-          "applied": 2992832,
+          "applied": 2995357,
           "times": 0.18
         },
         {
           "category": "Total",
           "offered": 33487080,
-          "applied": 3289974,
+          "applied": 3292499,
           "times": 0.1
         }
       ],
@@ -75,7 +75,7 @@
         {
           "category": "Retail",
           "reserved": 165778,
-          "applied": 23374,
+          "applied": 23400,
           "times": 0.14
         }
       ],
@@ -131,13 +131,13 @@
         {
           "category": "Retail",
           "offered": 247.81,
-          "applied": 44.29,
+          "applied": 44.33,
           "times": 0.18
         },
         {
           "category": "Total",
           "offered": 495.61,
-          "applied": 48.69,
+          "applied": 48.73,
           "times": 0.1
         }
       ]
