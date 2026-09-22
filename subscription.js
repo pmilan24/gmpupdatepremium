@@ -285,12 +285,13 @@
     let source = '';
 
     try {
-      const { data: json, source: feedSource } = await window.SubscriptionFeed.readLatest({
+      const { data: json, source: feedSource, warning } = await window.SubscriptionFeed.readLatest({
         pages: window.location.hostname.endsWith('.github.io'), manual: isManual, localUrl: SUBSCRIPTION_URL
       });
       parsedCompanies = json.companies;
       const ageSeconds = Math.max(0, Math.floor((Date.now() - Date.parse(json.lastUpdated)) / 1000));
       source = `${feedSource} · ${ageSeconds < 60 ? 'just now' : Math.floor(ageSeconds / 60) + ' min ago'}`;
+      if (warning) source += ` · ${warning}`;
       if (ageSeconds > 180) source += ' · waiting for next update';
 
       if (!parsedCompanies || parsedCompanies.length === 0) {
@@ -809,6 +810,8 @@
       }
     }
 
+    // Leave headroom within GitHub's anonymous read API quota. Manual refresh stays available.
+    if (window.location.hostname.endsWith('.github.io')) effectiveInterval = Math.max(75, effectiveInterval);
     refreshIntervalSeconds = effectiveInterval;
     secondsRemaining = refreshIntervalSeconds;
     updateCountdownUI();

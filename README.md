@@ -133,9 +133,13 @@ Data is extracted for educational and informational purposes from primary market
 ### Subscription sync and deployment
 
 GitHub Pages is static hosting. The subscription page's Refresh button and timer
-read the newest timestamped snapshot from the repository, with the deployed
-website snapshot as fallback. They do not start a scrape. This avoids waiting for
-a Pages rebuild after every data update. The page displays the snapshot's age.
+read current repository contents through GitHub’s public read API, comparing
+timestamps with raw-file and deployed-site fallbacks. Raw branch URLs alone can
+remain cached for several minutes. They do not start a scrape. This avoids waiting for
+a Pages rebuild after every data update. The page displays the snapshot's age. Pages polls every 75 seconds to leave
+headroom in the anonymous API quota; the backend sync still runs every minute.
+Manual refresh requests current repository contents. If GitHub rate-limits reads,
+the page shows a saved-data warning and respects the API reset time.
 
 `update-subscription.yml` starts a bounded **five-hour Actions session**.
 While running, it fetches direct from `SUB_DASH_URL`, updates the backend API and
