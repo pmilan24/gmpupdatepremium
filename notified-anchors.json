@@ -71,5 +71,11 @@
     "notifiedAtIST": "22 Sept 2026, 01:41:07 am IST",
     "notifiedAtEpoch": 1790021469599,
     "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$029f5575-a9fd-48de-b7ba-b6da4192f049.pdf"
+  },
+  "BSE_SKOFFSETLI": {
+    "symbol": "SKOFFSETLI",
+    "notifiedAtIST": "22 Sept 2026, 07:36:49 pm IST",
+    "notifiedAtEpoch": 1790086010383,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/AnchorIntimationLetter$10caf754-0eb4-451e-8552-a15f1fd23d4f.pdf"
   }
 }
