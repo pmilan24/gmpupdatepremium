@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-22T08:55:50.928Z",
+  "lastUpdated": "2026-09-22T08:56:50.970Z",
   "count": 7,
   "companies": [
     {
@@ -13,8 +13,8 @@
         "sHNI": 1414,
         "bHNI": 6767
       },
-      "lastUpdatedSource": "22-Sep-2026 14:25:15",
-      "totalApplications": 21889,
+      "lastUpdatedSource": "22-Sep-2026 14:26:13",
+      "totalApplications": 21910,
       "summary": {
         "totalTimes": 0.09,
         "qibTimes": 0,
@@ -49,13 +49,13 @@
         {
           "category": "Retail",
           "offered": 16743599,
-          "applied": 2774167,
+          "applied": 2779116,
           "times": 0.17
         },
         {
           "category": "Total",
           "offered": 33487080,
-          "applied": 3021819,
+          "applied": 3026768,
           "times": 0.09
         }
       ],
@@ -75,7 +75,7 @@
         {
           "category": "Retail",
           "reserved": 165778,
-          "applied": 21747,
+          "applied": 21768,
           "times": 0.13
         }
       ],
@@ -131,13 +131,13 @@
         {
           "category": "Retail",
           "offered": 247.81,
-          "applied": 41.06,
+          "applied": 41.13,
           "times": 0.17
         },
         {
           "category": "Total",
           "offered": 495.61,
-          "applied": 44.72,
+          "applied": 44.8,
           "times": 0.09
         }
       ]
@@ -153,7 +153,7 @@
         "sHNI": 6000,
         "bHNI": 20000
       },
-      "lastUpdatedSource": "22-Sep-2026 14:25:02",
+      "lastUpdatedSource": "22-Sep-2026 14:26:02",
       "totalApplications": 0,
       "summary": {
         "totalTimes": 1.26,
@@ -189,13 +189,13 @@
         {
           "category": "Individual",
           "offered": 3568000,
-          "applied": 5788000,
+          "applied": 5792000,
           "times": 1.62
         },
         {
           "category": "Total",
           "offered": 7850000,
-          "applied": 9868000,
+          "applied": 9872000,
           "times": 1.26
         }
       ],
@@ -215,7 +215,7 @@
         {
           "category": "Individual",
           "reserved": 892,
-          "applied": 1447,
+          "applied": 1448,
           "times": 1.62
         }
       ],
@@ -277,13 +277,13 @@
         {
           "category": "Individual",
           "offered": 19.27,
-          "applied": 31.26,
+          "applied": 31.28,
           "times": 1.62
         },
         {
           "category": "Total",
           "offered": 42.39,
-          "applied": 53.29,
+          "applied": 53.31,
           "times": 1.26
         }
       ]
@@ -299,12 +299,12 @@
         "sHNI": 3600,
         "bHNI": 9600
       },
-      "lastUpdatedSource": "22-Sep-2026 14:23:05",
+      "lastUpdatedSource": "22-Sep-2026 14:26:04",
       "totalApplications": 0,
       "summary": {
-        "totalTimes": 48.78,
+        "totalTimes": 49.3,
         "qibTimes": 0.37,
-        "hniTimes": 65.43,
+        "hniTimes": 65.84,
         "retailTimes": 0
       },
       "sharesBreakup": [
@@ -317,32 +317,32 @@
         {
           "category": "HNIs",
           "offered": 417600,
-          "applied": 27325200,
-          "times": 65.43
+          "applied": 27495600,
+          "times": 65.84
         },
         {
           "category": "bHNI",
           "offered": 278400,
-          "applied": 19436400,
-          "times": 69.81
+          "applied": 19562400,
+          "times": 70.27
         },
         {
           "category": "sHNI",
           "offered": 139200,
-          "applied": 7888800,
-          "times": 56.67
+          "applied": 7933200,
+          "times": 56.99
         },
         {
           "category": "Individual",
           "offered": 972000,
-          "applied": 67236000,
-          "times": 69.17
+          "applied": 68068800,
+          "times": 70.03
         },
         {
           "category": "Total",
           "offered": 1942800,
-          "applied": 94767600,
-          "times": 48.78
+          "applied": 95770800,
+          "times": 49.3
         }
       ],
       "applicationsBreakup": [
