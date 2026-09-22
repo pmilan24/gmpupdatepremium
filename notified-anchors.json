@@ -83,5 +83,29 @@
     "notifiedAtIST": "22 Sept 2026, 07:57:45 pm IST",
     "notifiedAtEpoch": 1790087266835,
     "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$8ce6135d-87d4-4ac2-aebb-6dc60dcf444d.pdf"
+  },
+  "BSE_SWASTIKAIN": {
+    "symbol": "SWASTIKAIN",
+    "notifiedAtIST": "22 Sept 2026, 09:39:22 pm IST",
+    "notifiedAtEpoch": 1790093364183,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation$e1648c5b-62ee-4bca-808b-e2fd3438ec0b.pdf"
+  },
+  "BSE_ADROITINDU": {
+    "symbol": "ADROITINDU",
+    "notifiedAtIST": "22 Sept 2026, 09:39:24 pm IST",
+    "notifiedAtEpoch": 1790093366014,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$21b3fdd9-9e86-4d4b-9760-7e639a423fe4.pdf"
+  },
+  "BSE_ELEVATECAM": {
+    "symbol": "ELEVATECAM",
+    "notifiedAtIST": "22 Sept 2026, 09:39:26 pm IST",
+    "notifiedAtEpoch": 1790093368035,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_intimation_letter$64ac0bda-e41b-4061-b185-0f563c997d29.pdf"
+  },
+  "BSE_UNITECFIBR": {
+    "symbol": "UNITECFIBR",
+    "notifiedAtIST": "22 Sept 2026, 09:39:28 pm IST",
+    "notifiedAtEpoch": 1790093369373,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Intimation_Letter$41eb3aca-ecde-4e51-83f8-eb7326effcad.pdf"
   }
 }
