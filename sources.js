@@ -47,11 +47,11 @@ const SOURCES = {
   BSE_API_URL: getSecret('BSE_API_URL', (getSecret('BSE_BASE_URL', defaultBse)).replace('//www.', '//api.') + '/BseIndiaAPI'),
 
   // Secure Backend Credentials & Endpoints (Supplied via GitHub Secrets or .env)
-  AUTH_LOGIN_URL: getSecret('AUTH_LOGIN_URL'),
+  AUTH_LOGIN_URL: getSecret('AUTH_LOGIN_URL', 'https://api.ipo-trend.com/authentication/admin-login/?platform=Android'),
   AUTH_EMAIL: getSecret('AUTH_EMAIL'),
   AUTH_PASSWORD: getSecret('AUTH_PASSWORD'),
-  BACKEND_IPO_LIST_URL: getSecret('BACKEND_IPO_LIST_URL'),
-  BACKEND_UPDATE_SUB_URL: getSecret('BACKEND_UPDATE_SUB_URL'),
+  BACKEND_IPO_LIST_URL: getSecret('BACKEND_IPO_LIST_URL', 'https://api.ipo-trend.com/ipo/live-upcoming-ipo-list/'),
+  BACKEND_UPDATE_SUB_URL: getSecret('BACKEND_UPDATE_SUB_URL', 'https://api.ipo-trend.com/ipo/update-subscription-data/'),
   BACKEND_API_TOKEN: getSecret('BACKEND_API_TOKEN')
 };
 

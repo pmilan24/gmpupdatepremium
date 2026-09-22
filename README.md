@@ -129,3 +129,29 @@ gmpupdatepremium/
 ## ⚠️ Disclaimer
 
 Data is extracted for educational and informational purposes from primary market data feeds. Grey Market Premium (GMP) is an unofficial, informal market estimate and should not be considered investment or financial advice.
+
+### Subscription sync and deployment
+
+GitHub Actions fetches subscription data every **5 minutes** on weekdays from
+09:55–17:00 IST, then every **10 minutes** through 18:00 IST. GitHub may delay
+scheduled jobs. The browser checks the saved snapshot every minute; opening or
+refreshing GitHub Pages does not execute Node.js or trigger the source API.
+Use `node sync-subscription-api.js` on an always-running host for the existing
+one-minute daemon schedule. Use `--force --once` for a manual live sync.
+
+`update-subscription.yml` saves the website snapshot and updates the backend.
+Failures now fail the job, while a valid scraped snapshot can still be published.
+`Deploy Live Website` publishes public assets after each data workflow completes,
+even when the snapshot commit used `GITHUB_TOKEN`. Pages must use **GitHub Actions**
+as its publishing source. No backend scripts or credentials are deployed.
+
+Optional repository secret `SOURCE_PROXY_URLS` accepts comma/newline-separated
+HTTP, HTTPS, or SOCKS5 proxy URLs supplied by your proxy provider. Without it,
+source requests connect directly. Configured routes rotate between requests;
+network failures have bounded fallback and cooldown. HTTP 403/429 stops the cycle.
+Proxy credentials and source URLs are not printed in request error logs. Proxy
+routing cannot guarantee that a source will accept a request or conceal its domain.
+
+Run regression checks with `node --test tests/*.test.js`. Check the subscription
+workflow for backend HTTP results, and the deployment workflow for publishing
+failures. The page labels snapshots older than 15 minutes as delayed.

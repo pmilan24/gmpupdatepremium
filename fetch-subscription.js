@@ -322,7 +322,8 @@ async function fetchLiveSubscription() {
     { timeoutMs: 20000 },
     (html) => {
       const parsed = parseHtmlSubscription(html);
-      return Array.isArray(parsed) && parsed.length > 0;
+      return Array.isArray(parsed) && parsed.length > 0 && parsed.every(company =>
+        company.companyName && !/^IPO \d+$/.test(company.companyName) && company.sharesBreakup.length > 0);
     }
   );
 

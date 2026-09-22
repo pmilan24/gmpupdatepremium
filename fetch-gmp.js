@@ -139,7 +139,7 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
   }
 }
 
-const { proxyRotator, getRandomUserAgent, getRandomPublicIp } = require('./proxy-rotator');
+const { proxyRotator, getRandomUserAgent } = require('./proxy-rotator');
 
 async function fetchFromWeb() {
   if (!TARGET_URL) {

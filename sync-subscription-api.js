@@ -7,10 +7,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const SOURCES = require('./sources');
-const { parseHtmlSubscription, fetchLiveSubscription } = require('./fetch-subscription');
-const { proxyRotator } = require('./proxy-rotator');
+const { fetchLiveSubscription } = require('./fetch-subscription');
 const { getBearerToken } = require('./auth-manager');
 
 const envPath = path.join(__dirname, '.env');
@@ -91,8 +89,7 @@ function pruneLogFile() {
 }
 
 // --- Adaptive Indian Time (IST) Schedule Checker ---
-function getMarketScheduleStatus() {
-  const now = new Date();
+function getMarketScheduleStatus(now = new Date()) {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Kolkata',
     weekday: 'short',
@@ -252,7 +249,7 @@ function getTokenWords(str) {
 function calculateSimilarity(str1, str2) {
   const norm1 = normalizeStr(str1);
   const norm2 = normalizeStr(str2);
-  if (norm1 && norm2 && (norm1 === norm2 || norm1.includes(norm2) || norm2.includes(norm1))) {
+  if (norm1 && norm2 && (norm1 === norm2)) {
     return 0.95;
   }
 
@@ -262,7 +259,7 @@ function calculateSimilarity(str1, str2) {
 
   let common = 0;
   for (const w1 of words1) {
-    if (words2.some(w2 => w1 === w2 || (w1.length >= 4 && (w2.includes(w1) || w1.includes(w2))))) {
+    if (words2.some(w2 => w1 === w2)) {
       common++;
     }
   }
@@ -273,24 +270,30 @@ function findMatchingIpo(scrapedCompany, backendIpoList) {
   const scrapedName = scrapedCompany.companyName || '';
   if (!scrapedName || scrapedName.length < 3) return null;
 
+  const scrapedWords = getTokenWords(scrapedName);
+  const normScraped = normalizeStr(scrapedName);
+
   let bestMatch = null;
   let highestScore = 0;
 
   for (const ipo of backendIpoList) {
     const backendName = ipo.company_name || ipo.name || ipo.title || '';
     const backendSymbol = (ipo.symbol || '').toLowerCase().trim();
+    const normBackend = normalizeStr(backendName);
 
-    // 1. Direct symbol containment in scraped company name
-    if (backendSymbol && backendSymbol.length >= 3) {
-      const lowerScraped = scrapedName.toLowerCase();
-      if (lowerScraped.includes(backendSymbol) || backendSymbol === lowerScraped) {
-        return ipo;
-      }
+    // 1. Exact normalized name match
+    if (normScraped && normBackend && normScraped === normBackend) {
+      return ipo;
     }
 
-    // 2. Token overlap & substring similarity
+    // 2. Exact word boundary symbol match (e.g. word "anand" matches symbol "ANAND", but not "vivekanand")
+    if (backendSymbol && scrapedWords.some(w => w === backendSymbol)) {
+      return ipo;
+    }
+
+    // 3. Token overlap & substring similarity
     const score = calculateSimilarity(scrapedName, backendName);
-    if (score > highestScore && score >= 0.5) {
+    if (score > highestScore && score >= 0.55) {
       highestScore = score;
       bestMatch = ipo;
     }
@@ -404,11 +407,10 @@ async function runSyncCycle() {
   // 1. Fetch fresh subscription data via proxy rotation
   const companies = await fetchSubscriptionWithProxyRotation();
   if (!companies || companies.length === 0) {
-    log('⚠️ No subscription data scraped this cycle.', 'WARN');
-    return;
+    throw new Error('No valid subscription data scraped; previous snapshot preserved.');
   }
 
-  // 2. Save local JSON snapshot & auto-push to GitHub Pages if changed
+  // 2. Save the validated snapshot; the workflow owns commits and deployment.
   try {
     const result = {
       lastUpdated: new Date().toISOString(),
@@ -417,56 +419,40 @@ async function runSyncCycle() {
     };
     fs.writeFileSync(CONFIG.SNAPSHOT_FILE, JSON.stringify(result, null, 2));
 
-    try {
-      const gitStatus = execSync('git status --porcelain subscription-data.json', { encoding: 'utf8' }).trim();
-      if (gitStatus) {
-        log('[GITHUB] Changes detected in subscription-data.json, committing & pushing...', 'INFO');
-        execSync('git config user.name "github-actions[bot]" 2>/dev/null || true', { stdio: 'ignore' });
-        execSync('git config user.email "github-actions[bot]@users.noreply.github.com" 2>/dev/null || true', { stdio: 'ignore' });
-        execSync('git add subscription-data.json && git commit -m "chore(subscription): auto-sync live snapshot"', { stdio: 'pipe' });
-        try {
-          execSync('git push origin main', { stdio: 'pipe' });
-          log('[GITHUB] 🚀 Auto-pushed fresh snapshot to GitHub Pages!', 'SUCCESS');
-        } catch (pushErr) {
-          // If rejected due to upstream changes, pull and push
-          log('[GITHUB] Push rejected, attempting rebase/pull...', 'WARN');
-          execSync('git pull --rebase origin main && git push origin main', { stdio: 'pipe' });
-          log('[GITHUB] 🚀 Pushed after rebase!', 'SUCCESS');
-        }
-      }
-    } catch (gitErr) {
-      log(`[GITHUB] Git sync notice: ${gitErr.message}`, 'DEBUG');
-    }
   } catch (e) {
-    log(`[SNAPSHOT] Failed to write snapshot: ${e.message}`, 'WARN');
+    throw new Error(`Snapshot write failed: ${e.message}`);
   }
 
   // 3. Resolve active Bearer token dynamically
   let activeToken = CONFIG.AUTH_TOKEN;
-  if (!activeToken) {
+  if (!activeToken || (SOURCES.AUTH_EMAIL && SOURCES.AUTH_PASSWORD)) {
     try {
       activeToken = await getBearerToken();
     } catch (err) {
-      log(`[AUTH] ⚠️ Dynamic authentication warning: ${err.message}`, 'WARN');
+      throw new Error(`Authentication failed: ${err.message}`);
     }
   }
 
   // 4. Get backend IPO list
   const backendIpos = await getBackendIpoList(activeToken);
   if (!backendIpos || backendIpos.length === 0) {
-    log('⚠️ Backend IPO list is empty. Waiting for live IPOs.', 'WARN');
-    return;
+    throw new Error('Backend IPO list is empty or unavailable; no updates sent.');
   }
 
   // 5. Match companies and send PUT requests
   let pushedCount = 0;
+  let failedCount = 0;
 
   for (const comp of companies) {
     const matchedIpo = findMatchingIpo(comp, backendIpos);
-    if (!matchedIpo) continue;
+    if (!matchedIpo) {
+      log(`[MATCH] No safe backend match for ${comp.companyName}`, 'WARN');
+      continue;
+    }
 
     const symbol = matchedIpo.symbol;
     const payload = formatPayloadForBackend(comp);
+    if (!symbol || !payload.subscription.length) { failedCount++; continue; }
 
     if (IS_VERBOSE) {
       log(`[MATCH] "${comp.companyName}" -> [${symbol}]`, 'DEBUG');
@@ -474,11 +460,16 @@ async function runSyncCycle() {
     }
 
     if (!activeToken) {
-      log(`[AUTH] ⚠️ No active token for [${symbol}]. Skipping PUT.`, 'WARN');
+      failedCount++;
+      log(`[AUTH] No active token for [${symbol}]. Skipping PUT.`, 'WARN');
       continue;
     }
 
-    const result = await pushSubscriptionUpdate(symbol, payload, activeToken);
+    let result = await pushSubscriptionUpdate(symbol, payload, activeToken);
+    if (result.status === 401 && SOURCES.AUTH_EMAIL && SOURCES.AUTH_PASSWORD) {
+      activeToken = await getBearerToken(true);
+      result = await pushSubscriptionUpdate(symbol, payload, activeToken);
+    }
     if (result.success) {
       pushedCount++;
       const subTimes = comp.summary?.totalTimes || 0;
@@ -486,6 +477,7 @@ async function runSyncCycle() {
       const hniTimes = comp.summary?.hniTimes || 0;
       log(`[SYNC] ✅ [${symbol}] "${comp.companyName}" -> Subscribed: ${subTimes}x (Retail: ${retailTimes}x, HNIs: ${hniTimes}x) | HTTP ${result.status}`, 'SUCCESS');
     } else {
+      failedCount++;
       log(`[SYNC] ❌ [${symbol}] Update Failed: HTTP ${result.status} | ${result.error}`, 'WARN');
     }
 
@@ -493,8 +485,17 @@ async function runSyncCycle() {
   }
 
   if (pushedCount === 0) {
-    log(`[CYCLE] Scraped ${companies.length} IPOs. None matched active backend list.`, 'INFO');
+    throw new Error(`Scraped ${companies.length} IPOs, but no backend updates succeeded.`);
   }
+  if (failedCount) throw new Error(`${failedCount} backend updates failed; ${pushedCount} succeeded.`);
+  return { scraped: companies.length, updated: pushedCount };
+}
+
+// Share concurrent server requests instead of running duplicate update cycles.
+let activeCycle;
+function runSingleSyncCycle() {
+  if (!activeCycle) activeCycle = runSyncCycle().finally(() => { activeCycle = null; });
+  return activeCycle;
 }
 
 // --- Automated Scheduler Loop ---
@@ -510,15 +511,16 @@ async function startDaemon() {
       if (!IS_FORCE && !schedule.open) {
         log(`[SCHEDULE] ⏸️ ${schedule.reason}. Sleeping for ${Math.round(nextWaitSec / 60)} min.`, 'INFO');
       } else {
-        await runSyncCycle();
+        await runSingleSyncCycle();
       }
     } catch (err) {
       log(`[DAEMON] Error: ${err.message}`, 'ERROR');
+      if (RUN_ONCE) process.exitCode = 1;
     }
 
     if (RUN_ONCE) {
       log('Single run complete (--once flag). Exiting.', 'INFO');
-      process.exit(0);
+      return;
     }
 
     setTimeout(nextLoop, nextWaitSec * 1000);
@@ -532,7 +534,7 @@ if (require.main === module) {
 }
 
 module.exports = {
-  runSyncCycle,
+  runSyncCycle: runSingleSyncCycle,
   formatPayloadForBackend,
   findMatchingIpo,
   getMarketScheduleStatus

@@ -1,0 +1,41 @@
+name: Deploy Live Website
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Sync IPO Subscription Data to Backend & Web
+      - Update Market GMP Data
+      - Update Exchange Anchor Allocation Reports
+    types: [completed]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - name: Assemble public files only
+        run: |
+          mkdir -p _site/anchors
+          cp *.html style.css app.js anchor.js subscription.js security.js notifications.js _site/
+          cp data.json subscription-data.json nse-ipo-data.json anchor-sync-log.json .nojekyll _site/
+          cp anchors/*.pdf _site/anchors/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deployment

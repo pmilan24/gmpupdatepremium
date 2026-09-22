@@ -15,17 +15,28 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: market-data-writer
+  cancel-in-progress: false
+
 jobs:
   sync-subscription:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Run regression tests
+        run: node --test tests/*.test.js
 
       - name: Fetch Live Subscription & Sync to Backend API
         env:
@@ -36,13 +47,15 @@ jobs:
           BACKEND_IPO_LIST_URL: ${{ secrets.BACKEND_IPO_LIST_URL }}
           BACKEND_UPDATE_SUB_URL: ${{ secrets.BACKEND_UPDATE_SUB_URL }}
           BACKEND_API_TOKEN: ${{ secrets.BACKEND_API_TOKEN }}
+          SOURCE_PROXY_URLS: ${{ secrets.SOURCE_PROXY_URLS }}
           SUB_DASH_URL: ${{ secrets.SUB_DASH_URL }}
           SUB_WEB_URL: ${{ secrets.SUB_WEB_URL }}
           JINA_PREFIX_URL: ${{ secrets.JINA_PREFIX_URL }}
         run: |
-          node sync-subscription-api.js --force --once
+          node sync-subscription-api.js --once ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
 
       - name: Commit and push updated subscription snapshot if changed
+        if: ${{ !cancelled() }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -51,5 +64,6 @@ jobs:
             echo "No changes detected in subscription data snapshot."
           else
             git commit -m "chore(subscription): auto-sync live subscription snapshot"
+            git pull --rebase origin main
             git push
           fi

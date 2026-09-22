@@ -19,12 +19,20 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: market-data-writer
+  cancel-in-progress: false
+
 jobs:
   sync-anchor:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -57,5 +65,6 @@ jobs:
             echo "No changes detected in Anchor data or sync logs."
           else
             git commit -m "chore(anchor): auto-update exchange anchor reports and sync logs"
+            git pull --rebase origin main
             git push
           fi

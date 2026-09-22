@@ -289,6 +289,7 @@
       const forceParam = isManual ? '&force=1' : '';
       const localRes = await fetch(`${SUBSCRIPTION_URL}?_t=${cacheBust}${forceParam}`, {
         cache: 'no-store',
+        signal: AbortSignal.timeout(20000),
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache'
@@ -298,7 +299,8 @@
       if (localRes.ok) {
         json = await localRes.json();
         parsedCompanies = json.companies || json;
-        source = 'Live Exchange Feed';
+        source = Date.now() - Date.parse(json.lastUpdated) > 15 * 60 * 1000
+          ? 'Saved snapshot · updates delayed' : 'Latest saved snapshot';
       }
 
       if (!parsedCompanies || parsedCompanies.length === 0) {
@@ -801,7 +803,11 @@
       if (schedule.status === 'closed') {
         if (els.countdownText) els.countdownText.textContent = 'Closed';
         if (els.countdownFill) els.countdownFill.style.width = '0%';
-        return; // Don't run auto timer when market is closed
+        // Recheck the schedule so a tab left open overnight resumes automatically.
+        countdownTimer = setInterval(() => {
+          if (applyMarketSchedule().status !== 'closed') fetchSubscriptionData();
+        }, 60000);
+        return;
       }
       effectiveInterval = schedule.intervalSeconds;
     } else {
