@@ -42,8 +42,66 @@
     return '';
   }
 
+  function formatLocalDateYMD(d) {
+    if (!d || isNaN(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function parseIssueDate(str) {
+    if (!str || str === '—') return null;
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+      const parts = str.slice(0, 10).split('-');
+      return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    }
+    const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+    const m = str.match(/(\d{1,2})[-\s]+([A-Za-z]{3})[-\s]+(\d{4})/);
+    if (m) {
+      const mon = months[m[2].toLowerCase()];
+      if (mon !== undefined) return new Date(parseInt(m[3], 10), mon, parseInt(m[1], 10));
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function getBseIssuePageUrls(ipo) {
+    if (!ipo) return { newUrl: '', oldUrl: '' };
+    const bseData = ipo.bseData || {};
+    if (bseData.issuePageUrl || bseData.oldIssuePageUrl) {
+      return {
+        newUrl: bseData.issuePageUrl || '',
+        oldUrl: bseData.oldIssuePageUrl || ''
+      };
+    }
+    const scripCode = bseData.scripCode || ipo.scripCode || '';
+    const ipoNo = bseData.ipoNo || ipo.bseIpoNo || '';
+    if (!ipoNo && !scripCode) return { newUrl: '', oldUrl: '' };
+
+    let startdtNew = '';
+    let startdtOld = '';
+    if (ipo.issueStartDate && ipo.issueStartDate !== '—') {
+      const d = parseIssueDate(ipo.issueStartDate);
+      if (d) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const monthNum = String(d.getMonth() + 1).padStart(2, '0');
+        const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthShort = monthsShort[d.getMonth()];
+        const year = d.getFullYear();
+        startdtNew = `${day}/${monthNum}/${year}`;
+        startdtOld = `${day}/${monthShort}/${year}`;
+      }
+    }
+
+    const newUrl = `https://www.bseindia.com/markets/publicissues/displayipo?id=${scripCode}&type=IPO&idtype=1&status=F&IPONo=${ipoNo}${startdtNew ? '&startdt=' + encodeURIComponent(startdtNew) : ''}`;
+    const oldUrl = `https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=${scripCode}&type=IPO&idtype=1&status=F&IPONo=${ipoNo}${startdtOld ? '&startdt=' + encodeURIComponent(startdtOld) : ''}`;
+
+    return { newUrl, oldUrl };
+  }
+
   function getBseNoticeUrls(ipo) {
-    if (!ipo) return { verifiedPdfUrl: '', logicNoticeUrl: '', hasVerifiedPdf: false };
+    if (!ipo) return { verifiedPdfUrl: '', logicNoticeUrl: '', issuePageUrl: '', oldIssuePageUrl: '', hasVerifiedPdf: false };
 
     // 1. Check verified intimation PDF or notice PDF
     const intimationPdf = ipo.anchor?.bseIntimationPdfUrl || ipo.bseIntimationPdfUrl;
@@ -60,14 +118,26 @@
       logicUrl = `https://www.bseindia.com/downloads/UploadDocs/Notices/${ipo.anchor.bseNoticeNo}/${ipo.anchor.bseNoticeNo}.pdf`;
     }
     if (!logicUrl && ipo.anchorEligibility?.expectedDate) {
-      const d = ipo.anchorEligibility.expectedDate.replace(/[^0-9]/g, '');
-      if (d.length >= 8) {
-        logicUrl = `https://www.bseindia.com/downloads/UploadDocs/Notices/${d.slice(0, 8)}-1/${d.slice(0, 8)}-1.pdf`;
+      let dStr = ipo.anchorEligibility.expectedDate.replace(/[^0-9]/g, '').slice(0, 8);
+      if (dStr.length === 8) {
+        // Roll forward Sunday to Monday (or Friday if needed)
+        const y = parseInt(dStr.slice(0, 4), 10);
+        const m = parseInt(dStr.slice(4, 6), 10) - 1;
+        const dt = parseInt(dStr.slice(6, 8), 10);
+        const testD = new Date(y, m, dt);
+        if (testD.getDay() === 0) { // Sunday -> roll to Monday
+          testD.setDate(testD.getDate() + 1);
+          dStr = `${testD.getFullYear()}${String(testD.getMonth() + 1).padStart(2, '0')}${String(testD.getDate()).padStart(2, '0')}`;
+        } else if (testD.getDay() === 6) { // Saturday -> roll to Friday
+          testD.setDate(testD.getDate() - 1);
+          dStr = `${testD.getFullYear()}${String(testD.getMonth() + 1).padStart(2, '0')}${String(testD.getDate()).padStart(2, '0')}`;
+        }
+        logicUrl = `https://www.bseindia.com/downloads/UploadDocs/Notices/${dStr}-1/${dStr}-1.pdf`;
       }
     }
-    if (!logicUrl && ipo.bseData?.ipoNo) {
-      logicUrl = `https://www.bseindia.com/markets/PublicIssues/BSEIPO.aspx?flag=1&ipono=${ipo.bseData.ipoNo}`;
-    }
+
+    // 3. Official BSE Issue Page (DisplayIPO)
+    const issueUrls = getBseIssuePageUrls(ipo);
 
     const resolvedVerified = verifiedPdf ? resolveAnchorLink(verifiedPdf, 'bse', ipo.symbol) : '';
     const resolvedLogic = logicUrl ? resolveAnchorLink(logicUrl, 'bse', ipo.symbol) : '';
@@ -75,13 +145,15 @@
     return {
       verifiedPdfUrl: (resolvedVerified && resolvedVerified.startsWith('http')) ? resolvedVerified : '',
       logicNoticeUrl: (resolvedLogic && resolvedLogic.startsWith('http')) ? resolvedLogic : '',
+      issuePageUrl: issueUrls.newUrl || (ipo.bseData?.ipoNo ? `https://www.bseindia.com/markets/PublicIssues/BSEIPO.aspx?flag=1&ipono=${ipo.bseData.ipoNo}` : ''),
+      oldIssuePageUrl: issueUrls.oldUrl,
       hasVerifiedPdf: hasVerified && !!(resolvedVerified && resolvedVerified.startsWith('http'))
     };
   }
 
   function getValidBseUrl(ipo) {
     const urls = getBseNoticeUrls(ipo);
-    return urls.verifiedPdfUrl || urls.logicNoticeUrl || '';
+    return urls.verifiedPdfUrl || urls.logicNoticeUrl || urls.issuePageUrl || '';
   }
 
   const ANCHOR_STORAGE_KEY = 'unified_anchor_history_v1';
@@ -267,9 +339,15 @@
       anchorDate.setDate(anchorDate.getDate() - 3);
     } else if (anchorDate.getDay() === 0) { // Sunday -> Friday
       anchorDate.setDate(anchorDate.getDate() - 2);
+    } else if (anchorDate.getDay() === 6) { // Saturday -> Friday
+      anchorDate.setDate(anchorDate.getDate() - 1);
     } else {
       anchorDate.setDate(anchorDate.getDate() - 1);
     }
+
+    // Safety: Ensure anchor date is never a weekend
+    if (anchorDate.getDay() === 0) anchorDate.setDate(anchorDate.getDate() - 2);
+    if (anchorDate.getDay() === 6) anchorDate.setDate(anchorDate.getDate() - 1);
 
     const todayDateOnly = getIndiaTodayDate();
     const anchorDateOnly = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), anchorDate.getDate());
@@ -279,6 +357,7 @@
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const formattedAnchorDate = `${anchorDate.getDate()} ${months[anchorDate.getMonth()]}`;
+    const ymdStr = formatLocalDateYMD(anchorDate);
 
     if (diffDays === 0) {
       return {
@@ -287,7 +366,7 @@
         isUpcoming: false,
         diffDays: 0,
         daysToGo: 0,
-        expectedDate: anchorDate.toISOString().slice(0, 10),
+        expectedDate: ymdStr,
         formattedDate: formattedAnchorDate,
         message: `Due Today (${formattedAnchorDate})`
       };
@@ -299,7 +378,7 @@
         isUpcoming: true,
         diffDays,
         daysToGo,
-        expectedDate: anchorDate.toISOString().slice(0, 10),
+        expectedDate: ymdStr,
         formattedDate: formattedAnchorDate,
         message: `Expected on ${formattedAnchorDate} (${daysToGo} day${daysToGo > 1 ? 's' : ''} to go)`
       };
@@ -310,7 +389,7 @@
         isUpcoming: false,
         diffDays,
         daysToGo: 0,
-        expectedDate: anchorDate.toISOString().slice(0, 10),
+        expectedDate: ymdStr,
         formattedDate: formattedAnchorDate,
         message: `Due / Released since ${formattedAnchorDate}`
       };
@@ -1108,8 +1187,16 @@
         // Logic-built URL option (always accessible to open in both cases!)
         if (bseUrls.logicNoticeUrl && bseUrls.logicNoticeUrl !== bseUrls.verifiedPdfUrl) {
           downloadActionsHtml += `
-            <a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" title="Open BSE Notice Link (Logic URL)" onclick="event.stopPropagation();">
-              📑 BSE Notice (Direct)
+            <a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" title="Open Logic-Built BSE Notice Link (${bseUrls.logicNoticeUrl})" onclick="event.stopPropagation();">
+              📑 BSE Notice (Logic)
+            </a>
+          `;
+        }
+        // Official BSE DisplayIPO Issue Page
+        if (bseUrls.issuePageUrl) {
+          downloadActionsHtml += `
+            <a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" title="Open Official BSE Issue Page (New Portal)" onclick="event.stopPropagation();">
+              🌐 BSE Issue Page
             </a>
           `;
         }
@@ -1440,6 +1527,7 @@
                 ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="${validNsePdf}" download="ANCHOR_${encodeURIComponent(symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" onclick="event.stopPropagation();">📄 Download ${symbol} PDF</a>` : ''}
                 ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(symbol)}.zip" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" onclick="event.stopPropagation();">💾 Official NSE ZIP</a>` : ''}
                 ${(hasBseVerified && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.verifiedPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" onclick="event.stopPropagation();">📄 BSE Notice PDF</a>` : ''}
+                ${(bseUrls.issuePageUrl && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 BSE Issue Page</a>` : ''}
               </div>
             </div>
           </div>
@@ -1450,8 +1538,20 @@
         renderUI();
       } else {
         let extraBseBtn = '';
-        if (bseUrls.logicNoticeUrl && (exchange === 'BSE' || exchange === 'BOTH')) {
-          extraBseBtn = `<div style="margin-top: 6px;"><a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice (Direct)</a></div>`;
+        if (exchange === 'BSE' || exchange === 'BOTH') {
+          const links = [];
+          if (bseUrls.logicNoticeUrl) {
+            links.push(`<a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice (Logic)</a>`);
+          }
+          if (bseUrls.issuePageUrl) {
+            links.push(`<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 Official BSE Issue Page (New)</a>`);
+          }
+          if (bseUrls.oldIssuePageUrl) {
+            links.push(`<a href="${bseUrls.oldIssuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🏛️ BSE Issue Page (Old)</a>`);
+          }
+          if (links.length > 0) {
+            extraBseBtn = `<div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">${links.join('')}</div>`;
+          }
         }
         const verdictHtml = `
           <div class="modal-step-item none" style="margin-top: 10px;">

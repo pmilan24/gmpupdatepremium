@@ -295,6 +295,14 @@ function getIndiaToday() {
   return new Date(y, m - 1, d);
 }
 
+function formatLocalDateYMD(d) {
+  if (!d || isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function checkAnchorDateEligibility(startDateStr) {
   if (!startDateStr) return { eligible: false, isToday: false, message: 'Date unknown' };
 
@@ -313,8 +321,17 @@ function checkAnchorDateEligibility(startDateStr) {
     expectedAnchorDate.setDate(issueDate.getDate() - 3);
   } else if (dayOfWeek === 0) { // Sunday open -> Friday
     expectedAnchorDate.setDate(issueDate.getDate() - 2);
+  } else if (dayOfWeek === 6) { // Saturday open -> Friday
+    expectedAnchorDate.setDate(issueDate.getDate() - 1);
   } else {
     expectedAnchorDate.setDate(issueDate.getDate() - 1);
+  }
+
+  // Safety: Ensure expected anchor date is NEVER a weekend (Saturday or Sunday)
+  if (expectedAnchorDate.getDay() === 0) {
+    expectedAnchorDate.setDate(expectedAnchorDate.getDate() - 2);
+  } else if (expectedAnchorDate.getDay() === 6) {
+    expectedAnchorDate.setDate(expectedAnchorDate.getDate() - 1);
   }
 
   const diffMs = today.getTime() - expectedAnchorDate.getTime();
@@ -322,6 +339,7 @@ function checkAnchorDateEligibility(startDateStr) {
   const isToday = diffDays === 0;
 
   const dateFormatted = expectedAnchorDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const ymdStr = formatLocalDateYMD(expectedAnchorDate);
 
   if (isToday) {
     return {
@@ -330,7 +348,7 @@ function checkAnchorDateEligibility(startDateStr) {
       isUpcoming: false,
       diffDays: 0,
       daysToGo: 0,
-      expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
+      expectedDate: ymdStr,
       message: `Due Today (${dateFormatted})`
     };
   } else if (diffDays < 0) {
@@ -341,7 +359,7 @@ function checkAnchorDateEligibility(startDateStr) {
       isUpcoming: true,
       diffDays,
       daysToGo,
-      expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
+      expectedDate: ymdStr,
       message: `Expected ${dateFormatted} (${daysToGo} day${daysToGo > 1 ? 's' : ''} to go)`
     };
   } else {
@@ -351,7 +369,7 @@ function checkAnchorDateEligibility(startDateStr) {
       isUpcoming: false,
       diffDays,
       daysToGo: 0,
-      expectedDate: expectedAnchorDate.toISOString().slice(0, 10),
+      expectedDate: ymdStr,
       message: `Due / Released since ${dateFormatted}`
     };
   }
@@ -469,10 +487,28 @@ async function getEnrichedBSEIpoList() {
     }
 
     const anchorDateCheck = checkAnchorDateEligibility(startDate);
+    const scripCode = item.Scrip_cd || '';
+    let startdtNew = '';
+    let startdtOld = '';
+    if (startDate) {
+      const d = parseLocalDate(startDate);
+      if (d) {
+        const day = String(d.getDate()).padStart(2, '0');
+        const monthNum = String(d.getMonth() + 1).padStart(2, '0');
+        const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthShort = monthsShort[d.getMonth()];
+        const year = d.getFullYear();
+        startdtNew = `${day}/${monthNum}/${year}`;
+        startdtOld = `${day}/${monthShort}/${year}`;
+      }
+    }
+
+    const issuePageUrl = ipoNo ? `https://www.bseindia.com/markets/publicissues/displayipo?id=${scripCode}&type=IPO&idtype=1&status=F&IPONo=${ipoNo}${startdtNew ? '&startdt=' + encodeURIComponent(startdtNew) : ''}` : '';
+    const oldIssuePageUrl = ipoNo ? `https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=${scripCode}&type=IPO&idtype=1&status=F&IPONo=${ipoNo}${startdtOld ? '&startdt=' + encodeURIComponent(startdtOld) : ''}` : '';
 
     enriched.push({
       bseIpoNo: ipoNo,
-      scripCode: item.Scrip_cd,
+      scripCode,
       symbol: symbol || scripName.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10).toUpperCase(),
       companyName: scripName,
       exchange: platform === 'SME' ? 'BSE SME' : 'BSE',
@@ -489,6 +525,13 @@ async function getEnrichedBSEIpoList() {
         noticePdfUrl: null,
         intimationPdfUrl: null,
         hasIntimationAttachment: false
+      },
+      bseData: {
+        ipoNo,
+        scripCode,
+        platform,
+        issuePageUrl,
+        oldIssuePageUrl
       },
       updatedAt: new Date().toISOString()
     });

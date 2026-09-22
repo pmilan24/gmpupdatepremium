@@ -96,9 +96,11 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         hasBseAttachment: hasBseAnchor ? matchedBse.anchor.hasIntimationAttachment : false
       },
       bseData: matchedBse ? {
-        ipoNo: matchedBse.bseIpoNo,
-        scripCode: matchedBse.scripCode,
-        platform: matchedBse.platform
+        ipoNo: matchedBse.bseIpoNo || matchedBse.bseData?.ipoNo,
+        scripCode: matchedBse.scripCode || matchedBse.bseData?.scripCode,
+        platform: matchedBse.platform,
+        issuePageUrl: matchedBse.bseData?.issuePageUrl || '',
+        oldIssuePageUrl: matchedBse.bseData?.oldIssuePageUrl || ''
       } : null,
       updatedAt: new Date().toISOString()
     });
@@ -137,9 +139,11 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         hasBseAttachment: hasBseAnchor ? bseItem.anchor.hasIntimationAttachment : false
       },
       bseData: {
-        ipoNo: bseItem.bseIpoNo,
-        scripCode: bseItem.scripCode,
-        platform: bseItem.platform
+        ipoNo: bseItem.bseIpoNo || bseItem.bseData?.ipoNo,
+        scripCode: bseItem.scripCode || bseItem.bseData?.scripCode,
+        platform: bseItem.platform,
+        issuePageUrl: bseItem.bseData?.issuePageUrl || '',
+        oldIssuePageUrl: bseItem.bseData?.oldIssuePageUrl || ''
       },
       updatedAt: new Date().toISOString()
     });
