@@ -319,7 +319,7 @@ async function fetchLiveSubscription() {
   // Use proxy rotator with blacklisting and validation
   const result = await proxyRotator.fetchWithRotation(
     DASH_INAPP_URL,
-    { timeoutMs: 12000 },
+    { timeoutMs: 20000 },
     (html) => {
       const parsed = parseHtmlSubscription(html);
       return Array.isArray(parsed) && parsed.length > 0;

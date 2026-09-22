@@ -294,8 +294,9 @@
           'Pragma': 'no-cache'
         }
       });
+      let json = null;
       if (localRes.ok) {
-        const json = await localRes.json();
+        json = await localRes.json();
         parsedCompanies = json.companies || json;
         source = 'Live Exchange Feed';
       }
@@ -313,9 +314,18 @@
       renderUI();
 
       if (els.lastUpdatedText) {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        els.lastUpdatedText.textContent = `${timeStr} · ${source}`;
+        let displayTime = '';
+        if (json && json.lastUpdated) {
+          try {
+            const serverDate = new Date(json.lastUpdated);
+            displayTime = serverDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          } catch (e) {}
+        }
+        if (!displayTime) {
+          displayTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        els.lastUpdatedText.textContent = `${displayTime} · ${source}`;
+        els.lastUpdatedText.style.color = '';
       }
 
     } catch (err) {

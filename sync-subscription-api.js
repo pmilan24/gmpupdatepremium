@@ -420,11 +420,26 @@ async function runSyncCycle() {
     try {
       const gitStatus = execSync('git status --porcelain subscription-data.json', { encoding: 'utf8' }).trim();
       if (gitStatus) {
-        execSync('git add subscription-data.json && git commit -m "chore(subscription): auto-sync live snapshot" && git push origin main', { stdio: 'pipe' });
-        log('[GITHUB] 🚀 Auto-pushed fresh snapshot to GitHub Pages!', 'SUCCESS');
+        log('[GITHUB] Changes detected in subscription-data.json, committing & pushing...', 'INFO');
+        execSync('git config user.name "github-actions[bot]" 2>/dev/null || true', { stdio: 'ignore' });
+        execSync('git config user.email "github-actions[bot]@users.noreply.github.com" 2>/dev/null || true', { stdio: 'ignore' });
+        execSync('git add subscription-data.json && git commit -m "chore(subscription): auto-sync live snapshot"', { stdio: 'pipe' });
+        try {
+          execSync('git push origin main', { stdio: 'pipe' });
+          log('[GITHUB] 🚀 Auto-pushed fresh snapshot to GitHub Pages!', 'SUCCESS');
+        } catch (pushErr) {
+          // If rejected due to upstream changes, pull and push
+          log('[GITHUB] Push rejected, attempting rebase/pull...', 'WARN');
+          execSync('git pull --rebase origin main && git push origin main', { stdio: 'pipe' });
+          log('[GITHUB] 🚀 Pushed after rebase!', 'SUCCESS');
+        }
       }
-    } catch (gitErr) {}
-  } catch (e) {}
+    } catch (gitErr) {
+      log(`[GITHUB] Git sync notice: ${gitErr.message}`, 'DEBUG');
+    }
+  } catch (e) {
+    log(`[SNAPSHOT] Failed to write snapshot: ${e.message}`, 'WARN');
+  }
 
   // 3. Resolve active Bearer token dynamically
   let activeToken = CONFIG.AUTH_TOKEN;

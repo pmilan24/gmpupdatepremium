@@ -1,8 +1,8 @@
 // proxy-rotator.js - Smart Proxy & IP Rotation with Failure Blacklisting
 // Used by both GMP scraper and Subscription data scraper
 
-const fs = require('fs');
-const path = require('path');
+const https = require('https');
+const http = require('http');
 
 // Diverse pool of User-Agents across iOS, Mac, Windows, Android
 const USER_AGENTS = [
@@ -32,9 +32,63 @@ function getRandomPublicIp() {
   return `${prefix[0]}.${prefix[1]}.${Math.floor(Math.random() * 254) + 1}.${Math.floor(Math.random() * 254) + 1}`;
 }
 
+// --- Native HTTPS GET helper (bypasses fetch() issues in some CI/Node environments) ---
+function nativeHttpsGet(url, headers, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Native fetch timeout after ${timeoutMs}ms`));
+    }, timeoutMs || 20000);
+
+    try {
+      const urlObj = new URL(url);
+      const lib = urlObj.protocol === 'http:' ? http : https;
+      const req = lib.request({
+        protocol: urlObj.protocol,
+        hostname: urlObj.hostname,
+        port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
+        path: urlObj.pathname + urlObj.search,
+        method: 'GET',
+        headers: headers || {},
+        timeout: timeoutMs || 20000,
+        rejectUnauthorized: false // some proxies need this
+      }, (res) => {
+        // Handle redirects
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          clearTimeout(timeoutId);
+          let redirectUrl = res.headers.location;
+          if (!redirectUrl.startsWith('http')) {
+            redirectUrl = new URL(redirectUrl, url).toString();
+          }
+          return nativeHttpsGet(redirectUrl, headers, timeoutMs).then(resolve).catch(reject);
+        }
+
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          clearTimeout(timeoutId);
+          return reject(new Error(`HTTP ${res.statusCode} from ${url}`));
+        }
+
+        const chunks = [];
+        res.on('data', c => chunks.push(c));
+        res.on('end', () => {
+          clearTimeout(timeoutId);
+          resolve(Buffer.concat(chunks).toString('utf-8'));
+        });
+        res.on('error', err => { clearTimeout(timeoutId); reject(err); });
+      });
+
+      req.on('error', err => { clearTimeout(timeoutId); reject(err); });
+      req.on('timeout', () => { clearTimeout(timeoutId); req.destroy(); reject(new Error('Request timeout')); });
+      req.end();
+    } catch (e) {
+      clearTimeout(timeoutId);
+      reject(e);
+    }
+  });
+}
+
 // In-memory health and blacklist state
 const proxyHealth = new Map();
-const BLACKLIST_DURATION_MS = 15 * 60 * 1000; // 15 minutes blacklist for failed proxies
+const BLACKLIST_DURATION_MS = 5 * 60 * 1000; // 5 minutes (was 15 — shorter so GH Actions re-tries quickly)
 
 class ProxyRotator {
   constructor() {
@@ -43,8 +97,45 @@ class ProxyRotator {
   }
 
   initStrategies() {
-    // Strategy definitions
     this.strategies = [
+      // --- Direct strategies (native https — most reliable, avoids fetch() quirks) ---
+      {
+        id: 'native-mobile',
+        name: 'Native HTTPS (Mobile UA + Rotating IP)',
+        type: 'native',
+        buildUrl: (targetUrl) => `${targetUrl}${targetUrl.includes('?') ? '&' : '?'}_t=${Date.now()}`,
+        buildHeaders: () => {
+          const ip = getRandomPublicIp();
+          return {
+            'User-Agent': getRandomUserAgent(),
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-IN,en;q=0.9',
+            'X-Forwarded-For': ip,
+            'Client-IP': ip,
+            'X-Real-IP': ip,
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          };
+        },
+        useNative: true,
+        timeoutMs: 20000
+      },
+      {
+        id: 'native-desktop',
+        name: 'Native HTTPS (Desktop UA + Clean Headers)',
+        type: 'native',
+        buildUrl: (targetUrl) => `${targetUrl}${targetUrl.includes('?') ? '&' : '?'}_nc=${Date.now()}`,
+        buildHeaders: () => ({
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'X-Forwarded-For': getRandomPublicIp(),
+          'Cache-Control': 'no-cache'
+        }),
+        useNative: true,
+        timeoutMs: 20000
+      },
+      // --- fetch()-based direct strategies ---
       {
         id: 'direct-mobile',
         name: 'Direct Primary (Mobile UA + Rotating IP Headers)',
@@ -59,7 +150,8 @@ class ProxyRotator {
             'Client-IP': ip,
             'X-Real-IP': ip
           };
-        }
+        },
+        timeoutMs: 20000
       },
       {
         id: 'direct-desktop',
@@ -74,8 +166,10 @@ class ProxyRotator {
             'Accept-Language': 'en-US,en;q=0.9',
             'X-Forwarded-For': ip
           };
-        }
+        },
+        timeoutMs: 20000
       },
+      // --- Proxy-based strategies ---
       {
         id: 'jina-clean',
         name: 'Jina Edge Proxy (Standard)',
@@ -85,27 +179,30 @@ class ProxyRotator {
           'Accept': 'text/plain,text/html',
           'x-no-cache': 'true',
           'User-Agent': getRandomUserAgent()
-        })
-      },
-      {
-        id: 'jina-mirror',
-        name: 'Jina Edge Proxy (Uncached Raw)',
-        type: 'proxy',
-        buildUrl: (targetUrl) => `https://r.jina.ai/${targetUrl}`,
-        buildHeaders: () => ({
-          'Accept': 'text/plain',
-          'x-no-cache': 'true'
-        })
+        }),
+        timeoutMs: 30000 // Jina needs longer
       },
       {
         id: 'allorigins-edge',
         name: 'AllOrigins Edge Proxy',
         type: 'proxy',
-        buildUrl: (targetUrl) => `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        buildUrl: (targetUrl) => `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}&_t=${Date.now()}`,
         buildHeaders: () => ({
           'User-Agent': getRandomUserAgent(),
           'Accept': '*/*'
-        })
+        }),
+        timeoutMs: 25000
+      },
+      {
+        id: 'corsproxy',
+        name: 'CORSProxy.io Edge Proxy',
+        type: 'proxy',
+        buildUrl: (targetUrl) => `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        buildHeaders: () => ({
+          'User-Agent': getRandomUserAgent(),
+          'Accept': 'text/html,*/*'
+        }),
+        timeoutMs: 25000
       }
     ];
 
@@ -125,20 +222,16 @@ class ProxyRotator {
   isBlacklisted(strategyId) {
     const health = proxyHealth.get(strategyId);
     if (!health) return false;
-    if (health.blacklistedUntil > Date.now()) {
-      return true;
-    }
-    return false;
+    return health.blacklistedUntil > Date.now();
   }
 
   recordFailure(strategyId, errorMsg) {
     const health = proxyHealth.get(strategyId) || { failCount: 0, blacklistedUntil: 0, successCount: 0 };
     health.failCount += 1;
     health.lastError = errorMsg;
-    // Blacklist on failure
     health.blacklistedUntil = Date.now() + BLACKLIST_DURATION_MS;
     proxyHealth.set(strategyId, health);
-    console.warn(`[PROXY-ROTATOR] ❌ Strategy "${strategyId}" failed (${errorMsg}). Blacklisted for 15 mins.`);
+    console.warn(`[PROXY-ROTATOR] ❌ Strategy "${strategyId}" failed (${errorMsg}). Blacklisted for 5 mins.`);
   }
 
   recordSuccess(strategyId) {
@@ -150,52 +243,43 @@ class ProxyRotator {
     proxyHealth.set(strategyId, health);
   }
 
-  getAvailableStrategies() {
-    const now = Date.now();
+  clearAllBlacklists() {
+    for (const [id, health] of proxyHealth.entries()) {
+      health.blacklistedUntil = 0;
+    }
+    console.warn('[PROXY-ROTATOR] 🔄 Cleared all blacklists for last-resort retry.');
+  }
+
+  getAvailableStrategies(forceAll = false) {
+    if (forceAll) return this.strategies;
+
     const available = this.strategies.filter(s => !this.isBlacklisted(s.id));
 
     if (available.length === 0) {
-      console.warn('[PROXY-ROTATOR] ⚠️ All proxy strategies were blacklisted. Auto-clearing oldest blacklist to maintain service.');
-      // Find strategy with earliest expiry
-      let oldest = this.strategies[0];
-      let minExpiry = Infinity;
-      for (const s of this.strategies) {
-        const h = proxyHealth.get(s.id);
-        if (h && h.blacklistedUntil < minExpiry) {
-          minExpiry = h.blacklistedUntil;
-          oldest = s;
-        }
-      }
-      const h = proxyHealth.get(oldest.id);
-      if (h) h.blacklistedUntil = 0;
-      return [oldest];
+      console.warn('[PROXY-ROTATOR] ⚠️ All proxy strategies blacklisted. Auto-clearing to maintain service.');
+      this.clearAllBlacklists();
+      return [...this.strategies]; // return all after clearing
     }
 
     return available;
   }
 
-  async fetchWithRotation(targetUrl, options = {}, validator = null) {
-    const available = this.getAvailableStrategies();
-    const totalCount = this.strategies.length;
-    const blacklistedCount = totalCount - available.length;
+  async tryStrategy(strategy, targetUrl, options, validator) {
+    const fetchUrl = strategy.buildUrl(targetUrl);
+    const headers = { ...strategy.buildHeaders(), ...(options.headers || {}) };
+    const timeoutMs = strategy.timeoutMs || options.timeoutMs || 20000;
 
-    console.log(`[PROXY-ROTATOR] Starting fetch for target: ${targetUrl.substring(0, 60)}...`);
-    console.log(`[PROXY-ROTATOR] Healthy proxies: ${available.length}/${totalCount} | Blacklisted: ${blacklistedCount}`);
+    let text;
 
-    let lastError = null;
-
-    for (let i = 0; i < available.length; i++) {
-      const strategy = available[i];
-      const fetchUrl = strategy.buildUrl(targetUrl);
-      const headers = { ...strategy.buildHeaders(), ...(options.headers || {}) };
-      const timeoutMs = options.timeoutMs || 12000;
-
-      console.log(`[PROXY-ROTATOR] [Attempt ${i + 1}/${available.length}] Trying strategy: "${strategy.name}"...`);
+    if (strategy.useNative) {
+      // Use native https module (most reliable in CI)
+      text = await nativeHttpsGet(fetchUrl, headers, timeoutMs);
+    } else {
+      // Use global fetch()
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
         const res = await fetch(fetchUrl, {
           method: options.method || 'GET',
           headers,
@@ -208,36 +292,85 @@ class ProxyRotator {
           throw new Error(`HTTP ${res.status} ${res.statusText}`);
         }
 
-        const text = await res.text();
-        if (!text || text.length < 200) {
-          throw new Error(`Empty or truncated response (${text ? text.length : 0} bytes)`);
-        }
+        text = await res.text();
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
 
-        // Run custom validator if provided
-        if (typeof validator === 'function') {
-          const valid = validator(text, res);
-          if (!valid) {
-            throw new Error('Response validation failed (unexpected format or 0 items parsed)');
-          }
-        }
+    if (!text || text.length < 200) {
+      throw new Error(`Empty or truncated response (${text ? text.length : 0} bytes)`);
+    }
 
-        // Success!
+    // Run custom validator if provided
+    if (typeof validator === 'function') {
+      const valid = validator(text);
+      if (!valid) {
+        throw new Error('Response validation failed (unexpected format or 0 items parsed)');
+      }
+    }
+
+    return text;
+  }
+
+  async fetchWithRotation(targetUrl, options = {}, validator = null) {
+    const available = this.getAvailableStrategies();
+    const totalCount = this.strategies.length;
+    const blacklistedCount = totalCount - available.length;
+
+    console.log(`[PROXY-ROTATOR] Starting fetch for target: ${targetUrl.substring(0, 60)}...`);
+    console.log(`[PROXY-ROTATOR] Healthy proxies: ${available.length}/${totalCount} | Blacklisted: ${blacklistedCount}`);
+
+    let lastError = null;
+
+    // First pass: try all available (non-blacklisted) strategies
+    for (let i = 0; i < available.length; i++) {
+      const strategy = available[i];
+      console.log(`[PROXY-ROTATOR] [Attempt ${i + 1}/${available.length}] Trying strategy: "${strategy.name}"...`);
+
+      try {
+        const text = await this.tryStrategy(strategy, targetUrl, options, validator);
         this.recordSuccess(strategy.id);
         console.log(`[PROXY-ROTATOR] ✅ Success with "${strategy.name}"! Received ${text.length} bytes.`);
-        return { text, response: res, strategy: strategy.name };
-
+        return { text, strategy: strategy.name };
       } catch (err) {
         lastError = err;
+        console.warn(`[PROXY-ROTATOR] ❌ "${strategy.name}" failed: ${err.message}`);
         this.recordFailure(strategy.id, err.message);
       }
 
       // Small pause before trying next proxy
       if (i < available.length - 1) {
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 400));
       }
     }
 
-    throw new Error(`All available proxies failed. Last error: ${lastError ? lastError.message : 'Unknown'}`);
+    // Second pass: Last-resort — clear all blacklists and retry strategies that weren't in the first pass
+    const alreadyTried = new Set(available.map(s => s.id));
+    const untried = this.strategies.filter(s => !alreadyTried.has(s.id));
+
+    if (untried.length > 0) {
+      console.warn(`[PROXY-ROTATOR] 🔄 Last-resort: trying ${untried.length} blacklisted strategies...`);
+      for (let i = 0; i < untried.length; i++) {
+        const strategy = untried[i];
+        console.log(`[PROXY-ROTATOR] [Last-resort ${i + 1}/${untried.length}] Trying: "${strategy.name}"...`);
+        try {
+          const text = await this.tryStrategy(strategy, targetUrl, options, validator);
+          this.recordSuccess(strategy.id);
+          console.log(`[PROXY-ROTATOR] ✅ Last-resort success with "${strategy.name}"! Received ${text.length} bytes.`);
+          return { text, strategy: strategy.name + ' (last-resort)' };
+        } catch (err) {
+          lastError = err;
+          console.warn(`[PROXY-ROTATOR] ❌ Last-resort "${strategy.name}" failed: ${err.message}`);
+          this.recordFailure(strategy.id, err.message);
+        }
+        if (i < untried.length - 1) {
+          await new Promise(r => setTimeout(r, 400));
+        }
+      }
+    }
+
+    throw new Error(`All ${this.strategies.length} proxy strategies failed. Last error: ${lastError ? lastError.message : 'Unknown'}`);
   }
 }
 
