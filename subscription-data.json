@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-22T07:33:48.353Z",
+  "lastUpdated": "2026-09-22T07:34:48.378Z",
   "count": 7,
   "companies": [
     {
@@ -13,8 +13,8 @@
         "sHNI": 1414,
         "bHNI": 6767
       },
-      "lastUpdatedSource": "22-Sep-2026 13:03:16",
-      "totalApplications": 17885,
+      "lastUpdatedSource": "22-Sep-2026 13:04:10",
+      "totalApplications": 17939,
       "summary": {
         "totalTimes": 0.07,
         "qibTimes": 0,
@@ -31,7 +31,7 @@
         {
           "category": "HNIs",
           "offered": 7175828,
-          "applied": 193415,
+          "applied": 194829,
           "times": 0.03
         },
         {
@@ -43,19 +43,19 @@
         {
           "category": "HNIs 2+",
           "offered": 2391943,
-          "applied": 186648,
+          "applied": 188062,
           "times": 0.08
         },
         {
           "category": "Retail",
           "offered": 16743599,
-          "applied": 2280075,
+          "applied": 2287650,
           "times": 0.14
         },
         {
           "category": "Total",
           "offered": 33487080,
-          "applied": 2473490,
+          "applied": 2482479,
           "times": 0.07
         }
       ],
@@ -63,13 +63,13 @@
         {
           "category": "HNIs (2-10L)",
           "reserved": 1692,
-          "applied": 108,
+          "applied": 109,
           "times": 0.06
         },
         {
           "category": "Retail",
           "reserved": 165778,
-          "applied": 17777,
+          "applied": 17830,
           "times": 0.11
         }
       ],
@@ -107,7 +107,7 @@
         {
           "category": "HNIs",
           "offered": 106.2,
-          "applied": 2.86,
+          "applied": 2.88,
           "times": 0.03
         },
         {
@@ -119,19 +119,19 @@
         {
           "category": "HNIs 2+",
           "offered": 35.4,
-          "applied": 2.76,
+          "applied": 2.78,
           "times": 0.08
         },
         {
           "category": "Retail",
           "offered": 247.81,
-          "applied": 33.75,
+          "applied": 33.86,
           "times": 0.14
         },
         {
           "category": "Total",
           "offered": 495.61,
-          "applied": 36.61,
+          "applied": 36.74,
           "times": 0.07
         }
       ]
