@@ -28,15 +28,17 @@ class ProxyRotator {
     const url = new URL(targetUrl);
     if (!['https:', 'http:'].includes(url.protocol)) throw new Error('Invalid source protocol');
     url.searchParams.set('_t', Date.now());
-    const routes = this.proxies.length
+    const routes = !options.directOnly && this.proxies.length
       ? this.proxies.map((_, i) => {
           const index = (this.cursor + i) % this.proxies.length;
           return { id: `proxy-${index + 1}`, proxy: this.proxies[index] };
         })
       : [{ id: 'direct', proxy: null }];
+    // A failure on one domain must not blacklist an independent fallback domain.
+    for (const route of routes) route.healthId = `${url.origin}:${route.id}`;
     this.cursor = (this.cursor + 1) % Math.max(1, this.proxies.length);
     for (const route of routes.slice(0, 3)) {
-      if (this.isBlacklisted(route.id)) continue;
+      if (this.isBlacklisted(route.healthId)) continue;
       // curl verifies TLS and enforces a total deadline including body downloads.
       const args = ['--silent', '--show-error', '--location', '--max-redirs', '3',
         '--proto', '=http,https', '--proto-redir', '=http,https',
@@ -51,7 +53,7 @@ class ProxyRotator {
         output = (await execFileAsync('curl', args, { maxBuffer: 10 * 1024 * 1024,
           timeout: (options.timeoutMs || 20000) + 2000 })).stdout;
       } catch (_) {
-        this.recordFailure(route.id);
+        this.recordFailure(route.healthId);
         console.warn(`[SOURCE] ${route.id}: network request failed (details redacted)`);
         continue;
       }
@@ -60,15 +62,15 @@ class ProxyRotator {
       const text = output.slice(0, boundary);
       if (status === 429 || status === 403) {
         // Do not rotate around an explicit rate limit or denied access.
-        for (const entry of routes) this.recordFailure(entry.id);
+        for (const entry of routes) this.recordFailure(entry.healthId);
         throw new Error(`Source HTTP ${status}; requests paused for this cycle`);
       }
       if (status < 200 || status >= 300 || !text || (validator && !validator(text))) {
-        this.recordFailure(route.id);
+        this.recordFailure(route.healthId);
         console.warn(`[SOURCE] ${route.id}: HTTP ${status} or invalid source content`);
         continue;
       }
-      this.recordSuccess(route.id);
+      this.recordSuccess(route.healthId);
       return { text, strategy: route.id };
     }
     throw new Error('No healthy source route succeeded; retry after cooldown');

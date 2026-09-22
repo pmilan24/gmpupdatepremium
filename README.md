@@ -132,26 +132,35 @@ Data is extracted for educational and informational purposes from primary market
 
 ### Subscription sync and deployment
 
-GitHub Actions fetches subscription data every **5 minutes** on weekdays from
-09:55–17:00 IST, then every **10 minutes** through 18:00 IST. GitHub may delay
-scheduled jobs. The browser checks the saved snapshot every minute; opening or
-refreshing GitHub Pages does not execute Node.js or trigger the source API.
-Use `node sync-subscription-api.js` on an always-running host for the existing
-one-minute daemon schedule. Use `--force --once` for a manual live sync.
+GitHub Pages is static hosting. The subscription page's Refresh button and timer
+read the newest timestamped snapshot from the repository, with the deployed
+website snapshot as fallback. They do not start a scrape. This avoids waiting for
+a Pages rebuild after every data update. The page displays the snapshot's age.
 
-`update-subscription.yml` saves the website snapshot and updates the backend.
-Failures now fail the job, while a valid scraped snapshot can still be published.
-`Deploy Live Website` publishes public assets after each data workflow completes,
-even when the snapshot commit used `GITHUB_TOKEN`. Pages must use **GitHub Actions**
-as its publishing source. No backend scripts or credentials are deployed.
+`update-subscription.yml` starts a bounded **five-hour Actions session**.
+While running, it fetches direct from `SUB_DASH_URL`, updates the backend API and
+commits a new snapshot each minute, weekdays 09:55–17:00 IST. Cadence becomes ten
+minutes from 17:00–18:00 IST, then the session stops. Scheduled triggers every
+five minutes during market hours queue a replacement session; concurrency keeps
+only one subscription session active. GitHub can delay or drop scheduled starts,
+so this is best-effort freshness, not guaranteed continuous hosting.
 
-Optional repository secret `SOURCE_PROXY_URLS` accepts comma/newline-separated
-HTTP, HTTPS, or SOCKS5 proxy URLs supplied by your proxy provider. Without it,
-source requests connect directly. Configured routes rotate between requests;
-network failures have bounded fallback and cooldown. HTTP 403/429 stops the cycle.
-Proxy credentials and source URLs are not printed in request error logs. Proxy
-routing cannot guarantee that a source will accept a request or conceal its domain.
+Use **Start live updates → Run workflow** on GitHub to start a session manually.
+A manual start outside market hours performs one update only. Run
+`node sync-subscription-api.js --force --once` for a local one-time sync, or
+`node sync-subscription-api.js` on an always-running host for its normal daemon.
 
-Run regression checks with `node --test tests/*.test.js`. Check the subscription
-workflow for backend HTTP results, and the deployment workflow for publishing
-failures. The page labels snapshots older than 15 minutes as delayed.
+Subscription fetching ignores proxy configuration and uses direct HTTPS. If the
+primary source fails or returns invalid content, it tries `SUB_WEB_URL`. Each
+source has independent cooldown state. A blocked fallback is reported and the
+last valid snapshot is retained; access restrictions are not bypassed.
+
+`Deploy Live Website` publishes public assets on code pushes and after data
+workflows finish. Pages uses **GitHub Actions** as its publishing source. Source
+URLs, backend credentials and server-side scripts are not included in the site.
+Backend errors are logged as failures; valid source data can still be published
+when a backend update fails. The session retries on its next interval.
+
+Run `node --test tests/*.test.js`. Session logs show each API result and completed
+publication cycle. Changes appear in the page on its next refresh, even while
+the Actions session is still running.

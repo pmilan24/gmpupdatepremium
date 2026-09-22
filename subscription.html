@@ -50,9 +50,11 @@
         </div>
 
         <!-- Refresh Button -->
-        <button id="refreshBtn" class="btn btn-primary" style="background: #10b981;" title="Refresh subscription numbers">
+        <button id="refreshBtn" class="btn btn-primary" style="background: #10b981;" title="Load the latest published subscription update">
           <span id="refreshIcon">🔄</span> Refresh
         </button>
+
+        <a class="btn btn-outline" href="https://github.com/pmilan24/gmpupdatepremium/actions/workflows/update-subscription.yml" target="_blank" rel="noopener" title="Open GitHub and choose Run workflow to start live updates">Start live updates ↗</a>
 
         <!-- Sound Notification Toggle -->
         <button id="soundToggleBtn" class="btn btn-outline" title="Sound alerts on changes">
@@ -202,6 +204,7 @@
     </p>
   </footer>
 
+  <script src="subscription-feed.js"></script>
   <script src="subscription.js"></script>
 </body>
 </html>

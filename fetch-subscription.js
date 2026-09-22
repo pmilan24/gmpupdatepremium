@@ -4,7 +4,6 @@ const path = require('path');
 const SOURCES = require('./sources');
 const { proxyRotator } = require('./proxy-rotator');
 
-const DASH_INAPP_URL = SOURCES.SUB_DASH_URL;
 
 function cleanText(str) {
   if (!str) return '';
@@ -312,24 +311,24 @@ function parseHtmlSubscription(html) {
 }
 
 async function fetchLiveSubscription() {
-  if (!DASH_INAPP_URL) {
-    throw new Error('SUB_DASH_URL is not configured.');
-  }
-
-  // Use proxy rotator with blacklisting and validation
-  const result = await proxyRotator.fetchWithRotation(
-    DASH_INAPP_URL,
-    { timeoutMs: 20000 },
-    (html) => {
-      const parsed = parseHtmlSubscription(html);
-      return Array.isArray(parsed) && parsed.length > 0 && parsed.every(company =>
-        company.companyName && !/^IPO \d+$/.test(company.companyName) && company.sharesBreakup.length > 0);
+  const urls = [...new Set([SOURCES.SUB_DASH_URL, SOURCES.SUB_WEB_URL].filter(Boolean))];
+  if (!urls.length) throw new Error('No subscription source configured.');
+  for (let i = 0; i < urls.length; i++) {
+    try {
+      const result = await proxyRotator.fetchWithRotation(urls[i],
+        { timeoutMs: 20000, directOnly: true }, html => {
+          const parsed = parseHtmlSubscription(html);
+          return parsed.length > 0 && parsed.every(company =>
+            company.companyName && !/^IPO \d+$/.test(company.companyName) && company.sharesBreakup.length > 0);
+        });
+      const companies = parseHtmlSubscription(result.text);
+      console.log(`[SUBSCRIPTION] Parsed ${companies.length} companies directly from ${i === 0 ? 'primary' : 'alternate'} source.`);
+      return companies;
+    } catch (err) {
+      console.warn(`[SUBSCRIPTION] ${i === 0 ? 'Primary' : 'Alternate'} source unavailable: ${err.message}`);
     }
-  );
-
-  const companies = parseHtmlSubscription(result.text);
-  console.log(`[SUBSCRIPTION] Successfully parsed ${companies.length} companies via "${result.strategy}"!`);
-  return companies;
+  }
+  throw new Error('Primary and alternate subscription sources unavailable; retaining previous data.');
 }
 
 async function main() {

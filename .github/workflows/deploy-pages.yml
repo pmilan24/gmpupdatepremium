@@ -31,7 +31,7 @@ jobs:
       - name: Assemble public files only
         run: |
           mkdir -p _site/anchors
-          cp *.html style.css app.js anchor.js subscription.js security.js notifications.js _site/
+          cp *.html style.css app.js anchor.js subscription.js subscription-feed.js security.js notifications.js _site/
           cp data.json subscription-data.json nse-ipo-data.json anchor-sync-log.json .nojekyll _site/
           cp anchors/*.pdf _site/anchors/
       - uses: actions/upload-pages-artifact@v3

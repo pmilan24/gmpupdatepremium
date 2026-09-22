@@ -285,23 +285,13 @@
     let source = '';
 
     try {
-      const cacheBust = Date.now() + '_' + Math.floor(Math.random() * 10000);
-      const forceParam = isManual ? '&force=1' : '';
-      const localRes = await fetch(`${SUBSCRIPTION_URL}?_t=${cacheBust}${forceParam}`, {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(20000),
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache'
-        }
+      const { data: json, source: feedSource } = await window.SubscriptionFeed.readLatest({
+        pages: window.location.hostname.endsWith('.github.io'), manual: isManual, localUrl: SUBSCRIPTION_URL
       });
-      let json = null;
-      if (localRes.ok) {
-        json = await localRes.json();
-        parsedCompanies = json.companies || json;
-        source = Date.now() - Date.parse(json.lastUpdated) > 15 * 60 * 1000
-          ? 'Saved snapshot · updates delayed' : 'Latest saved snapshot';
-      }
+      parsedCompanies = json.companies;
+      const ageSeconds = Math.max(0, Math.floor((Date.now() - Date.parse(json.lastUpdated)) / 1000));
+      source = `${feedSource} · ${ageSeconds < 60 ? 'just now' : Math.floor(ageSeconds / 60) + ' min ago'}`;
+      if (ageSeconds > 180) source += ' · waiting for next update';
 
       if (!parsedCompanies || parsedCompanies.length === 0) {
         if (Array.isArray(companiesList) && companiesList.length > 0) {
