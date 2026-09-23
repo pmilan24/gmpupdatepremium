@@ -133,6 +133,10 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
   const isDryRun = options.dryRun || false;
 
   if (!telegramToken || !telegramChatId) {
+    const availableCount = ipos.filter(ipo => ipo.anchor && ipo.anchor.available).length;
+    if (availableCount > 0) {
+      console.warn(`[NOTIFY] Telegram secrets missing; ${availableCount} available anchor report(s) will remain pending for retry.`);
+    }
     return [];
   }
 
@@ -198,13 +202,19 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
         caption
       });
 
-      // Mark as notified so you never get duplicates
-      notifiedMap[id] = {
-        symbol: ipo.symbol,
-        notifiedAtIST: nowIST,
-        notifiedAtEpoch: Date.now(),
-        pdfUrl
-      };
+      if (result.telegram && result.telegram.success) {
+        // Mark as notified only after Telegram confirms delivery, so failures retry next run.
+        notifiedMap[id] = {
+          symbol: ipo.symbol,
+          notifiedAtIST: nowIST,
+          notifiedAtEpoch: Date.now(),
+          pdfUrl,
+          method: result.telegram.method || 'telegram'
+        };
+      } else {
+        result.retryPending = true;
+        console.warn(`[NOTIFY] Telegram delivery failed for ${ipo.symbol}; keeping pending for next run. Response: ${JSON.stringify(result.telegram)}`);
+      }
     } else {
       console.log("[NOTIFY] (Dry-Run) Alert prepared for " + ipo.symbol + ". No messages dispatched.");
     }
@@ -212,7 +222,7 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
     results.push(result);
   }
 
-  if (!isDryRun && results.length > 0) {
+  if (!isDryRun && results.some(r => r.telegram && r.telegram.success)) {
     saveNotifiedSet(notifiedMap);
   }
 

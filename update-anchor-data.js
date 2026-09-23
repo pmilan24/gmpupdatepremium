@@ -297,8 +297,13 @@ async function main() {
 
     // Check for newly released Anchor reports and trigger instant Telegram & NTFY alerts
     const alerts = await checkAndNotifyNewAnchors(ipos);
-    if (alerts.length > 0) {
-      console.log(`[NOTIFY] 🚀 Dispatched instant notifications for ${alerts.length} new Anchor report(s)!`);
+    const sentAlerts = alerts.filter(a => a.telegram && a.telegram.success);
+    const failedAlerts = alerts.filter(a => a.retryPending || (a.telegram && !a.telegram.success));
+    if (sentAlerts.length > 0) {
+      console.log(`[NOTIFY] 🚀 Dispatched instant Telegram notifications for ${sentAlerts.length} new Anchor report(s)!`);
+    }
+    if (failedAlerts.length > 0) {
+      console.warn(`[NOTIFY] ⚠️ ${failedAlerts.length} Telegram alert(s) failed and will retry on next run.`);
     }
 
     // Record successful sync log
@@ -306,6 +311,8 @@ async function main() {
       count: ipos.length,
       anchorCount,
       activeCadence,
+      telegramSentCount: sentAlerts.length,
+      telegramFailedCount: failedAlerts.length,
       timeIST: ist.formattedDateTimeIST
     });
 
