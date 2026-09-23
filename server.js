@@ -56,6 +56,67 @@ let unifiedCacheExpiry = 0;
 const cacheDir = '/tmp/nse_cache';
 if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
 
+function noStoreHeaders(extra = {}) {
+  return {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+    ...extra
+  };
+}
+
+function clearExchangeCaches() {
+  nseCacheData = null;
+  nseCacheExpiry = 0;
+  bseCacheData = null;
+  bseCacheExpiry = 0;
+  unifiedCacheData = null;
+  unifiedCacheExpiry = 0;
+}
+
+function getBseAttachmentOnly(url, hasAttachment = false) {
+  if (!url) return null;
+  return hasAttachment || /\/Notices\/Attach\//i.test(url) ? url : null;
+}
+
+async function deepCheckNSEAnchor(symbol, preferredSeries = '') {
+  const normalizedSymbol = (symbol || '').toUpperCase().trim();
+  if (!normalizedSymbol) return { available: false, zipUrl: null, detail: null, attempts: [] };
+
+  const seriesCandidates = [...new Set([preferredSeries, 'EQ', 'SME', 'BE'].filter(Boolean))];
+  const typeCandidates = ['Active', 'Forthcoming'];
+  const attempts = [];
+
+  for (const series of seriesCandidates) {
+    for (const type of typeCandidates) {
+      try {
+        const detail = await fetchNSEIpoDetail(normalizedSymbol, series, type);
+        attempts.push(`${series}/${type}: ${detail ? 'HTTP OK' : 'no data'}`);
+        const list = detail?.issueInfo?.dataList || [];
+        const anchorItem = Array.isArray(list) ? list.find(d => d.title && /anchor\s*allocation\s*report/i.test(d.title)) : null;
+        if (anchorItem && anchorItem.value && anchorItem.value.startsWith('http')) {
+          return { available: true, zipUrl: anchorItem.value, detail, series, type, title: anchorItem.title, attempts };
+        }
+      } catch (e) {
+        attempts.push(`${series}/${type}: ${e.message}`);
+      }
+    }
+  }
+
+  // NSE archive sometimes publishes deterministic ZIP before detail API is refreshed.
+  try {
+    const archiveZipUrl = `${SOURCES.NSE_ARCHIVE_URL}/content/ipo/ANCHOR_${encodeURIComponent(normalizedSymbol)}.zip`;
+    await downloadAnchorZip(archiveZipUrl, normalizedSymbol, true);
+    attempts.push('archive-direct: ZIP available');
+    return { available: true, zipUrl: archiveZipUrl, detail: null, series: preferredSeries || 'EQ', type: 'Archive', title: 'Anchor Allocation Report', attempts };
+  } catch (e) {
+    attempts.push(`archive-direct: ${e.message}`);
+  }
+
+  return { available: false, zipUrl: null, detail: null, attempts };
+}
+
+
 // Pre-warm initial caches from existing snapshot
 try {
   const initialSnapshotPath = path.join(ROOT, 'nse-ipo-data.json');
@@ -175,6 +236,7 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = parsedUrl.pathname;
   const force = parsedUrl.searchParams.get('force') === '1';
+  if (force) clearExchangeCaches();
 
   // --- DYNAMIC ROUTE: GET /data.json (Live GMP Feed with automatic refresh) ---
   if (pathname === '/data.json') {
@@ -265,7 +327,7 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/nse/ipo-list') {
     try {
       const data = await getCachedNSEList(force);
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.writeHead(200, noStoreHeaders({ 'Content-Type': 'application/json; charset=utf-8' }));
       res.end(JSON.stringify(data));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -278,7 +340,7 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/bse/ipo-list') {
     try {
       const data = await getCachedBSEList(force);
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.writeHead(200, noStoreHeaders({ 'Content-Type': 'application/json; charset=utf-8' }));
       res.end(JSON.stringify(data));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -293,14 +355,14 @@ const server = http.createServer(async (req, res) => {
     try {
       if (force || !unifiedCacheData || now > unifiedCacheExpiry) {
         console.log('[SERVER] Refreshing unified exchange IPO cache (NSE + BSE)...');
-        const [nseData, bseData] = await Promise.all([
-          getCachedNSEList(force).catch(() => ({ ipos: [] })),
-          getCachedBSEList(force).catch(() => ({ ipos: [] }))
-        ]);
-        const ipos = require('./merge-exchanges').mergeNseAndBse(nseData.ipos || [], bseData.ipos || []);
+        const ipos = await require('./merge-exchanges').getUnifiedExchangeIpos();
+        const nseCount = ipos.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE'))).length;
+        const bseCount = ipos.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE'))).length;
         unifiedCacheData = {
           lastUpdated: new Date().toISOString(),
           count: ipos.length,
+          nseCount,
+          bseCount,
           anchorCount: ipos.filter(i => i.anchor && i.anchor.available).length,
           ipos
         };
@@ -311,7 +373,7 @@ const server = http.createServer(async (req, res) => {
 
       res.writeHead(200, {
         'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-cache'
+        ...noStoreHeaders()
       });
       res.end(JSON.stringify(unifiedCacheData));
     } catch (err) {
@@ -332,102 +394,118 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/exchange/check-ipo') {
     const symbol = (parsedUrl.searchParams.get('symbol') || '').toUpperCase().trim();
     const companyName = parsedUrl.searchParams.get('companyName') || '';
+    const exchange = (parsedUrl.searchParams.get('exchange') || 'BOTH').toUpperCase();
+    const preferredSeries = (parsedUrl.searchParams.get('series') || '').toUpperCase().trim();
+
+    clearExchangeCaches();
 
     const steps = [];
-    steps.push({ stage: 'init', message: `Initializing live cross-exchange check for ${symbol || companyName}...` });
+    steps.push({ stage: 'init', message: `Initializing cache-free live cross-exchange check for ${symbol || companyName}...` });
 
     try {
       let nseAnchorFound = false;
       let nseZipUrl = null;
+      let nseSeries = preferredSeries || null;
+      let nseType = null;
       let bseAnchorFound = false;
       let bseNoticePdfUrl = null;
       let bseIntimationPdfUrl = null;
       let bseNoticeNo = null;
+      let bseIssuePageUrl = null;
 
-      // 1. Check NSE
-      steps.push({ stage: 'nse_lookup', message: `Querying NSE issue information for ${symbol}...` });
-      if (symbol) {
+      if ((exchange === 'NSE' || exchange === 'BOTH') && symbol) {
+        steps.push({ stage: 'nse_lookup', message: `NSE fresh check: scanning EQ/SME and Active/Forthcoming issue detail APIs for ${symbol}...` });
+        const nseCheck = await deepCheckNSEAnchor(symbol, preferredSeries);
+        nseAnchorFound = nseCheck.available;
+        nseZipUrl = nseCheck.zipUrl;
+        nseSeries = nseCheck.series || nseSeries;
+        nseType = nseCheck.type || null;
+        steps.push({ stage: 'nse_attempts', message: `NSE attempts: ${nseCheck.attempts.join(' | ')}` });
+        if (nseAnchorFound) {
+          steps.push({ stage: 'nse_success', message: `Found NSE Anchor Allocation ZIP (${nseSeries || 'series auto'}, ${nseType || 'type auto'}): ${nseCheck.title || 'Anchor Allocation Report'}` });
+        } else {
+          steps.push({ stage: 'nse_none', message: `NSE: No Anchor Allocation Report found after fresh detail + direct archive check.` });
+        }
+      }
+
+      if (exchange === 'BSE' || exchange === 'BOTH') {
+        steps.push({ stage: 'bse_lookup', message: `BSE fresh check: scanning issue database and live notice feeds...` });
         try {
-          const nseDetail = await fetchNSEIpoDetail(symbol, 'EQ');
-          if (nseDetail && nseDetail.issueInfo && Array.isArray(nseDetail.issueInfo.dataList)) {
-            const anchorItem = nseDetail.issueInfo.dataList.find(d => 
-              d.title && /anchor\s*allocation\s*report/i.test(d.title)
-            );
-            if (anchorItem && anchorItem.value && anchorItem.value.startsWith('http')) {
-              nseAnchorFound = true;
-              nseZipUrl = anchorItem.value;
-              steps.push({ stage: 'nse_success', message: `Found NSE Anchor Allocation ZIP file: ${anchorItem.title}` });
+          const bseIssues = await fetchBSEPublicIssues();
+          const matchedBse = bseIssues.find(b => matchCompany({ symbol, companyName }, { symbol: b.short_name, companyName: b.Scrip_Name }));
+
+          if (matchedBse) {
+            steps.push({ stage: 'bse_matched', message: `Matched on BSE: ${matchedBse.Scrip_Name} (IPO_NO: ${matchedBse.IPO_NO})` });
+            const scripCode = matchedBse.Scrip_cd || '';
+            const ipoNo = matchedBse.IPO_NO || '';
+            bseIssuePageUrl = ipoNo ? `${SOURCES.BSE_BASE_URL}/markets/publicissues/displayipo?id=${scripCode}&type=IPO&idtype=1&status=F&IPONo=${ipoNo}` : null;
+
+            try {
+              const detail = await fetchBSEIpoDetail(matchedBse.IPO_NO);
+              const notices = detail.IPONO_4 || [];
+              const foundNotice = notices.find(n => /anchor/i.test(n.SUBJECT || ''));
+
+              if (foundNotice) {
+                bseNoticeNo = foundNotice.NOTICE_NO;
+                bseNoticePdfUrl = foundNotice.FILENAME || `${SOURCES.BSE_BASE_URL}/downloads/UploadDocs/Notices/${foundNotice.NOTICE_NO}/${foundNotice.NOTICE_NO}.pdf`;
+                steps.push({ stage: 'bse_notice_found', message: `Found BSE Anchor Notice #${bseNoticeNo}: ${(foundNotice.SUBJECT || '').replace(/[\r\n]+/g, ' ')}` });
+                bseIntimationPdfUrl = await extractAttachmentFromNoticePdf(bseNoticePdfUrl);
+                if (bseIntimationPdfUrl) {
+                  bseAnchorFound = true;
+                  steps.push({ stage: 'bse_success', message: `Extracted verified BSE inner attachment PDF.` });
+                } else {
+                  steps.push({ stage: 'bse_info', message: `BSE notice found but inner attachment PDF was not present yet.` });
+                }
+              }
+            } catch (detailErr) {
+              steps.push({ stage: 'bse_error', message: `BSE issue detail API notice: ${detailErr.message}` });
+            }
+          } else {
+            steps.push({ stage: 'bse_unmatched', message: `BSE issue database did not return a company match.` });
+          }
+        } catch (bseErr) {
+          steps.push({ stage: 'bse_error', message: `BSE public issue API notice: ${bseErr.message}` });
+        }
+
+        if (!bseAnchorFound) {
+          steps.push({ stage: 'bse_live_notices', message: `Scanning BSE live notice feed for uploaded Anchor filings...` });
+          const queryName = companyName || symbol;
+          const liveNotice = await findBSEAnchorInNotices(queryName);
+          if (liveNotice) {
+            bseNoticeNo = liveNotice.noticeNo;
+            bseNoticePdfUrl = liveNotice.noticePdfUrl;
+            bseIntimationPdfUrl = getBseAttachmentOnly(liveNotice.intimationPdfUrl, liveNotice.hasIntimationAttachment);
+            if (bseIntimationPdfUrl) {
+              bseAnchorFound = true;
+              steps.push({ stage: 'bse_success', message: `Discovered verified live BSE attachment from notice #${bseNoticeNo}: ${liveNotice.subject || 'Anchor Allocation'}` });
             } else {
-              steps.push({ stage: 'nse_none', message: `NSE: No anchor allocation report posted yet.` });
+              steps.push({ stage: 'bse_info', message: `BSE live notice found but verified inner attachment is not available yet.` });
             }
           }
-        } catch (e) {
-          steps.push({ stage: 'nse_error', message: `NSE check notice: ${e.message}` });
         }
-      }
 
-      // 2. Check BSE
-      steps.push({ stage: 'bse_lookup', message: `Scanning BSE Public Issues database...` });
-      const bseIssues = await fetchBSEPublicIssues();
-      const matchedBse = bseIssues.find(b => matchCompany({ symbol, companyName }, { symbol: b.short_name, companyName: b.Scrip_Name }));
-
-      if (matchedBse) {
-        steps.push({ stage: 'bse_matched', message: `Matched on BSE: ${matchedBse.Scrip_Name} (IPO_NO: ${matchedBse.IPO_NO})` });
-        const detail = await fetchBSEIpoDetail(matchedBse.IPO_NO);
-        const notices = detail.IPONO_4 || [];
-        const foundNotice = notices.find(n => /anchor/i.test(n.SUBJECT || ''));
-
-        if (foundNotice) {
-          bseNoticeNo = foundNotice.NOTICE_NO;
-          bseNoticePdfUrl = foundNotice.FILENAME || `${SOURCES.BSE_BASE_URL}/downloads/UploadDocs/Notices/${foundNotice.NOTICE_NO}/${foundNotice.NOTICE_NO}.pdf`;
-          steps.push({ stage: 'bse_notice_found', message: `Found BSE Anchor Notice #${bseNoticeNo}: ${foundNotice.SUBJECT.replace(/[\r\n]+/g, ' ')}` });
-
-          steps.push({ stage: 'bse_extract_pdf', message: `Extracting Anchor Intimation Letter attachment from BSE Notice PDF...` });
-          bseIntimationPdfUrl = await extractAttachmentFromNoticePdf(bseNoticePdfUrl);
-
-          if (bseIntimationPdfUrl) {
-            bseAnchorFound = true;
-            steps.push({ stage: 'bse_success', message: `Extracted Intimation Letter PDF successfully!` });
+        if (!bseAnchorFound) {
+          const queryName = companyName || symbol;
+          const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+          steps.push({ stage: 'bse_probe', message: `Probing BSE notice PDFs for ${todayStr} without cache...` });
+          const probed = await probeSequentialBseNotices(queryName, todayStr, 70);
+          if (probed) {
+            bseNoticeNo = probed.noticeNo;
+            bseNoticePdfUrl = probed.noticePdfUrl;
+            bseIntimationPdfUrl = getBseAttachmentOnly(probed.intimationPdfUrl, probed.hasIntimationAttachment);
+            if (bseIntimationPdfUrl) {
+              bseAnchorFound = true;
+              steps.push({ stage: 'bse_success', message: `Found verified BSE attachment via sequential probe: ${bseNoticeNo}.pdf` });
+            } else {
+              steps.push({ stage: 'bse_info', message: `BSE notice candidate found via probe, but no verified attachment yet.` });
+            }
           } else {
-            bseAnchorFound = true;
-            bseIntimationPdfUrl = bseNoticePdfUrl;
-            steps.push({ stage: 'bse_success', message: `BSE Notice PDF verified and ready.` });
+            steps.push({ stage: 'bse_none', message: `BSE: No verified Anchor attachment detected in fresh scan.` });
           }
         }
       }
 
-      // 3. Fallback: Check BSE Live General Notice API (getCurrPreNextNoticesData_New)
-      if (!bseAnchorFound) {
-        steps.push({ stage: 'bse_live_notices', message: `Scanning BSE real-time notice feed for newly uploaded Anchor filings...` });
-        const queryName = companyName || symbol;
-        const liveNotice = await findBSEAnchorInNotices(queryName);
-        if (liveNotice) {
-          bseAnchorFound = true;
-          bseNoticeNo = liveNotice.noticeNo;
-          bseNoticePdfUrl = liveNotice.noticePdfUrl;
-          bseIntimationPdfUrl = liveNotice.intimationPdfUrl;
-          steps.push({ stage: 'bse_success', message: `Discovered live notice #${bseNoticeNo}: ${liveNotice.subject || 'Anchor Allocation'}` });
-        }
-      }
-
-      // 4. Fallback: Sequential URL link validation probe (if unindexed)
-      if (!bseAnchorFound) {
-        const queryName = companyName || symbol;
-        const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        steps.push({ stage: 'bse_probe', message: `Probing active notice circular URLs for ${todayStr}...` });
-        const probed = await probeSequentialBseNotices(queryName, todayStr, 50);
-        if (probed) {
-          bseAnchorFound = true;
-          bseNoticeNo = probed.noticeNo;
-          bseNoticePdfUrl = probed.noticePdfUrl;
-          bseIntimationPdfUrl = probed.intimationPdfUrl;
-          steps.push({ stage: 'bse_success', message: `Found valid uploaded notice file via sequential probe: ${bseNoticeNo}.pdf` });
-        } else {
-          steps.push({ stage: 'bse_none', message: `BSE: No anchor filing detected across API, feeds, or direct document URLs.` });
-        }
-      }
-
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.writeHead(200, noStoreHeaders({ 'Content-Type': 'application/json; charset=utf-8' }));
       res.end(JSON.stringify({
         symbol,
         companyName,
@@ -437,20 +515,23 @@ const server = http.createServer(async (req, res) => {
           nse: {
             available: nseAnchorFound,
             zipUrl: nseZipUrl,
-            pdfUrl: nseAnchorFound ? `/api/nse/anchor-pdf?symbol=${encodeURIComponent(symbol)}` : null
+            pdfUrl: nseAnchorFound ? `/api/nse/anchor-pdf?symbol=${encodeURIComponent(symbol)}&force=1` : null,
+            series: nseSeries,
+            type: nseType
           },
           bse: {
             available: bseAnchorFound,
             noticeNo: bseNoticeNo,
             noticePdfUrl: bseNoticePdfUrl,
-            intimationPdfUrl: bseIntimationPdfUrl
+            intimationPdfUrl: bseIntimationPdfUrl,
+            issuePageUrl: bseIssuePageUrl
           }
         },
         steps
       }));
     } catch (err) {
       steps.push({ stage: 'error', message: err.message });
-      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.writeHead(500, noStoreHeaders({ 'Content-Type': 'application/json' }));
       res.end(JSON.stringify({ error: err.message, steps }));
     }
     return;
@@ -490,7 +571,7 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(upstream.statusCode, {
           'Content-Type': upstream.headers['content-type'] || 'application/pdf',
           'Content-Disposition': 'inline',
-          'Cache-Control': 'public, max-age=3600'
+          ...noStoreHeaders()
         });
         upstream.pipe(res);
       }).on('error', (e) => {
@@ -514,13 +595,13 @@ const server = http.createServer(async (req, res) => {
     }
 
     const cachedPdfPath = path.join(cacheDir, `ANCHOR_${symbol}.pdf`);
-    if (fs.existsSync(cachedPdfPath)) {
+    if (!force && fs.existsSync(cachedPdfPath)) {
       const stats = fs.statSync(cachedPdfPath);
       res.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="ANCHOR_${symbol}_REPORT.pdf"`,
         'Content-Length': stats.size,
-        'Cache-Control': 'public, max-age=3600'
+        ...noStoreHeaders()
       });
       fs.createReadStream(cachedPdfPath).pipe(res);
       return;
@@ -538,7 +619,7 @@ const server = http.createServer(async (req, res) => {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="ANCHOR_${symbol}_REPORT.pdf"`,
         'Content-Length': pdfBuffer.length,
-        'Cache-Control': 'public, max-age=3600'
+        ...noStoreHeaders()
       });
       res.end(pdfBuffer);
     } catch (err) {
@@ -559,13 +640,13 @@ const server = http.createServer(async (req, res) => {
     }
 
     const cachedZipPath = path.join(cacheDir, `ANCHOR_${symbol}.zip`);
-    if (fs.existsSync(cachedZipPath)) {
+    if (!force && fs.existsSync(cachedZipPath)) {
       const stats = fs.statSync(cachedZipPath);
       res.writeHead(200, {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="ANCHOR_${symbol}.zip"`,
         'Content-Length': stats.size,
-        'Cache-Control': 'public, max-age=3600'
+        ...noStoreHeaders()
       });
       fs.createReadStream(cachedZipPath).pipe(res);
       return;
@@ -582,7 +663,7 @@ const server = http.createServer(async (req, res) => {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="ANCHOR_${symbol}.zip"`,
         'Content-Length': zipBuffer.length,
-        'Cache-Control': 'public, max-age=3600'
+        ...noStoreHeaders()
       });
       res.end(zipBuffer);
     } catch (err) {

@@ -703,110 +703,37 @@
         }
       }
 
-      // 1. Fetch NSE India first (when running on server)
-      try {
-        const nseRes = await fetch(`/api/nse/ipo-list?t=${Date.now()}`, { cache: 'no-cache' });
-        if (nseRes.ok) {
-          const nseData = await nseRes.json();
-          if (nseData && Array.isArray(nseData.ipos)) {
-            nseList = nseData.ipos;
-          }
-        }
-      } catch (nseErr) {
-        console.warn('[ANCHOR] NSE fetch error:', nseErr.message);
-      }
-
-      // If NSE returned items, SHOW THEM IMMEDIATELY IN THE TABLE!
-      if (nseList.length > 0) {
-        ipoList = nseList.map(formatNseItem);
-        processAnchorDiff(ipoList);
-        renderUI();
-
-        updateProgressTracker({
-          stageBadge: 'Step 2 of 2: BSE India',
-          title: `✅ NSE Loaded (${nseList.length} IPOs) · Now Fetching BSE India...`,
-          desc: `Displaying ${nseList.length} NSE issues. Indexing BSE live notices & public issues...`,
-          progressPercent: 55,
-          step1Status: 'done',
-          step1Text: `✅ ${nseList.length} Loaded`,
-          step2Status: 'loading',
-          step2Text: 'Fetching BSE...',
-          step3Status: 'pending',
-          step3Text: 'Waiting for BSE...'
-        });
-      } else {
-        updateProgressTracker({
-          stageBadge: 'Step 2 of 2: BSE India',
-          title: 'Fetching BSE India Issues & Anchor Notices...',
-          desc: 'Connecting to BSE India feed and indexing notices...',
-          progressPercent: 40,
-          step1Status: 'warning',
-          step1Text: 'NSE 0 Issues',
-          step2Status: 'loading',
-          step2Text: 'Fetching BSE...',
-          step3Status: 'pending',
-          step3Text: 'Pending'
-        });
-      }
-
-      // 2. Fetch BSE India
-      try {
-        const bseRes = await fetch(`/api/bse/ipo-list?t=${Date.now()}`, { cache: 'no-cache' });
-        if (bseRes.ok) {
-          const bseData = await bseRes.json();
-          if (bseData && Array.isArray(bseData.ipos)) {
-            bseList = bseData.ipos;
-          }
-        }
-      } catch (bseErr) {
-        console.warn('[ANCHOR] BSE fetch error:', bseErr.message);
-      }
-
-      // If NSE had failed but BSE succeeded, show BSE immediately before unifying
-      if (nseList.length === 0 && bseList.length > 0) {
-        ipoList = bseList.map(formatBseItem);
-        processAnchorDiff(ipoList);
-        renderUI();
-      }
-
-      updateProgressTracker({
-        stageBadge: 'Finalizing',
-        title: '🔗 Unifying Cross-Exchange IPOs & Sorting Timeline...',
-        desc: `Merging ${nseList.length} NSE issues and ${bseList.length} BSE issues...`,
-        progressPercent: 88,
-        step1Status: nseList.length > 0 ? 'done' : 'warning',
-        step1Text: nseList.length > 0 ? `✅ ${nseList.length} Loaded` : 'No NSE',
-        step2Status: bseList.length > 0 ? 'done' : 'warning',
-        step2Text: bseList.length > 0 ? `✅ ${bseList.length} Loaded` : 'No BSE',
-        step3Status: 'loading',
-        step3Text: 'Merging...'
-      });
-
-      // 3. Merge Both Exchanges
-      const unifiedList = mergeNseAndBse(nseList, bseList);
-
+      // Server-backed refresh: use one cache-free unified route so NSE+BSE merge and fallbacks stay consistent.
       let snapshotTimeIST = null;
-      if (unifiedList.length > 0) {
-        ipoList = unifiedList;
-      } else {
-        // Fallback to local snapshot file if both were empty (e.g. on GitHub Pages)
+      try {
+        const unifiedRes = await fetch(`/api/exchange/ipo-list?force=1&t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+        });
+        if (unifiedRes.ok) {
+          const unifiedData = await unifiedRes.json();
+          const unifiedList = unifiedData.ipos || unifiedData;
+          if (Array.isArray(unifiedList) && unifiedList.length > 0) {
+            ipoList = unifiedList;
+            nseList = ipoList.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE')));
+            bseList = ipoList.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE')));
+            if (unifiedData.lastUpdated) snapshotTimeIST = unifiedData.lastUpdated.includes('IST') ? unifiedData.lastUpdated : formatIndiaDateTime(new Date(unifiedData.lastUpdated));
+          }
+        }
+      } catch (unifiedErr) {
+        console.warn('[ANCHOR] Unified live fetch error:', unifiedErr.message);
+      }
+
+      if (!Array.isArray(ipoList) || ipoList.length === 0) {
         try {
           const fbRes = await fetch(`${FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-cache' });
           if (fbRes.ok) {
             const fbData = await fbRes.json();
             ipoList = fbData.ipos || fbData;
-            if (fbData.lastUpdated) {
-              snapshotTimeIST = fbData.lastUpdated.includes('IST') 
-                ? fbData.lastUpdated 
-                : formatIndiaDateTime(new Date(fbData.lastUpdated));
-            }
+            if (fbData.lastUpdated) snapshotTimeIST = fbData.lastUpdated.includes('IST') ? fbData.lastUpdated : formatIndiaDateTime(new Date(fbData.lastUpdated));
             if (Array.isArray(ipoList)) {
-              if (nseList.length === 0) {
-                nseList = ipoList.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE')));
-              }
-              if (bseList.length === 0) {
-                bseList = ipoList.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE')));
-              }
+              nseList = ipoList.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE')));
+              bseList = ipoList.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE')));
             }
           }
         } catch (fbErr) {
@@ -821,7 +748,7 @@
       updateProgressTracker({
         stageBadge: 'Live Sync Active',
         title: `✅ All Exchanges Unified (${ipoList.length} IPOs · ${totalAnchors} Anchor Reports Released)`,
-        desc: `Synchronized: NSE (${nseList.length}) + BSE (${bseList.length}) with live notice attachments cross-linked.`,
+        desc: `Cache-free refresh: NSE (${nseList.length}) + BSE (${bseList.length}) with live notice attachments cross-linked.`,
         progressPercent: 100,
         step1Status: nseList.length > 0 ? 'done' : 'warning',
         step1Text: `✅ ${nseList.length} NSE`,
@@ -1392,19 +1319,15 @@
     const targetName = symbol || companyName;
     const exchangeName = exchange === 'BOTH' ? 'NSE & BSE India' : exchange + ' India';
 
-    // Highlight active modal tab
     const tabs = els.checkModal.querySelectorAll('.modal-tab');
     tabs.forEach(t => {
-      if (t.dataset.exchange === currentCheckingExchange) {
-        t.classList.add('active');
-      } else {
-        t.classList.remove('active');
-      }
+      if (t.dataset.exchange === currentCheckingExchange) t.classList.add('active');
+      else t.classList.remove('active');
     });
 
     els.checkModal.style.display = 'flex';
     els.modalTitle.textContent = `⚡ Force Checking: ${targetName} [${exchangeName}]`;
-    els.modalSub.textContent = `Querying real-time exchange registry feeds on ${exchangeName}...`;
+    els.modalSub.textContent = `Clearing local cache and querying live exchange feeds on ${exchangeName}...`;
 
     const progressWrap = document.getElementById('modalProgressWrap');
     const progressFill = document.getElementById('modalProgressFill');
@@ -1414,7 +1337,7 @@
     }
 
     const steps = [
-      { stage: 'init', message: `Step 1/3: Connecting to ${exchangeName} live registry...` }
+      { stage: 'init', message: `Step 1/3: Clearing cache and connecting to ${exchangeName} live registry...` }
     ];
 
     function renderSteps() {
@@ -1422,22 +1345,11 @@
       steps.forEach(st => {
         let icon = 'ℹ️';
         let cls = '';
-        if (st.stage.includes('success')) {
-          icon = '✅';
-          cls = 'success';
-        } else if (st.stage.includes('notice_found') || st.stage.includes('matched')) {
-          icon = '✨';
-          cls = 'found';
-        } else if (st.stage.includes('none') || st.stage.includes('unmatched')) {
-          icon = '⚪';
-          cls = 'none';
-        } else if (st.stage.includes('extract') || st.stage.includes('info')) {
-          icon = '📋';
-          cls = 'found';
-        } else if (st.stage.includes('init') || st.stage.includes('query')) {
-          icon = '⏳';
-          cls = 'found';
-        }
+        if (st.stage.includes('success')) { icon = '✅'; cls = 'success'; }
+        else if (st.stage.includes('notice_found') || st.stage.includes('matched') || st.stage.includes('attempts')) { icon = '✨'; cls = 'found'; }
+        else if (st.stage.includes('none') || st.stage.includes('unmatched') || st.stage.includes('error')) { icon = '⚪'; cls = 'none'; }
+        else if (st.stage.includes('extract') || st.stage.includes('info') || st.stage.includes('probe')) { icon = '📋'; cls = 'found'; }
+        else if (st.stage.includes('init') || st.stage.includes('lookup')) { icon = '⏳'; cls = 'found'; }
 
         stepHtml += `
           <div class="modal-step-item ${cls}">
@@ -1449,86 +1361,90 @@
       els.modalStepsList.innerHTML = stepHtml;
     }
 
-    renderSteps();
-
-    try {
-      await new Promise(r => setTimeout(r, 180));
-      if (progressFill) progressFill.style.width = '55%';
-
-      let currentItem = ipoList.find(i => 
+    function upsertCheckedResult(result) {
+      if (!result || !result.anchorAvailable) return null;
+      const idx = ipoList.findIndex(i =>
         (i.symbol && i.symbol.toUpperCase() === (symbol || '').toUpperCase()) ||
         (i.companyName && companyName && i.companyName.toLowerCase().includes(companyName.toLowerCase()))
       );
+      if (idx < 0) return null;
+      const item = { ...ipoList[idx], anchor: { ...(ipoList[idx].anchor || {}) } };
 
-      try {
-        const freshRes = await fetch(`${FALLBACK_URL}?_t=${Date.now()}`, { cache: 'no-cache' });
-        if (freshRes.ok) {
-          const freshData = await freshRes.json();
-          const freshList = freshData.ipos || freshData;
-          if (Array.isArray(freshList)) {
-            ipoList = freshList;
-            const updated = freshList.find(i => 
-              (i.symbol && i.symbol.toUpperCase() === (symbol || '').toUpperCase()) ||
-              (i.companyName && companyName && i.companyName.toLowerCase().includes(companyName.toLowerCase()))
-            );
-            if (updated) currentItem = updated;
-          }
-        }
-      } catch (e) {
-        // Fallback to in-memory item
+      if (result.sources?.nse?.available) {
+        item.anchor.available = true;
+        item.anchor.source = item.anchor.source === 'BSE' ? 'BOTH' : 'NSE';
+        item.anchor.nseZipUrl = result.sources.nse.zipUrl || item.anchor.nseZipUrl;
+        item.anchor.nsePdfUrl = result.sources.nse.pdfUrl || item.anchor.nsePdfUrl;
       }
+
+      if (result.sources?.bse?.available) {
+        item.anchor.available = true;
+        item.anchor.source = item.anchor.source === 'NSE' ? 'BOTH' : 'BSE';
+        item.anchor.bseNoticeNo = result.sources.bse.noticeNo || item.anchor.bseNoticeNo;
+        item.anchor.bseNoticePdfUrl = result.sources.bse.noticePdfUrl || item.anchor.bseNoticePdfUrl;
+        item.anchor.bseAttachmentPdfUrl = result.sources.bse.intimationPdfUrl || item.anchor.bseAttachmentPdfUrl;
+        item.anchor.bseIntimationPdfUrl = result.sources.bse.intimationPdfUrl || item.anchor.bseIntimationPdfUrl;
+        item.anchor.hasBseAttachment = !!result.sources.bse.intimationPdfUrl;
+        if (result.sources.bse.issuePageUrl) {
+          item.bseData = { ...(item.bseData || {}), issuePageUrl: result.sources.bse.issuePageUrl };
+        }
+      }
+
+      ipoList[idx] = item;
+      return item;
+    }
+
+    renderSteps();
+
+    try {
+      await new Promise(r => setTimeout(r, 120));
+      if (progressFill) progressFill.style.width = '45%';
+
+      const currentItem = ipoList.find(i =>
+        (i.symbol && i.symbol.toUpperCase() === (symbol || '').toUpperCase()) ||
+        (i.companyName && companyName && i.companyName.toLowerCase().includes(companyName.toLowerCase()))
+      );
+      const series = currentItem?.series || '';
+      const url = `/api/exchange/check-ipo?symbol=${encodeURIComponent(symbol || '')}&companyName=${encodeURIComponent(companyName || '')}&exchange=${encodeURIComponent(exchange || 'BOTH')}&series=${encodeURIComponent(series)}&force=1&_t=${Date.now()}`;
+      const liveRes = await fetch(url, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+      });
 
       if (progressFill) progressFill.style.width = '80%';
-      await new Promise(r => setTimeout(r, 220));
-
-      const bseUrls = getBseNoticeUrls(currentItem);
-      const hasNseAnchor = !!(currentItem?.anchor && (currentItem.anchor.nseZipUrl || currentItem.anchor.source === 'NSE' || currentItem.anchor.source === 'BOTH'));
-      const hasBseVerified = bseUrls.hasVerifiedPdf;
-
-      let isAnchorFound = false;
-
-      if (exchange === 'NSE' || exchange === 'BOTH') {
-        if (hasNseAnchor) {
-          isAnchorFound = true;
-          steps.push({ stage: 'success_nse', message: `NSE Archive: Verified Anchor filing for ${symbol} (ANCHOR_${symbol}.pdf ready).` });
-        } else {
-          steps.push({ stage: 'none_nse', message: `NSE India: No Anchor ZIP archive filed yet for ${symbol}.` });
-        }
+      const liveData = await liveRes.json();
+      if (Array.isArray(liveData.steps)) {
+        steps.splice(0, steps.length, ...liveData.steps);
+      }
+      if (!liveRes.ok) {
+        throw new Error(liveData.error || `HTTP ${liveRes.status}`);
       }
 
-      if (exchange === 'BSE' || exchange === 'BOTH') {
-        if (hasBseVerified) {
-          isAnchorFound = true;
-          const doc = currentItem?.anchor?.bseIntimationPdfUrl ? 'Intimation Letter' : 'Notice';
-          steps.push({ stage: 'success_bse', message: `BSE India: Verified Official Anchor ${doc} PDF is available.` });
-        } else if (bseUrls.logicNoticeUrl) {
-          steps.push({ stage: 'info_bse', message: `BSE India: BSE notice candidate URL generated from expected date. Use it only for manual checking until a verified attachment appears.` });
-        } else {
-          steps.push({ stage: 'none_bse', message: `BSE India: No official Anchor notice published yet on BSE.` });
-        }
-      }
-
-      const elig = currentItem?.anchorEligibility || {};
-      if (elig.message) {
-        steps.push({ stage: 'extract_info', message: `Schedule timing: ${elig.message}` });
-      }
+      const updatedItem = upsertCheckedResult(liveData) || currentItem;
+      const bseUrls = getBseNoticeUrls(updatedItem);
+      const hasNseAnchor = !!(liveData.sources?.nse?.available);
+      const hasBseVerified = !!(liveData.sources?.bse?.available && liveData.sources?.bse?.intimationPdfUrl);
+      const isAnchorFound = hasNseAnchor || hasBseVerified;
 
       if (progressFill) progressFill.style.width = '100%';
       renderSteps();
 
       const stepItems = els.modalStepsList;
       if (isAnchorFound) {
-        const validNsePdf = `./anchors/ANCHOR_${encodeURIComponent(symbol)}.pdf`;
+        const nsePdf = liveData.sources?.nse?.pdfUrl || `./anchors/ANCHOR_${encodeURIComponent(symbol)}.pdf`;
+        const nseZip = liveData.sources?.nse?.zipUrl || '';
+        const bsePdf = liveData.sources?.bse?.intimationPdfUrl || bseUrls.verifiedPdfUrl;
+        const bseIssue = liveData.sources?.bse?.issuePageUrl || bseUrls.issuePageUrl;
         const verdictHtml = `
           <div class="modal-step-item success" style="margin-top: 10px; font-weight: 600;">
             <div class="modal-step-icon">🎉</div>
             <div>
-              <strong>Anchor Allocation Report is available!</strong>
+              <strong>Fresh live check found Anchor Allocation Report!</strong>
               <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-                ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="${validNsePdf}" download="ANCHOR_${encodeURIComponent(symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" onclick="event.stopPropagation();">📄 Download ${symbol} PDF</a>` : ''}
-                ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(symbol)}.zip" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" onclick="event.stopPropagation();">💾 Official NSE ZIP</a>` : ''}
-                ${(hasBseVerified && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.verifiedPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" onclick="event.stopPropagation();">📄 BSE Anchor PDF</a>` : ''}
-                ${(bseUrls.issuePageUrl && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 BSE Issue Page</a>` : ''}
+                ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="${nsePdf}" download="ANCHOR_${encodeURIComponent(symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" onclick="event.stopPropagation();">📄 NSE PDF</a>` : ''}
+                ${(hasNseAnchor && nseZip && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="${nseZip}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" onclick="event.stopPropagation();">💾 Official NSE ZIP</a>` : ''}
+                ${(hasBseVerified && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bsePdf}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" onclick="event.stopPropagation();">📄 BSE Anchor PDF</a>` : ''}
+                ${(bseIssue && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseIssue}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 BSE Issue Page</a>` : ''}
               </div>
             </div>
           </div>
@@ -1538,40 +1454,27 @@
         playAnchorChime();
         renderUI();
       } else {
-        let extraBseBtn = '';
-        if (exchange === 'BSE' || exchange === 'BOTH') {
-          const links = [];
-          if (bseUrls.logicNoticeUrl) {
-            links.push(`<a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice Candidate</a>`);
-          }
-          if (bseUrls.issuePageUrl) {
-            links.push(`<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 Official BSE Issue Page (New)</a>`);
-          }
-          if (bseUrls.oldIssuePageUrl) {
-            links.push(`<a href="${bseUrls.oldIssuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🏛️ BSE Issue Page (Old)</a>`);
-          }
-          if (links.length > 0) {
-            extraBseBtn = `<div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">${links.join('')}</div>`;
-          }
+        const links = [];
+        if ((exchange === 'BSE' || exchange === 'BOTH') && bseUrls.logicNoticeUrl) {
+          links.push(`<a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice Candidate</a>`);
+        }
+        if ((exchange === 'BSE' || exchange === 'BOTH') && bseUrls.issuePageUrl) {
+          links.push(`<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 Official BSE Issue Page</a>`);
         }
         const verdictHtml = `
           <div class="modal-step-item none" style="margin-top: 10px;">
             <div class="modal-step-icon">🕒</div>
             <div>
-              No verified Anchor PDF detected on ${exchange === 'BOTH' ? 'either exchange' : exchange} yet. Continuing monitoring.
-              ${extraBseBtn}
+              Fresh live check did not find a verified Anchor PDF on ${exchange === 'BOTH' ? 'NSE or BSE' : exchange} yet.
+              ${links.length ? `<div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">${links.join('')}</div>` : ''}
             </div>
           </div>
         `;
         stepItems.insertAdjacentHTML('beforeend', verdictHtml);
       }
     } catch (err) {
-      els.modalStepsList.innerHTML = `
-        <div class="modal-step-item none">
-          <div class="modal-step-icon">ℹ️</div>
-          <div>Checked ${exchangeName} for ${symbol || companyName}. Status verified against latest exchange snapshot.</div>
-        </div>
-      `;
+      steps.push({ stage: 'error', message: `Live force check failed: ${err.message}. If this page is opened on GitHub Pages, live force-check requires the Mac/local server.` });
+      renderSteps();
     }
   };
 
