@@ -412,7 +412,8 @@ async function pushSubscriptionUpdate(symbol, payload, activeToken) {
     } else {
       const apiStatus = json?.meta?.status_code ? `API ${json.meta.status_code}` : `HTTP ${res.status}`;
       const apiMessage = json?.meta?.validations?.[0]?.error?.[0] || json?.meta?.message || json?.message || responseText;
-      return { success: false, status: res.status, apiStatus, data: json, responseText, error: apiMessage };
+      return { success: false, status: res.status, apiStatus, data: json, responseText, error: apiMessage,
+        authFailed: Number(json?.meta?.status_code || res.status) === 401 };
     }
   } catch (err) {
     return { success: false, error: err.message };
@@ -440,15 +441,18 @@ async function runSyncCycle() {
     throw new Error(`Snapshot write failed: ${e.message}`);
   }
 
-  // 3. Resolve active Bearer token dynamically
+  // 3. Resolve active Bearer token. Prefer the static backend token when present;
+  // login tokens may authenticate but still lack update permission.
   let activeToken = CONFIG.AUTH_TOKEN;
-  if (!activeToken || (SOURCES.AUTH_EMAIL && SOURCES.AUTH_PASSWORD)) {
+  let tokenSource = activeToken ? 'static' : 'login';
+  if (!activeToken) {
     try {
       activeToken = await getBearerToken();
     } catch (err) {
       throw new Error(`Authentication failed: ${err.message}`);
     }
   }
+  log(`[AUTH] Using ${tokenSource} backend token for subscription update requests.`, 'INFO');
 
   // 4. Get backend IPO list
   const backendIpos = await getBackendIpoList(activeToken);
@@ -483,8 +487,10 @@ async function runSyncCycle() {
     }
 
     let result = await pushSubscriptionUpdate(symbol, payload, activeToken);
-    if (result.status === 401 && SOURCES.AUTH_EMAIL && SOURCES.AUTH_PASSWORD) {
+    if (result.authFailed && SOURCES.AUTH_EMAIL && SOURCES.AUTH_PASSWORD) {
       activeToken = await getBearerToken(true);
+      tokenSource = 'login';
+      log(`[AUTH] Static token rejected for [${symbol}], retried with login token.`, 'WARN');
       result = await pushSubscriptionUpdate(symbol, payload, activeToken);
     }
     if (result.success) {

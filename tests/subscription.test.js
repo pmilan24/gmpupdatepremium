@@ -4,16 +4,17 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
-function loadSync({ scrape, request } = {}) {
+function loadSync({ scrape, request, sources, auth } = {}) {
   const writes = [];
+  const backendSources = sources || { BACKEND_IPO_LIST_URL: 'https://backend.test/list/',
+    BACKEND_UPDATE_SUB_URL: 'https://backend.test/update/', BACKEND_API_TOKEN: 'test' };
   const context = {
     require(name) {
       if (name === 'fs') return { existsSync: () => false, appendFileSync() {},
         writeFileSync: (...args) => writes.push(args) };
-      if (name === './sources') return { BACKEND_IPO_LIST_URL: 'https://backend.test/list/',
-        BACKEND_UPDATE_SUB_URL: 'https://backend.test/update/', BACKEND_API_TOKEN: 'test' };
+      if (name === './sources') return backendSources;
       if (name === './fetch-subscription') return { fetchLiveSubscription: scrape || (async () => []) };
-      if (name === './auth-manager') return { getBearerToken: async () => 'test' };
+      if (name === './auth-manager') return auth || { getBearerToken: async () => 'test' };
       return require(name);
     },
     __dirname: path.resolve(__dirname, '..'), module: { exports: {} },
@@ -86,6 +87,26 @@ test('HTTP 200 PUT with API permission error is treated as failed', async () => 
       data: {}
     }) } });
   await assert.rejects(sync.runSyncCycle(), /no backend updates succeeded/);
+});
+
+test('static backend token is preferred over lower-permission login token', async () => {
+  let loginCalls = 0;
+  const sync = loadSync({ scrape: async () => [company],
+    sources: { BACKEND_IPO_LIST_URL: 'https://backend.test/list/',
+      BACKEND_UPDATE_SUB_URL: 'https://backend.test/update/', BACKEND_API_TOKEN: 'static-token',
+      AUTH_EMAIL: 'admin@example.test', AUTH_PASSWORD: 'secret' },
+    auth: { getBearerToken: async () => { loginCalls++; return 'login-token'; } },
+    request: async (_, options) => {
+      assert.equal(options.headers.Authorization, 'Bearer static-token');
+      return options.method === 'GET' ? { ok: true, json: async () => ({ data: [
+        { symbol: 'VIVEKANAND', company_name: company.companyName }
+      ] }) } : { ok: true, status: 200, text: async () => JSON.stringify({
+        meta: { status: true, status_code: 200, message: 'updated' },
+        data: {}
+      }) };
+    } });
+  await sync.runSyncCycle();
+  assert.equal(loginCalls, 0);
 });
 
 test('proxy requests use real proxies and block denied routes', async () => {
