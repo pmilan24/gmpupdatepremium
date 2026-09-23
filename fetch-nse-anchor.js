@@ -169,6 +169,21 @@ function extractPdfFromZipBuffer(zipBuffer) {
   }
 }
 
+
+async function probeNSEAnchorArchive(symbol) {
+  if (!symbol) return null;
+  const zipUrl = `${SOURCES.NSE_ARCHIVE_URL}/content/ipo/ANCHOR_${symbol.toUpperCase()}.zip`;
+  try {
+    const zipBuffer = await downloadAnchorZip(zipUrl, symbol.toUpperCase(), true);
+    if (zipBuffer && zipBuffer.length > 100) {
+      return zipUrl;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
 async function getEnrichedIpoList() {
   const rawList = await fetchNSEIpoList();
 
@@ -206,6 +221,16 @@ async function getEnrichedIpoList() {
         }
       } catch (e) {
         console.warn(`[NSE] Could not fetch detail for ${symbol}:`, e.message);
+      }
+
+      if (!anchorAvailable) {
+        const archiveZipUrl = await probeNSEAnchorArchive(symbol);
+        if (archiveZipUrl) {
+          anchorAvailable = true;
+          anchorTitle = 'Anchor Allocation Report';
+          anchorZipUrl = archiveZipUrl;
+          console.log(`[NSE] Anchor archive discovered directly for ${symbol}.`);
+        }
       }
     }
 
@@ -275,6 +300,7 @@ module.exports = {
   getNSESession,
   fetchNSEIpoList,
   fetchNSEIpoDetail,
+  probeNSEAnchorArchive,
   downloadAnchorZip,
   extractPdfFromZipBuffer,
   getEnrichedIpoList
