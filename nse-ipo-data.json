@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "23 Sept 2026, 07:35:15 pm IST",
+  "lastUpdated": "23 Sept 2026, 07:48:58 pm IST",
   "scheduleStatus": {
-    "lastRunIST": "23 Sept 2026, 07:35:15 pm IST",
+    "lastRunIST": "23 Sept 2026, 07:48:58 pm IST",
     "activeCadence": "Manual / Forced Run",
     "activeWindow": "Mon-Fri 3:00 PM - 11:00 PM IST (Saturday & Sunday OFF)",
     "isWeekend": false
@@ -9,6 +9,20 @@
   "count": 29,
   "anchorCount": 10,
   "recentLogs": [
+    {
+      "timestampIST": "23 Sept 2026, 07:48:58 pm IST",
+      "epochMs": 1790173138951,
+      "istDate": "23 Sept 2026",
+      "istTime": "07:48:58 pm IST",
+      "status": "SUCCESS",
+      "message": "Synchronized 29 unified IPOs (10 Anchor Reports Released) [Manual / Forced Run].",
+      "details": {
+        "count": 29,
+        "anchorCount": 10,
+        "activeCadence": "Manual / Forced Run",
+        "timeIST": "23 Sept 2026, 07:48:46 pm IST"
+      }
+    },
     {
       "timestampIST": "23 Sept 2026, 07:35:15 pm IST",
       "epochMs": 1790172315185,
@@ -204,20 +218,6 @@
         "activeCadence": "Manual / Forced Run",
         "timeIST": "21 Sept 2026, 11:14:46 pm IST"
       }
-    },
-    {
-      "timestampIST": "21 Sept 2026, 09:49:22 pm IST",
-      "epochMs": 1790007562399,
-      "istDate": "21 Sept 2026",
-      "istTime": "09:49:22 pm IST",
-      "status": "SUCCESS",
-      "message": "Synchronized 25 unified IPOs (10 Anchor Reports Released) [Manual / Forced Run].",
-      "details": {
-        "count": 25,
-        "anchorCount": 10,
-        "activeCadence": "Manual / Forced Run",
-        "timeIST": "21 Sept 2026, 09:49:16 pm IST"
-      }
     }
   ],
   "ipos": [
@@ -265,7 +265,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4844&type=IPO&idtype=1&status=F&IPONo=7993&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4844&type=IPO&idtype=1&status=F&IPONo=7993&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.752Z"
+      "updatedAt": "2026-09-23T14:18:52.246Z"
     },
     {
       "id": "NSE_ARMEE",
@@ -311,7 +311,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4843&type=IPO&idtype=1&status=F&IPONo=7992&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4843&type=IPO&idtype=1&status=F&IPONo=7992&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.752Z"
+      "updatedAt": "2026-09-23T14:18:52.246Z"
     },
     {
       "id": "NSE_ELEVATE",
@@ -357,7 +357,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4838&type=IPO&idtype=1&status=F&IPONo=7987&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4838&type=IPO&idtype=1&status=F&IPONo=7987&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.752Z"
+      "updatedAt": "2026-09-23T14:18:52.246Z"
     },
     {
       "id": "NSE_SWASTIKAIN",
@@ -403,7 +403,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4842&type=IPO&idtype=1&status=F&IPONo=7991&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4842&type=IPO&idtype=1&status=F&IPONo=7991&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.246Z"
     },
     {
       "id": "NSE_VARMORA",
@@ -449,7 +449,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4837&type=IPO&idtype=1&status=F&IPONo=7986&startdt=22%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4837&type=IPO&idtype=1&status=F&IPONo=7986&startdt=22%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.246Z"
     },
     {
       "id": "NSE_POOJALOGIS",
@@ -488,7 +488,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "NSE_COREIN",
@@ -527,7 +527,7 @@
         "hasBseAttachment": false
       },
       "bseData": null,
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_VIVEKANAND",
@@ -572,7 +572,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4832&type=IPO&idtype=1&status=F&IPONo=7981&startdt=21%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4832&type=IPO&idtype=1&status=F&IPONo=7981&startdt=21%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_ROBOKIDZED",
@@ -617,7 +617,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4833&type=IPO&idtype=1&status=F&IPONo=7982&startdt=21%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4833&type=IPO&idtype=1&status=F&IPONo=7982&startdt=21%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_FXMULTITEC",
@@ -662,7 +662,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4831&type=IPO&idtype=1&status=F&IPONo=7980&startdt=21%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4831&type=IPO&idtype=1&status=F&IPONo=7980&startdt=21%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_SPANDANASP",
@@ -707,7 +707,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4815&type=IPO&idtype=1&status=F&IPONo=7964&startdt=09%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4815&type=IPO&idtype=1&status=F&IPONo=7964&startdt=09%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_HIMALAYANU",
@@ -752,7 +752,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4834&type=IPO&idtype=1&status=F&IPONo=7983&startdt=22%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4834&type=IPO&idtype=1&status=F&IPONo=7983&startdt=22%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_ANANDSEAML",
@@ -797,7 +797,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4841&type=IPO&idtype=1&status=F&IPONo=7990&startdt=22%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4841&type=IPO&idtype=1&status=F&IPONo=7990&startdt=22%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_AONESTEELS",
@@ -842,7 +842,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4849&type=IPO&idtype=1&status=F&IPONo=7998&startdt=24%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4849&type=IPO&idtype=1&status=F&IPONo=7998&startdt=24%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_MONEYVIEWL",
@@ -887,7 +887,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4846&type=IPO&idtype=1&status=F&IPONo=7995&startdt=24%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4846&type=IPO&idtype=1&status=F&IPONo=7995&startdt=24%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_ROOPASCREE",
@@ -932,7 +932,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4848&type=IPO&idtype=1&status=F&IPONo=7997&startdt=24%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4848&type=IPO&idtype=1&status=F&IPONo=7997&startdt=24%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_PESHWAWHEA",
@@ -977,7 +977,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4850&type=IPO&idtype=1&status=F&IPONo=8000&startdt=24%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4850&type=IPO&idtype=1&status=F&IPONo=8000&startdt=24%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_SKOFFSETLI",
@@ -1022,7 +1022,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4836&type=IPO&idtype=1&status=F&IPONo=7984&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4836&type=IPO&idtype=1&status=F&IPONo=7984&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_LIQVDDIGIT",
@@ -1067,7 +1067,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4840&type=IPO&idtype=1&status=F&IPONo=7989&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4840&type=IPO&idtype=1&status=F&IPONo=7989&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_UNITECFIBR",
@@ -1112,7 +1112,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4839&type=IPO&idtype=1&status=F&IPONo=7988&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4839&type=IPO&idtype=1&status=F&IPONo=7988&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_SAIURJAIND",
@@ -1157,7 +1157,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4847&type=IPO&idtype=1&status=F&IPONo=7996&startdt=25%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4847&type=IPO&idtype=1&status=F&IPONo=7996&startdt=25%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_ORIENTCABL",
@@ -1202,7 +1202,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4851&type=IPO&idtype=1&status=F&IPONo=8001&startdt=25%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4851&type=IPO&idtype=1&status=F&IPONo=8001&startdt=25%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_CONTAINETE",
@@ -1247,7 +1247,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4778&type=IPO&idtype=1&status=F&IPONo=7923&startdt=31%2F08%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4778&type=IPO&idtype=1&status=F&IPONo=7923&startdt=31%2FAug%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_MANOJJEWEL",
@@ -1292,7 +1292,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4779&type=IPO&idtype=1&status=F&IPONo=7924&startdt=31%2F08%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4779&type=IPO&idtype=1&status=F&IPONo=7924&startdt=31%2FAug%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_ECS",
@@ -1337,7 +1337,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=540063&type=IPO&idtype=1&status=F&IPONo=7978&startdt=17%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=540063&type=IPO&idtype=1&status=F&IPONo=7978&startdt=17%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_CUBI FIN SER",
@@ -1382,7 +1382,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=511710&type=IPO&idtype=1&status=F&IPONo=7979&startdt=17%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=511710&type=IPO&idtype=1&status=F&IPONo=7979&startdt=17%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_SALEMERODE",
@@ -1427,7 +1427,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4821&type=IPO&idtype=1&status=F&IPONo=7972&startdt=15%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4821&type=IPO&idtype=1&status=F&IPONo=7972&startdt=15%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_INDRAYANIB",
@@ -1472,7 +1472,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4822&type=IPO&idtype=1&status=F&IPONo=7970&startdt=15%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4822&type=IPO&idtype=1&status=F&IPONo=7970&startdt=15%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     },
     {
       "id": "BSE_CENTURYEXT",
@@ -1517,7 +1517,7 @@
         "issuePageUrl": "https://www.bseindia.com/markets/publicissues/displayipo?id=4845&type=IPO&idtype=1&status=F&IPONo=7994&startdt=23%2F09%2F2026",
         "oldIssuePageUrl": "https://beta.bseindia.com/markets/publicIssues/DisplayIPO.aspx?id=4845&type=IPO&idtype=1&status=F&IPONo=7994&startdt=23%2FSep%2F2026"
       },
-      "updatedAt": "2026-09-23T14:05:14.753Z"
+      "updatedAt": "2026-09-23T14:18:52.247Z"
     }
   ]
 }

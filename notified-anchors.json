@@ -137,5 +137,11 @@
     "notifiedAtIST": "23 Sept 2026, 12:51:19 am IST",
     "notifiedAtEpoch": 1790104880639,
     "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_POOJALOGIS.zip"
+  },
+  "BSE_ROOPASCREE": {
+    "symbol": "ROOPASCREE",
+    "notifiedAtIST": "23 Sept 2026, 07:48:56 pm IST",
+    "notifiedAtEpoch": 1790173138951,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/ANCHOR_LETTER$8834d073-0ba4-469a-8fc0-471220125bce.pdf"
   }
 }
