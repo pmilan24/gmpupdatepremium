@@ -42,34 +42,79 @@ async function getNSESession() {
   }
 }
 
+function normalizeNSEIpoItem(item = {}) {
+  return {
+    ...item,
+    companyName: item.companyName || item.company || item.name || item.symbol || '',
+    symbol: item.symbol || item.htmsym || item.htmSym || '',
+    series: item.series || item.securityType || (item.isBse === '1' ? 'SME' : 'EQ'),
+    status: item.status || 'Active',
+    issueStartDate: item.issueStartDate || item.ipoStartDate || item.startDate || '—',
+    issueEndDate: item.issueEndDate || item.ipoEndDate || item.endDate || '—',
+    issuePrice: item.issuePrice || item.priceRange || item.floorPrice || '',
+    issueSize: item.issueSize || item.noOfSharesOffered || item.noOfShares || ''
+  };
+}
+
+async function fetchNSEJson(pathname, headers) {
+  const url = `${NSE_BASE_URL}${pathname}${pathname.includes('?') ? '&' : '?'}_t=${Date.now()}`;
+  const res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+  if (!res.ok) {
+    throw new Error(`NSE ${pathname} HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
 async function fetchNSEIpoList() {
   const cookies = await getNSESession();
   const apiHeaders = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
     'Referer': `${NSE_BASE_URL}/market-data/all-upcoming-issues-ipo`,
     'Cookie': cookies
   };
 
-  const url = `${NSE_BASE_URL}/api/ipo-current-issue?_t=${Date.now()}`;
-  const res = await fetch(url, { headers: apiHeaders, signal: AbortSignal.timeout(8000) });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch NSE IPO list: HTTP ${res.status}`);
+  const [currentResult, upcomingResult] = await Promise.allSettled([
+    fetchNSEJson('/api/ipo-current-issue', apiHeaders),
+    fetchNSEJson('/api/all-upcoming-issues?category=ipo', apiHeaders)
+  ]);
+
+  const currentList = currentResult.status === 'fulfilled' ? currentResult.value : [];
+  const upcomingList = upcomingResult.status === 'fulfilled' ? upcomingResult.value : [];
+
+  if (currentResult.status === 'rejected') {
+    console.warn('[NSE] ipo-current-issue failed:', currentResult.reason.message);
   }
-  return await res.json();
+  if (upcomingResult.status === 'rejected') {
+    console.warn('[NSE] all-upcoming-issues failed:', upcomingResult.reason.message);
+  }
+
+  const byKey = new Map();
+  for (const sourceItem of [...upcomingList, ...currentList]) {
+    const item = normalizeNSEIpoItem(sourceItem);
+    const key = `${(item.symbol || '').toUpperCase()}|${(item.series || '').toUpperCase()}|${(item.companyName || '').toUpperCase()}`;
+    if (!key.replace(/\|/g, '')) continue;
+    byKey.set(key, { ...(byKey.get(key) || {}), ...item });
+  }
+
+  const merged = Array.from(byKey.values());
+  console.log(`[NSE] IPO list merged: current=${currentList.length}, upcoming=${upcomingList.length}, total=${merged.length}`);
+  return merged;
 }
 
-async function fetchNSEIpoDetail(symbol, series = 'EQ') {
+async function fetchNSEIpoDetail(symbol, series = 'EQ', type = 'Active') {
   try {
     const cookies = await getNSESession();
     const apiHeaders = {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Accept': 'application/json, text/plain, */*',
-      'Referer': `${NSE_BASE_URL}/market-data/issue-information?symbol=${symbol}&series=${series}&type=Active`,
+      'Referer': `${NSE_BASE_URL}/market-data/issue-information?symbol=${symbol}&series=${series}&type=${encodeURIComponent(type)}`,
       'Cookie': cookies
     };
 
-    const url = `${NSE_BASE_URL}/api/ipo-detail?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(series)}&_t=${Date.now()}`;
+    const url = `${NSE_BASE_URL}/api/ipo-detail?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(series)}&type=${encodeURIComponent(type)}&_t=${Date.now()}`;
     const res = await fetch(url, { headers: apiHeaders, signal: AbortSignal.timeout(5000) });
     if (!res.ok) {
       return null;
@@ -139,7 +184,8 @@ async function getEnrichedIpoList() {
 
     if (symbol) {
       try {
-        const detail = await fetchNSEIpoDetail(symbol, series);
+        const detailType = /forthcoming/i.test(item.status || '') ? 'Forthcoming' : 'Active';
+        const detail = await fetchNSEIpoDetail(symbol, series, detailType);
         if (detail && detail.issueInfo && Array.isArray(detail.issueInfo.dataList)) {
           // Look for Anchor Allocation Report specifically
           const anchorItem = detail.issueInfo.dataList.find(d => 

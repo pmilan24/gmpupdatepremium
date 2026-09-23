@@ -1,4 +1,6 @@
 // merge-exchanges.js - Unify NSE and BSE IPO data with cross-exchange fallback
+const fs = require('fs');
+const path = require('path');
 const { getEnrichedIpoList: getNSEList, fetchNSEIpoDetail } = require('./fetch-nse-anchor');
 const { getEnrichedBSEIpoList, fetchBSEIpoDetail, extractAttachmentFromNoticePdf, checkAnchorDateEligibility } = require('./fetch-bse-anchor');
 
@@ -168,11 +170,75 @@ function mergeNseAndBse(nseList = [], bseList = []) {
   return unified;
 }
 
+
+function loadSnapshotExchangeItems(exchangeName) {
+  try {
+    const snapshotPath = path.join(__dirname, 'nse-ipo-data.json');
+    if (!fs.existsSync(snapshotPath)) return [];
+    const parsed = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+    const items = parsed.ipos || [];
+    return items
+      .filter(i => {
+        const platforms = i.platforms || [];
+        const exchange = i.exchange || '';
+        return platforms.includes(exchangeName) || exchange.includes(exchangeName);
+      })
+      .map(i => {
+        if (exchangeName === 'BSE') {
+          return {
+            bseIpoNo: i.bseIpoNo || i.bseData?.ipoNo,
+            scripCode: i.scripCode || i.bseData?.scripCode,
+            symbol: i.symbol,
+            companyName: i.companyName,
+            exchange: (i.exchange && i.exchange.includes('SME')) ? 'BSE SME' : 'BSE',
+            platform: i.bseData?.platform || i.platform || (i.series === 'SME' ? 'SME' : 'MainBoard'),
+            status: i.status,
+            issueStartDate: i.issueStartDate,
+            issueEndDate: i.issueEndDate,
+            issuePrice: i.issuePrice,
+            anchorEligibility: i.anchorEligibility,
+            anchor: {
+              available: !!(i.anchor && i.anchor.available && (i.anchor.source === 'BSE' || i.anchor.source === 'BOTH' || i.anchor.bseNoticePdfUrl || i.anchor.bseIntimationPdfUrl)),
+              noticeNo: i.anchor?.bseNoticeNo || null,
+              noticePdfUrl: i.anchor?.bseNoticePdfUrl || null,
+              attachmentPdfUrl: i.anchor?.bseAttachmentPdfUrl || null,
+              intimationPdfUrl: i.anchor?.bseIntimationPdfUrl || null,
+              hasIntimationAttachment: !!i.anchor?.hasBseAttachment
+            },
+            bseData: i.bseData || {}
+          };
+        }
+
+        return {
+          symbol: i.symbol,
+          companyName: i.companyName,
+          series: i.series,
+          exchange: i.exchange,
+          status: i.status,
+          issueStartDate: i.issueStartDate,
+          issueEndDate: i.issueEndDate,
+          issuePrice: i.issuePrice,
+          issueSize: i.issueSize,
+          noOfTime: i.noOfTime,
+          registrar: i.registrar,
+          anchorEligibility: i.anchorEligibility,
+          anchor: {
+            available: !!(i.anchor && i.anchor.available && (i.anchor.source === 'NSE' || i.anchor.source === 'BOTH' || i.anchor.nseZipUrl)),
+            zipUrl: i.anchor?.nseZipUrl || null,
+            pdfUrl: i.anchor?.nsePdfUrl || null
+          }
+        };
+      });
+  } catch (e) {
+    return [];
+  }
+}
+
 /**
  * Fetch and merge data from both NSE and BSE concurrently
  */
 async function getUnifiedExchangeIpos() {
-  const [nseList, bseList] = await Promise.all([
+  let [nseList, bseList] = await Promise.all([
     getNSEList().catch(err => {
       console.warn('[MERGE] NSE fetch failed:', err.message);
       return [];
@@ -182,6 +248,22 @@ async function getUnifiedExchangeIpos() {
       return [];
     })
   ]);
+
+  if (!nseList || nseList.length === 0) {
+    const fallback = loadSnapshotExchangeItems('NSE');
+    if (fallback.length > 0) {
+      console.warn(`[MERGE] NSE live list empty; using ${fallback.length} NSE items from last snapshot fallback.`);
+      nseList = fallback;
+    }
+  }
+
+  if (!bseList || bseList.length === 0) {
+    const fallback = loadSnapshotExchangeItems('BSE');
+    if (fallback.length > 0) {
+      console.warn(`[MERGE] BSE live list empty; using ${fallback.length} BSE items from last snapshot fallback.`);
+      bseList = fallback;
+    }
+  }
 
   return mergeNseAndBse(nseList, bseList);
 }
