@@ -132,16 +132,28 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
   const telegramChatId = options.telegramChatId || process.env.TELEGRAM_CHAT_ID;
   const isDryRun = options.dryRun || false;
 
-  if (!telegramToken || !telegramChatId) {
-    const availableCount = ipos.filter(ipo => ipo.anchor && ipo.anchor.available).length;
-    if (availableCount > 0) {
-      console.warn(`[NOTIFY] Telegram secrets missing; ${availableCount} available anchor report(s) will remain pending for retry.`);
-    }
-    return [];
-  }
-
   const notifiedMap = loadNotifiedSet();
   const results = [];
+
+  if (!telegramToken || !telegramChatId) {
+    for (const ipo of ipos) {
+      if (!(ipo.anchor && ipo.anchor.available)) continue;
+      const id = ipo.id || ("IPO_" + ipo.symbol);
+      if (notifiedMap[id]) continue;
+      results.push({
+        id,
+        symbol: ipo.symbol,
+        company: ipo.companyName || ipo.symbol,
+        pdfUrl: '',
+        telegram: { success: false, skipped: true, reason: 'TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not provided' },
+        retryPending: true
+      });
+    }
+    if (results.length > 0) {
+      console.warn(`[NOTIFY] Telegram secrets missing; ${results.length} available anchor report(s) will remain pending for retry.`);
+    }
+    return results;
+  }
 
   for (const ipo of ipos) {
     const isAnchorAvailable = ipo.anchor && ipo.anchor.available;
