@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-23T07:54:26.423Z",
+  "lastUpdated": "2026-09-23T07:55:26.782Z",
   "count": 15,
   "companies": [
     {
@@ -13,8 +13,8 @@
         "sHNI": 1414,
         "bHNI": 6767
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:11",
-      "totalApplications": 44257,
+      "lastUpdatedSource": "23-Sep-2026 13:25:07",
+      "totalApplications": 44366,
       "summary": {
         "totalTimes": 0.19,
         "qibTimes": 0,
@@ -49,13 +49,13 @@
         {
           "category": "Retail",
           "offered": 16743599,
-          "applied": 5568332,
+          "applied": 5581765,
           "times": 0.33
         },
         {
           "category": "Total",
           "offered": 33487080,
-          "applied": 6300784,
+          "applied": 6314217,
           "times": 0.19
         }
       ],
@@ -75,7 +75,7 @@
         {
           "category": "Retail",
           "reserved": 165778,
-          "applied": 43974,
+          "applied": 44083,
           "times": 0.27
         }
       ],
@@ -131,13 +131,13 @@
         {
           "category": "Retail",
           "offered": 247.81,
-          "applied": 82.41,
+          "applied": 82.61,
           "times": 0.33
         },
         {
           "category": "Total",
           "offered": 495.61,
-          "applied": 93.25,
+          "applied": 93.45,
           "times": 0.19
         }
       ]
@@ -153,12 +153,12 @@
         "sHNI": 1134,
         "bHNI": 5427
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:13",
-      "totalApplications": 14883,
+      "lastUpdatedSource": "23-Sep-2026 13:25:09",
+      "totalApplications": 15039,
       "summary": {
         "totalTimes": 0.52,
         "qibTimes": 0.16,
-        "hniTimes": 1.12,
+        "hniTimes": 1.14,
         "retailTimes": 0.46
       },
       "sharesBreakup": [
@@ -171,31 +171,31 @@
         {
           "category": "HNIs",
           "offered": 1304392,
-          "applied": 1462536,
-          "times": 1.12
+          "applied": 1482219,
+          "times": 1.14
         },
         {
           "category": "HNIs 10+",
           "offered": 869595,
-          "applied": 1318032,
-          "times": 1.52
+          "applied": 1334313,
+          "times": 1.53
         },
         {
           "category": "HNIs 2+",
           "offered": 434797,
-          "applied": 144504,
-          "times": 0.33
+          "applied": 147906,
+          "times": 0.34
         },
         {
           "category": "Retail",
           "offered": 3043581,
-          "applied": 1404135,
+          "applied": 1412883,
           "times": 0.46
         },
         {
           "category": "Total",
           "offered": 6087164,
-          "applied": 3136887,
+          "applied": 3165318,
           "times": 0.52
         }
       ],
@@ -203,19 +203,19 @@
         {
           "category": "HNIs (10L+)",
           "reserved": 767,
-          "applied": 187,
-          "times": 0.24
+          "applied": 190,
+          "times": 0.25
         },
         {
           "category": "HNIs (2-10L)",
           "reserved": 383,
-          "applied": 112,
-          "times": 0.29
+          "applied": 115,
+          "times": 0.3
         },
         {
           "category": "Retail",
           "reserved": 37575,
-          "applied": 14584,
+          "applied": 14734,
           "times": 0.39
         }
       ],
@@ -253,31 +253,31 @@
         {
           "category": "HNIs",
           "offered": 24.13,
-          "applied": 27.06,
-          "times": 1.12
+          "applied": 27.42,
+          "times": 1.14
         },
         {
           "category": "HNIs 10+",
           "offered": 16.09,
-          "applied": 24.38,
-          "times": 1.52
+          "applied": 24.68,
+          "times": 1.53
         },
         {
           "category": "HNIs 2+",
           "offered": 8.04,
-          "applied": 2.67,
-          "times": 0.33
+          "applied": 2.74,
+          "times": 0.34
         },
         {
           "category": "Retail",
           "offered": 56.31,
-          "applied": 25.98,
+          "applied": 26.14,
           "times": 0.46
         },
         {
           "category": "Total",
           "offered": 112.61,
-          "applied": 58.03,
+          "applied": 58.56,
           "times": 0.52
         }
       ]
@@ -293,8 +293,8 @@
         "sHNI": 574,
         "bHNI": 2788
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:13",
-      "totalApplications": 10344,
+      "lastUpdatedSource": "23-Sep-2026 13:25:09",
+      "totalApplications": 10374,
       "summary": {
         "totalTimes": 0.11,
         "qibTimes": 0.11,
@@ -329,13 +329,13 @@
         {
           "category": "Retail",
           "offered": 5801105,
-          "applied": 562110,
+          "applied": 563996,
           "times": 0.1
         },
         {
           "category": "Total",
           "offered": 31906077,
-          "applied": 3573396,
+          "applied": 3575282,
           "times": 0.11
         }
       ],
@@ -355,7 +355,7 @@
         {
           "category": "Retail",
           "reserved": 141490,
-          "applied": 10270,
+          "applied": 10300,
           "times": 0.07
         }
       ],
@@ -411,13 +411,13 @@
         {
           "category": "Retail",
           "offered": 210,
-          "applied": 20.35,
+          "applied": 20.42,
           "times": 0.1
         },
         {
           "category": "Total",
           "offered": 1155,
-          "applied": 129.36,
+          "applied": 129.43,
           "times": 0.11
         }
       ]
@@ -433,12 +433,12 @@
         "sHNI": 560,
         "bHNI": 2680
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:18",
-      "totalApplications": 27646,
+      "lastUpdatedSource": "23-Sep-2026 13:25:12",
+      "totalApplications": 27768,
       "summary": {
-        "totalTimes": 0.38,
+        "totalTimes": 0.39,
         "qibTimes": 1,
-        "hniTimes": 0.24,
+        "hniTimes": 0.27,
         "retailTimes": 0.31
       },
       "sharesBreakup": [
@@ -451,51 +451,51 @@
         {
           "category": "HNIs",
           "offered": 1800000,
-          "applied": 436120,
-          "times": 0.24
+          "applied": 493800,
+          "times": 0.27
         },
         {
           "category": "HNIs 10+",
           "offered": 1200000,
-          "applied": 325400,
-          "times": 0.27
+          "applied": 382520,
+          "times": 0.32
         },
         {
           "category": "HNIs 2+",
           "offered": 600000,
-          "applied": 110720,
-          "times": 0.18
+          "applied": 111280,
+          "times": 0.19
         },
         {
           "category": "Retail",
           "offered": 4200000,
-          "applied": 1287320,
+          "applied": 1293160,
           "times": 0.31
         },
         {
           "category": "Total",
           "offered": 6935000,
-          "applied": 2658440,
-          "times": 0.38
+          "applied": 2721960,
+          "times": 0.39
         }
       ],
       "applicationsBreakup": [
         {
           "category": "HNIs (10L+)",
           "reserved": 2143,
-          "applied": 19,
+          "applied": 20,
           "times": 0.01
         },
         {
           "category": "HNIs (2-10L)",
           "reserved": 1071,
-          "applied": 166,
-          "times": 0.15
+          "applied": 167,
+          "times": 0.16
         },
         {
           "category": "Retail",
           "reserved": 105000,
-          "applied": 27461,
+          "applied": 27581,
           "times": 0.26
         }
       ],
@@ -533,32 +533,32 @@
         {
           "category": "HNIs",
           "offered": 67.5,
-          "applied": 16.35,
-          "times": 0.24
+          "applied": 18.52,
+          "times": 0.27
         },
         {
           "category": "HNIs 10+",
           "offered": 45,
-          "applied": 12.2,
-          "times": 0.27
+          "applied": 14.34,
+          "times": 0.32
         },
         {
           "category": "HNIs 2+",
           "offered": 22.5,
-          "applied": 4.15,
-          "times": 0.18
+          "applied": 4.17,
+          "times": 0.19
         },
         {
           "category": "Retail",
           "offered": 157.5,
-          "applied": 48.27,
+          "applied": 48.49,
           "times": 0.31
         },
         {
           "category": "Total",
           "offered": 260.06,
-          "applied": 99.69,
-          "times": 0.38
+          "applied": 102.07,
+          "times": 0.39
         }
       ]
     },
@@ -573,13 +573,13 @@
         "sHNI": 1554,
         "bHNI": 7548
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:25",
-      "totalApplications": 115429,
+      "lastUpdatedSource": "23-Sep-2026 13:24:41",
+      "totalApplications": 116108,
       "summary": {
         "totalTimes": 2.72,
         "qibTimes": 0.01,
         "hniTimes": 3.36,
-        "retailTimes": 3.99
+        "retailTimes": 4
       },
       "sharesBreakup": [
         {
@@ -591,7 +591,7 @@
         {
           "category": "HNIs",
           "offered": 1687050,
-          "applied": 5664219,
+          "applied": 5672877,
           "times": 3.36
         },
         {
@@ -603,19 +603,19 @@
         {
           "category": "HNIs 2+",
           "offered": 562350,
-          "applied": 2854254,
-          "times": 5.08
+          "applied": 2862912,
+          "times": 5.09
         },
         {
           "category": "Retail",
           "offered": 3936450,
-          "applied": 15715047,
-          "times": 3.99
+          "applied": 15756561,
+          "times": 4
         },
         {
           "category": "Total",
           "offered": 7872900,
-          "applied": 21396138,
+          "applied": 21446310,
           "times": 2.72
         }
       ],
@@ -629,14 +629,14 @@
         {
           "category": "HNIs (2-10L)",
           "reserved": 362,
-          "applied": 1678,
-          "times": 4.64
+          "applied": 1683,
+          "times": 4.65
         },
         {
           "category": "Retail",
           "reserved": 35464,
-          "applied": 113399,
-          "times": 3.2
+          "applied": 114073,
+          "times": 3.22
         }
       ],
       "demandBreakupCrores": [
@@ -673,7 +673,7 @@
         {
           "category": "HNIs",
           "offered": 22.61,
-          "applied": 75.9,
+          "applied": 76.02,
           "times": 3.36
         },
         {
@@ -685,19 +685,19 @@
         {
           "category": "HNIs 2+",
           "offered": 7.54,
-          "applied": 38.25,
-          "times": 5.08
+          "applied": 38.36,
+          "times": 5.09
         },
         {
           "category": "Retail",
           "offered": 52.75,
-          "applied": 210.58,
-          "times": 3.99
+          "applied": 211.14,
+          "times": 4
         },
         {
           "category": "Total",
           "offered": 105.5,
-          "applied": 286.71,
+          "applied": 287.38,
           "times": 2.72
         }
       ]
@@ -871,7 +871,7 @@
         "sHNI": 9000,
         "bHNI": 30000
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:11",
+      "lastUpdatedSource": "23-Sep-2026 13:25:07",
       "totalApplications": 0,
       "summary": {
         "totalTimes": 1.27,
@@ -927,14 +927,14 @@
         {
           "category": "HNIs (3-10L)",
           "reserved": 32,
-          "applied": 12,
-          "times": 0.38
+          "applied": 15,
+          "times": 0.47
         },
         {
           "category": "Individual",
           "reserved": 333,
-          "applied": 359,
-          "times": 1.08
+          "applied": 369,
+          "times": 1.11
         }
       ],
       "demandBreakupCrores": []
@@ -950,8 +950,8 @@
         "sHNI": 3600,
         "bHNI": 9600
       },
-      "lastUpdatedSource": "23-Sep-2026 13:16:18",
-      "totalApplications": 170,
+      "lastUpdatedSource": "23-Sep-2026 13:24:18",
+      "totalApplications": 174,
       "summary": {
         "totalTimes": 0.27,
         "qibTimes": 0,
@@ -986,13 +986,13 @@
         {
           "category": "Individual",
           "offered": 832800,
-          "applied": 357600,
+          "applied": 360000,
           "times": 0.43
         },
         {
           "category": "Total",
           "offered": 1663200,
-          "applied": 454800,
+          "applied": 457200,
           "times": 0.27
         }
       ],
@@ -1205,7 +1205,7 @@
         "sHNI": 6000,
         "bHNI": 20000
       },
-      "lastUpdatedSource": "23-Sep-2026 13:22:25",
+      "lastUpdatedSource": "23-Sep-2026 13:24:38",
       "totalApplications": 0,
       "summary": {
         "totalTimes": 0.56,
@@ -1255,8 +1255,8 @@
         {
           "category": "HNIs (10L+)",
           "reserved": 120,
-          "applied": 83,
-          "times": 0.69
+          "applied": 85,
+          "times": 0.71
         },
         {
           "category": "HNIs (3-10L)",
@@ -1284,7 +1284,7 @@
         "sHNI": 3600,
         "bHNI": 9600
       },
-      "lastUpdatedSource": "23-Sep-2026 13:23:26",
+      "lastUpdatedSource": "23-Sep-2026 13:24:41",
       "totalApplications": 0,
       "summary": {
         "totalTimes": 0.22,
@@ -1320,7 +1320,7 @@
         {
           "category": "Individual",
           "offered": 1260000,
-          "applied": 441600,
+          "applied": 444000,
           "times": 0.35
         },
         {
@@ -1332,7 +1332,7 @@
         {
           "category": "Total",
           "offered": 2586000,
-          "applied": 559200,
+          "applied": 561600,
           "times": 0.22
         }
       ],
@@ -1352,7 +1352,7 @@
         {
           "category": "Individual",
           "reserved": 525,
-          "applied": 184,
+          "applied": 185,
           "times": 0.35
         }
       ],
@@ -1414,7 +1414,7 @@
         {
           "category": "Individual",
           "offered": 14.49,
-          "applied": 5.08,
+          "applied": 5.11,
           "times": 0.35
         },
         {
@@ -1426,7 +1426,7 @@
         {
           "category": "Total",
           "offered": 29.74,
-          "applied": 6.43,
+          "applied": 6.46,
           "times": 0.22
         }
       ]
