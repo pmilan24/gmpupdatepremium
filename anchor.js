@@ -103,14 +103,15 @@
   function getBseNoticeUrls(ipo) {
     if (!ipo) return { verifiedPdfUrl: '', logicNoticeUrl: '', issuePageUrl: '', oldIssuePageUrl: '', hasVerifiedPdf: false };
 
-    // 1. Check verified intimation PDF or notice PDF
-    const intimationPdf = ipo.anchor?.bseIntimationPdfUrl || ipo.bseIntimationPdfUrl;
+    // 1. Verified BSE anchor PDF must be the inner Attach PDF, not the outer notice shell.
+    const rawAttachmentPdf = ipo.anchor?.bseAttachmentPdfUrl || ipo.bseAttachmentPdfUrl || '';
+    const rawIntimationPdf = ipo.anchor?.bseIntimationPdfUrl || ipo.bseIntimationPdfUrl || '';
     const noticePdf = ipo.anchor?.bseNoticePdfUrl || ipo.bseNoticePdfUrl;
     const customBse = ipo.bseLink || ipo.bseUrl;
+    const intimationPdf = rawAttachmentPdf || ((ipo.anchor?.hasBseAttachment || /\/Notices\/Attach\//i.test(rawIntimationPdf)) ? rawIntimationPdf : '');
 
-    // A real verified PDF exists if anchor is flagged available and attachment/intimation is ready
-    const hasVerified = !!(ipo.anchor?.available && (intimationPdf || (noticePdf && ipo.anchor?.hasBseAttachment)));
-    const verifiedPdf = intimationPdf || (hasVerified ? noticePdf : '');
+    const hasVerified = !!(ipo.anchor?.available && intimationPdf);
+    const verifiedPdf = intimationPdf;
 
     // 2. Logic URL (constructed from notice number or expected date or custom link)
     let logicUrl = noticePdf || customBse || '';
@@ -1179,16 +1180,16 @@
       if (hasBsePlatform) {
         if (hasBseVerifiedPdf && bseUrls.verifiedPdfUrl) {
           downloadActionsHtml += `
-            <a href="${bseUrls.verifiedPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" title="Direct Download/View Verified BSE Anchor Notice PDF" onclick="event.stopPropagation();">
-              📄 BSE Notice PDF
+            <a href="${bseUrls.verifiedPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" title="Direct Download/View Verified BSE Anchor Allocation PDF" onclick="event.stopPropagation();">
+              📄 BSE Anchor PDF
             </a>
           `;
         }
         // Logic-built URL option (always accessible to open in both cases!)
         if (bseUrls.logicNoticeUrl && bseUrls.logicNoticeUrl !== bseUrls.verifiedPdfUrl) {
           downloadActionsHtml += `
-            <a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" title="Open Logic-Built BSE Notice Link (${bseUrls.logicNoticeUrl})" onclick="event.stopPropagation();">
-              📑 BSE Notice (Logic)
+            <a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" title="Open logic-built BSE notice candidate link (${bseUrls.logicNoticeUrl})" onclick="event.stopPropagation();">
+              📑 BSE Notice Candidate
             </a>
           `;
         }
@@ -1501,7 +1502,7 @@
           const doc = currentItem?.anchor?.bseIntimationPdfUrl ? 'Intimation Letter' : 'Notice';
           steps.push({ stage: 'success_bse', message: `BSE India: Verified Official Anchor ${doc} PDF is available.` });
         } else if (bseUrls.logicNoticeUrl) {
-          steps.push({ stage: 'info_bse', message: `BSE India: Direct notice candidate URL generated. Direct link is active below.` });
+          steps.push({ stage: 'info_bse', message: `BSE India: BSE notice candidate URL generated from expected date. Use it only for manual checking until a verified attachment appears.` });
         } else {
           steps.push({ stage: 'none_bse', message: `BSE India: No official Anchor notice published yet on BSE.` });
         }
@@ -1526,7 +1527,7 @@
               <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
                 ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="${validNsePdf}" download="ANCHOR_${encodeURIComponent(symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" onclick="event.stopPropagation();">📄 Download ${symbol} PDF</a>` : ''}
                 ${(hasNseAnchor && (exchange === 'NSE' || exchange === 'BOTH')) ? `<a href="https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(symbol)}.zip" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" onclick="event.stopPropagation();">💾 Official NSE ZIP</a>` : ''}
-                ${(hasBseVerified && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.verifiedPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" onclick="event.stopPropagation();">📄 BSE Notice PDF</a>` : ''}
+                ${(hasBseVerified && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.verifiedPdfUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-download" onclick="event.stopPropagation();">📄 BSE Anchor PDF</a>` : ''}
                 ${(bseUrls.issuePageUrl && (exchange === 'BSE' || exchange === 'BOTH')) ? `<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 BSE Issue Page</a>` : ''}
               </div>
             </div>
@@ -1541,7 +1542,7 @@
         if (exchange === 'BSE' || exchange === 'BOTH') {
           const links = [];
           if (bseUrls.logicNoticeUrl) {
-            links.push(`<a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice (Logic)</a>`);
+            links.push(`<a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice Candidate</a>`);
           }
           if (bseUrls.issuePageUrl) {
             links.push(`<a href="${bseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-page" onclick="event.stopPropagation();">🌐 Official BSE Issue Page (New)</a>`);

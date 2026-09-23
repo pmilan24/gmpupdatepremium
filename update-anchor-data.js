@@ -9,6 +9,34 @@ const SNAPSHOT_PATH = path.join(__dirname, 'nse-ipo-data.json');
 const LOG_PATH = path.join(__dirname, 'anchor-sync-log.json');
 const MAX_LOG_AGE_MS = 2 * 24 * 60 * 60 * 1000; // 2 days (48 hours)
 
+async function downloadBsePdf(pdfUrl) {
+  if (!pdfUrl || !pdfUrl.startsWith('http')) return null;
+  const res = await fetch(pdfUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Referer': 'https://www.bseindia.com/'
+    }
+  });
+  if (!res.ok) {
+    throw new Error(`BSE PDF download failed: HTTP ${res.status}`);
+  }
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length < 100 || !buf.slice(0, 5).toString('latin1').startsWith('%PDF')) {
+    throw new Error('BSE PDF download did not return a valid PDF');
+  }
+  return buf;
+}
+
+function getBseAttachmentUrl(item) {
+  const anchor = item && item.anchor ? item.anchor : {};
+  const candidate = anchor.bseAttachmentPdfUrl || anchor.bseIntimationPdfUrl || '';
+  if (!candidate) return '';
+  if (anchor.hasBseAttachment || /\/Notices\/Attach\//i.test(candidate)) {
+    return candidate;
+  }
+  return '';
+}
+
 function formatIndiaDateTime(date = new Date()) {
   return new Intl.DateTimeFormat('en-IN', {
     timeZone: 'Asia/Kolkata',
@@ -231,22 +259,38 @@ async function main() {
     }
 
     for (const item of ipos) {
-      if (item.anchor && item.anchor.nseZipUrl && item.symbol) {
-        const targetPdfPath = path.join(anchorsDir, `ANCHOR_${item.symbol.toUpperCase()}.pdf`);
-        if (!fs.existsSync(targetPdfPath)) {
-          try {
-            console.log(`[ANCHOR] Downloading & extracting PDF for ${item.symbol}...`);
-            const zipBuffer = await downloadAnchorZip(item.anchor.nseZipUrl, item.symbol);
-            if (zipBuffer) {
-              const pdfBuffer = extractPdfFromZipBuffer(zipBuffer);
-              if (pdfBuffer && pdfBuffer.length > 0) {
-                fs.writeFileSync(targetPdfPath, pdfBuffer);
-                console.log(`[ANCHOR] ✅ Saved extracted PDF: ${targetPdfPath} (${pdfBuffer.length} bytes)`);
-              }
-            }
-          } catch (e) {
-            console.warn(`[ANCHOR] Could not extract PDF for ${item.symbol}:`, e.message);
+      if (!item.anchor || !item.symbol) continue;
+
+      const targetPdfPath = path.join(anchorsDir, `ANCHOR_${item.symbol.toUpperCase()}.pdf`);
+      const bseAttachmentUrl = getBseAttachmentUrl(item);
+
+      if (bseAttachmentUrl && (!fs.existsSync(targetPdfPath) || item.anchor.source === 'BSE')) {
+        try {
+          console.log(`[ANCHOR] Downloading BSE attachment PDF for ${item.symbol}...`);
+          const pdfBuffer = await downloadBsePdf(bseAttachmentUrl);
+          if (pdfBuffer && pdfBuffer.length > 0) {
+            fs.writeFileSync(targetPdfPath, pdfBuffer);
+            console.log(`[ANCHOR] ✅ Saved BSE attachment PDF: ${targetPdfPath} (${pdfBuffer.length} bytes)`);
           }
+          continue;
+        } catch (e) {
+          console.warn(`[ANCHOR] Could not download BSE attachment for ${item.symbol}:`, e.message);
+        }
+      }
+
+      if (item.anchor.nseZipUrl && !fs.existsSync(targetPdfPath)) {
+        try {
+          console.log(`[ANCHOR] Downloading & extracting NSE PDF for ${item.symbol}...`);
+          const zipBuffer = await downloadAnchorZip(item.anchor.nseZipUrl, item.symbol);
+          if (zipBuffer) {
+            const pdfBuffer = extractPdfFromZipBuffer(zipBuffer);
+            if (pdfBuffer && pdfBuffer.length > 0) {
+              fs.writeFileSync(targetPdfPath, pdfBuffer);
+              console.log(`[ANCHOR] ✅ Saved extracted NSE PDF: ${targetPdfPath} (${pdfBuffer.length} bytes)`);
+            }
+          }
+        } catch (e) {
+          console.warn(`[ANCHOR] Could not extract NSE PDF for ${item.symbol}:`, e.message);
         }
       }
     }

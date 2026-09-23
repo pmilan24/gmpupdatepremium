@@ -16,6 +16,20 @@ function stripDomain(url) {
   return url.replace(/^https?:\/\/[^\/]+/i, '');
 }
 
+function toBseAbsoluteUrl(url) {
+  if (!url) return null;
+  return url.startsWith('http') ? url : `https://www.bseindia.com${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
+function getVerifiedBseAttachment(anchor = {}) {
+  const candidate = anchor.attachmentPdfUrl || anchor.intimationPdfUrl || '';
+  if (!candidate) return null;
+  if (anchor.hasIntimationAttachment || /\/Notices\/Attach\//i.test(candidate)) {
+    return toBseAbsoluteUrl(candidate);
+  }
+  return null;
+}
+
 function matchCompany(a, b) {
   if (!a || !b) return false;
   // Exact symbol match
@@ -90,8 +104,9 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         nseZipUrl: hasNseAnchor ? (nseItem.anchor.zipUrl?.startsWith('http') ? nseItem.anchor.zipUrl : `https://nsearchives.nseindia.com${nseItem.anchor.zipUrl?.startsWith('/') ? '' : '/'}${nseItem.anchor.zipUrl || `content/ipo/ANCHOR_${nseItem.symbol.toUpperCase()}.zip`}`) : null,
         nsePdfUrl: null,
         // BSE direct sources
-        bseNoticePdfUrl: hasBseAnchor && matchedBse.anchor.noticePdfUrl ? (matchedBse.anchor.noticePdfUrl.startsWith('http') ? matchedBse.anchor.noticePdfUrl : `https://www.bseindia.com${matchedBse.anchor.noticePdfUrl.startsWith('/') ? '' : '/'}${matchedBse.anchor.noticePdfUrl}`) : null,
-        bseIntimationPdfUrl: hasBseAnchor && matchedBse.anchor.intimationPdfUrl ? (matchedBse.anchor.intimationPdfUrl.startsWith('http') ? matchedBse.anchor.intimationPdfUrl : `https://www.bseindia.com${matchedBse.anchor.intimationPdfUrl.startsWith('/') ? '' : '/'}${matchedBse.anchor.intimationPdfUrl}`) : null,
+        bseNoticePdfUrl: hasBseAnchor ? toBseAbsoluteUrl(matchedBse.anchor.noticePdfUrl) : null,
+        bseAttachmentPdfUrl: hasBseAnchor ? getVerifiedBseAttachment(matchedBse.anchor) : null,
+        bseIntimationPdfUrl: hasBseAnchor ? getVerifiedBseAttachment(matchedBse.anchor) : null,
         bseNoticeNo: hasBseAnchor ? matchedBse.anchor.noticeNo : null,
         hasBseAttachment: hasBseAnchor ? matchedBse.anchor.hasIntimationAttachment : false
       },
@@ -133,8 +148,9 @@ function mergeNseAndBse(nseList = [], bseList = []) {
         source: hasBseAnchor ? 'BSE' : 'NONE',
         nseZipUrl: null,
         nsePdfUrl: null,
-        bseNoticePdfUrl: hasBseAnchor && bseItem.anchor.noticePdfUrl ? (bseItem.anchor.noticePdfUrl.startsWith('http') ? bseItem.anchor.noticePdfUrl : `https://www.bseindia.com${bseItem.anchor.noticePdfUrl.startsWith('/') ? '' : '/'}${bseItem.anchor.noticePdfUrl}`) : null,
-        bseIntimationPdfUrl: hasBseAnchor && bseItem.anchor.intimationPdfUrl ? (bseItem.anchor.intimationPdfUrl.startsWith('http') ? bseItem.anchor.intimationPdfUrl : `https://www.bseindia.com${bseItem.anchor.intimationPdfUrl.startsWith('/') ? '' : '/'}${bseItem.anchor.intimationPdfUrl}`) : null,
+        bseNoticePdfUrl: hasBseAnchor ? toBseAbsoluteUrl(bseItem.anchor.noticePdfUrl) : null,
+        bseAttachmentPdfUrl: hasBseAnchor ? getVerifiedBseAttachment(bseItem.anchor) : null,
+        bseIntimationPdfUrl: hasBseAnchor ? getVerifiedBseAttachment(bseItem.anchor) : null,
         bseNoticeNo: hasBseAnchor ? bseItem.anchor.noticeNo : null,
         hasBseAttachment: hasBseAnchor ? bseItem.anchor.hasIntimationAttachment : false
       },

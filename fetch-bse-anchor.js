@@ -159,7 +159,8 @@ async function probeSequentialBseNotices(companyName, targetDateStr, maxProbe = 
           noticeNo,
           noticeDate: targetDateStr,
           noticePdfUrl: pdfUrl,
-          intimationPdfUrl: attachUrl || pdfUrl,
+          attachmentPdfUrl: attachUrl || null,
+          intimationPdfUrl: attachUrl || null,
           hasIntimationAttachment: !!attachUrl,
           method: 'SEQUENTIAL_PROBE'
         };
@@ -200,7 +201,8 @@ async function findBSEAnchorInNotices(companyName, targetDates = []) {
               noticeNo,
               noticeDate,
               noticePdfUrl,
-              intimationPdfUrl: attachUrl || noticePdfUrl,
+              attachmentPdfUrl: attachUrl || null,
+              intimationPdfUrl: attachUrl || null,
               hasIntimationAttachment: !!attachUrl,
               subject: notice.Subject,
               method: 'LIVE_NOTICE_API'
@@ -467,8 +469,6 @@ async function getEnrichedBSEIpoList() {
           if (intimationPdfUrl) {
             attachmentCache.set(noticeNo, intimationPdfUrl);
             hasAttachment = true;
-          } else {
-            intimationPdfUrl = noticePdfUrl;
           }
         } else {
           hasAttachment = true;
@@ -479,7 +479,8 @@ async function getEnrichedBSEIpoList() {
           noticeNo,
           noticeDate,
           noticePdfUrl,
-          intimationPdfUrl,
+          attachmentPdfUrl: intimationPdfUrl || null,
+          intimationPdfUrl: intimationPdfUrl || null,
           hasIntimationAttachment: hasAttachment,
           method: 'FAST_LIVE_FEED'
         };
@@ -523,6 +524,7 @@ async function getEnrichedBSEIpoList() {
         noticeNo: null,
         noticeDate: null,
         noticePdfUrl: null,
+        attachmentPdfUrl: null,
         intimationPdfUrl: null,
         hasIntimationAttachment: false
       },

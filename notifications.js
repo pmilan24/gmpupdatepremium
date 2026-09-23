@@ -155,11 +155,13 @@ async function checkAndNotifyNewAnchors(ipos = [], options = {}) {
       return rawUrl;
     }
 
-    // Best PDF download URL
-    const candidateUrl = ipo.anchor.bseIntimationPdfUrl
-      || ipo.anchor.bseNoticePdfUrl
-      || ipo.anchor.nseZipUrl
+    // Best report URL: prefer actual BSE attachment PDF; do not send outer BSE notice as the primary report.
+    const bseAttachmentUrl = ipo.anchor.bseAttachmentPdfUrl
+      || ((ipo.anchor.hasBseAttachment || /\/Notices\/Attach\//i.test(ipo.anchor.bseIntimationPdfUrl || '')) ? ipo.anchor.bseIntimationPdfUrl : '');
+    const candidateUrl = bseAttachmentUrl
       || ipo.anchor.nsePdfUrl
+      || ipo.anchor.nseZipUrl
+      || ipo.anchor.bseNoticePdfUrl
       || "";
     const pdfUrl = resolveDownloadUrl(candidateUrl);
 
