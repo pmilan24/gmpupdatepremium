@@ -150,5 +150,12 @@
     "notifiedAtEpoch": 1790183064658,
     "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_MONEYVIEW.zip",
     "method": "sendDocument-file"
+  },
+  "NSE_AONESTEELS": {
+    "symbol": "AONESTEELS",
+    "notifiedAtIST": "23 Sept 2026, 10:36:22 pm IST",
+    "notifiedAtEpoch": 1790183185231,
+    "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_AONESTEELS.zip",
+    "method": "sendDocument-file"
   }
 }
