@@ -93,6 +93,22 @@ function compactApiResponse(value) {
   return raw.replace(/\s+/g, ' ').trim().slice(0, 500);
 }
 
+function compactJson(value, limit = 2000) {
+  return JSON.stringify(value || {}).replace(/\s+/g, ' ').trim().slice(0, limit);
+}
+
+function getCompanyTrace(comp) {
+  return {
+    companyName: comp.companyName,
+    sourceUpdated: comp.lastUpdatedSource || '',
+    totalTimes: comp.summary?.totalTimes || 0,
+    qibTimes: comp.summary?.qibTimes || 0,
+    hniTimes: comp.summary?.hniTimes || 0,
+    retailTimes: comp.summary?.retailTimes || 0,
+    totalApplications: comp.totalApplications || 0
+  };
+}
+
 function responseIndicatesSuccess(json) {
   if (!json || typeof json !== 'object' || !json.meta) return true;
   if (json.meta.status === false) return false;
@@ -486,6 +502,10 @@ async function runSyncCycle() {
       continue;
     }
 
+    const updateUrl = `${CONFIG.UPDATE_SUB_URL}/${symbol}/`;
+    log(`[API REQUEST] [${symbol}] source=${compactJson(getCompanyTrace(comp), 1000)}`, 'INFO');
+    log(`[API REQUEST] [${symbol}] PUT ${updateUrl} payload=${compactJson(payload, 4000)}`, 'INFO');
+
     let result = await pushSubscriptionUpdate(symbol, payload, activeToken);
     if (result.authFailed && SOURCES.AUTH_EMAIL && SOURCES.AUTH_PASSWORD) {
       activeToken = await getBearerToken(true);
@@ -498,11 +518,11 @@ async function runSyncCycle() {
       const subTimes = comp.summary?.totalTimes || 0;
       const retailTimes = comp.summary?.retailTimes || 0;
       const hniTimes = comp.summary?.hniTimes || 0;
-      log(`[SYNC] ✅ [${symbol}] "${comp.companyName}" -> Subscribed: ${subTimes}x (Retail: ${retailTimes}x, HNIs: ${hniTimes}x) | PUT ${CONFIG.UPDATE_SUB_URL}/${symbol}/ | HTTP ${result.status}`, 'SUCCESS');
-      log(`[API RESPONSE] [${symbol}] ${compactApiResponse(result.data || result.responseText || result.message || {})}`, 'INFO');
+      log(`[SYNC] ✅ [${symbol}] "${comp.companyName}" -> Subscribed: ${subTimes}x (Retail: ${retailTimes}x, HNIs: ${hniTimes}x) | PUT ${updateUrl} | HTTP ${result.status}`, 'SUCCESS');
+      log(`[API RESPONSE] [${symbol}] HTTP ${result.status} body=${compactApiResponse(result.data || result.responseText || result.message || {})}`, 'INFO');
     } else {
       failedCount++;
-      log(`[SYNC] ❌ [${symbol}] Update Failed: PUT ${CONFIG.UPDATE_SUB_URL}/${symbol}/ | HTTP ${result.status} ${result.apiStatus || ''} | ${compactApiResponse(result.data || result.error)}`, 'WARN');
+      log(`[SYNC] ❌ [${symbol}] Update Failed: PUT ${updateUrl} | HTTP ${result.status} ${result.apiStatus || ''} | ${compactApiResponse(result.data || result.error)}`, 'WARN');
     }
 
     await new Promise(r => setTimeout(r, 400));
