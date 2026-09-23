@@ -15,6 +15,7 @@ const CACHE_DIR = path.join(BASE_DIR, 'cache');
 const PROXY_CACHE_FILE = path.join(CACHE_DIR, 'source-proxies.json');
 const DEFAULT_BLOCK_MS = 30 * 60 * 1000;
 const PERMANENT_BLOCK_AFTER = 3;
+let cacheBustCounter = 0;
 
 function getRandomUserAgent() {
   return 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
@@ -97,7 +98,9 @@ class ProxyRotator {
   async fetchWithRotation(targetUrl, options = {}, validator = null) {
     const url = new URL(targetUrl);
     if (!['https:', 'http:'].includes(url.protocol)) throw new Error('Invalid source protocol');
-    url.searchParams.set('_t', Date.now());
+    const bust = `${Date.now()}-${process.pid || 0}-${++cacheBustCounter}`;
+    url.searchParams.set('_t', bust);
+    url.searchParams.set('_cb', bust);
     this.proxies = this.loadProxies();
     const directFallback = options.directFallback !== false;
     const routes = !options.directOnly && this.proxies.length
@@ -117,7 +120,10 @@ class ProxyRotator {
       const args = ['--silent', '--show-error', '--location', '--max-redirs', '3',
         '--proto', '=http,https', '--proto-redir', '=http,https',
         '--max-time', String((options.timeoutMs || 20000) / 1000),
-        '--user-agent', getRandomUserAgent(), '--header', 'Cache-Control: no-cache',
+        '--user-agent', getRandomUserAgent(),
+        '--header', 'Cache-Control: no-cache, no-store, max-age=0',
+        '--header', 'Pragma: no-cache',
+        '--header', 'Expires: 0',
         '--write-out', '\n%{http_code}'];
       if (route.proxy) args.push('--proxy', route.proxy);
       for (const [key, value] of Object.entries(options.headers || {})) args.push('--header', `${key}: ${value}`);

@@ -76,6 +76,18 @@ test('failed PUT does not report a successful cycle', async () => {
   await assert.rejects(sync.runSyncCycle(), /no backend updates succeeded/);
 });
 
+test('HTTP 200 PUT with API permission error is treated as failed', async () => {
+  const sync = loadSync({ scrape: async () => [company], request: async (_, options) =>
+    options.method === 'GET' ? { ok: true, json: async () => ({ data: [
+      { symbol: 'VIVEKANAND', company_name: company.companyName }
+    ] }) } : { ok: true, status: 200, text: async () => JSON.stringify({
+      meta: { status: false, status_code: 403, message: 'Validation error',
+        validations: [{ error: ['You do not have permission to perform this action.'] }] },
+      data: {}
+    }) } });
+  await assert.rejects(sync.runSyncCycle(), /no backend updates succeeded/);
+});
+
 test('proxy requests use real proxies and block denied routes', async () => {
   const calls = [];
   const context = {

@@ -62,13 +62,24 @@ async function runLocalDaemon({ once = false, force = false } = {}) {
     }
 
     lastProxyRefreshAt = await maybeRefreshProxyCache(lastProxyRefreshAt);
+    let syncError = null;
     try {
       await runSyncCycle();
-      await publishSnapshot();
-      console.log('[LOCAL] Cycle complete.');
     } catch (err) {
-      console.error(`[LOCAL] Cycle failed: ${err.message}`);
+      syncError = err;
+      console.error(`[LOCAL] Sync failed: ${err.message}`);
+    }
+    try {
+      await publishSnapshot();
+    } catch (err) {
+      console.error(`[LOCAL] Publish failed: ${err.message}`);
       if (once) throw err;
+    }
+    if (syncError) {
+      console.error('[LOCAL] Cycle finished with backend update failures; snapshot was still published when changed.');
+      if (once) throw syncError;
+    } else {
+      console.log('[LOCAL] Cycle complete.');
     }
 
     if (once) return;

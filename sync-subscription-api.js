@@ -88,6 +88,18 @@ function pruneLogFile() {
   } catch (e) {}
 }
 
+function compactApiResponse(value) {
+  const raw = typeof value === 'string' ? value : JSON.stringify(value || {});
+  return raw.replace(/\s+/g, ' ').trim().slice(0, 500);
+}
+
+function responseIndicatesSuccess(json) {
+  if (!json || typeof json !== 'object' || !json.meta) return true;
+  if (json.meta.status === false) return false;
+  if (Number(json.meta.status_code) >= 400) return false;
+  return true;
+}
+
 // --- Adaptive Indian Time (IST) Schedule Checker ---
 function getMarketScheduleStatus(now = new Date()) {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -392,10 +404,15 @@ async function pushSubscriptionUpdate(symbol, payload, activeToken) {
       json = JSON.parse(responseText);
     } catch (e) {}
 
-    if (res.ok) {
-      return { success: true, status: res.status, data: json, message: json?.meta?.message || responseText };
+    const apiAccepted = responseIndicatesSuccess(json);
+
+    if (res.ok && apiAccepted) {
+      return { success: true, status: res.status, data: json, responseText,
+        message: json?.meta?.message || json?.message || responseText };
     } else {
-      return { success: false, status: res.status, error: responseText };
+      const apiStatus = json?.meta?.status_code ? `API ${json.meta.status_code}` : `HTTP ${res.status}`;
+      const apiMessage = json?.meta?.validations?.[0]?.error?.[0] || json?.meta?.message || json?.message || responseText;
+      return { success: false, status: res.status, apiStatus, data: json, responseText, error: apiMessage };
     }
   } catch (err) {
     return { success: false, error: err.message };
@@ -475,10 +492,11 @@ async function runSyncCycle() {
       const subTimes = comp.summary?.totalTimes || 0;
       const retailTimes = comp.summary?.retailTimes || 0;
       const hniTimes = comp.summary?.hniTimes || 0;
-      log(`[SYNC] ✅ [${symbol}] "${comp.companyName}" -> Subscribed: ${subTimes}x (Retail: ${retailTimes}x, HNIs: ${hniTimes}x) | HTTP ${result.status}`, 'SUCCESS');
+      log(`[SYNC] ✅ [${symbol}] "${comp.companyName}" -> Subscribed: ${subTimes}x (Retail: ${retailTimes}x, HNIs: ${hniTimes}x) | PUT ${CONFIG.UPDATE_SUB_URL}/${symbol}/ | HTTP ${result.status}`, 'SUCCESS');
+      log(`[API RESPONSE] [${symbol}] ${compactApiResponse(result.data || result.responseText || result.message || {})}`, 'INFO');
     } else {
       failedCount++;
-      log(`[SYNC] ❌ [${symbol}] Update Failed: HTTP ${result.status} | ${result.error}`, 'WARN');
+      log(`[SYNC] ❌ [${symbol}] Update Failed: PUT ${CONFIG.UPDATE_SUB_URL}/${symbol}/ | HTTP ${result.status} ${result.apiStatus || ''} | ${compactApiResponse(result.data || result.error)}`, 'WARN');
     }
 
     await new Promise(r => setTimeout(r, 400));
