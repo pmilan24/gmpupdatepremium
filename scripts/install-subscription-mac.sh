@@ -5,6 +5,7 @@ repo_dir="/Users/milan/Documents/GitHub/gmpupdatepremium"
 label="com.gmpupdatepremium.subscription"
 plist="$HOME/Library/LaunchAgents/$label.plist"
 log_dir="$repo_dir/logs"
+node_bin="$(command -v node)"
 
 mkdir -p "$HOME/Library/LaunchAgents" "$log_dir"
 chmod +x "$repo_dir/scripts/subscription-local-runner.sh"
@@ -19,8 +20,8 @@ cat > "$plist" <<PLIST
   <string>$label</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/bin/zsh</string>
-    <string>$repo_dir/scripts/subscription-local-runner.sh</string>
+    <string>$node_bin</string>
+    <string>$repo_dir/local-subscription-runner.js</string>
   </array>
   <key>WorkingDirectory</key>
   <string>$repo_dir</string>
@@ -36,6 +37,12 @@ cat > "$plist" <<PLIST
   <dict>
     <key>PATH</key>
     <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>SOURCE_PROXY_MAX_TEST</key>
+    <string>8</string>
+    <key>SOURCE_PROXY_MAX_SAVE</key>
+    <string>3</string>
+    <key>SOURCE_PROXY_REFRESH_MINUTES</key>
+    <string>60</string>
   </dict>
 </dict>
 </plist>
