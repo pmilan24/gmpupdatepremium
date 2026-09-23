@@ -141,27 +141,48 @@ headroom in the anonymous API quota; the backend sync still runs every minute.
 Manual refresh requests current repository contents. If GitHub rate-limits reads,
 the page shows a saved-data warning and respects the API reset time.
 
-`update-subscription.yml` starts a bounded **five-hour Actions session**.
-While running, it fetches direct from `SUB_DASH_URL`, updates the backend API and
-commits a new snapshot each minute, weekdays 09:55–17:00 IST. Cadence becomes ten
-minutes from 17:00–18:00 IST, then the session stops. Scheduled triggers every
-five minutes during market hours queue a replacement session; concurrency keeps
-only one subscription session active. GitHub can delay or drop scheduled starts,
-so this is best-effort freshness, not guaranteed continuous hosting.
+Subscription live sync now runs from the Mac with `launchd`. GitHub Actions is
+kept as a manual backup only because scheduled Actions can be delayed or missed.
+Install/start the Mac runner with:
 
-Use **Start live updates → Run workflow** on GitHub to start a session manually.
-A manual start outside market hours performs one update only. Run
-`node sync-subscription-api.js --force --once` for a local one-time sync, or
-`node sync-subscription-api.js` on an always-running host for its normal daemon.
+```bash
+chmod +x scripts/*.sh
+scripts/install-subscription-mac.sh
+```
 
-Subscription fetching ignores proxy configuration and uses direct HTTPS. If the
-primary source fails or returns invalid content, it tries `SUB_WEB_URL`. Each
-source has independent cooldown state. A blocked fallback is reported and the
-last valid snapshot is retained; access restrictions are not bypassed.
+Stop it with:
 
-`Deploy Live Website` publishes public assets on code pushes and after data
-workflows finish. Pages uses **GitHub Actions** as its publishing source. Source
-URLs, backend credentials and server-side scripts are not included in the site.
+```bash
+scripts/uninstall-subscription-mac.sh
+```
+
+The local runner reads `.env`, fetches `SUB_DASH_URL` with `SUB_WEB_URL` as the
+fallback, updates the backend API with the same `GET` and `PUT` flow as before,
+commits `subscription-data.json`, and pushes `main`. During active subscription
+hours it runs every minute. From 17:00–18:00 IST it runs every ten minutes.
+
+Proxy rotation is enabled by default for source fetching. Set `SOURCE_PROXY_URLS`
+in `.env` for your own stable proxies, or let `manage-source-proxies.js` refresh
+`cache/source-proxies.json` from public proxy lists. Dead routes are cooled down.
+Routes that return 403/429 or fail repeatedly are marked blocked and skipped in
+future cycles. Set `SOURCE_DIRECT_ONLY=true` in `.env` to bypass proxies and use
+direct HTTPS only.
+
+Useful local commands:
+
+```bash
+node manage-source-proxies.js
+node local-subscription-runner.js --force --once
+tail -f logs/subscription-local.out.log
+tail -f logs/subscription-local.err.log
+```
+
+Use **Start live updates → Run workflow** on GitHub only as a manual backup.
+
+`Deploy Live Website` publishes public assets on code pushes. Data-only snapshot
+pushes are ignored by Pages deployment because `subscription.html` reads the
+current branch snapshot through GitHub's public contents API. Source URLs,
+backend credentials and server-side scripts are not included in the site.
 Backend errors are logged as failures; valid source data can still be published
 when a backend update fails. The session retries on its next interval.
 

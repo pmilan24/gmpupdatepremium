@@ -313,16 +313,18 @@ function parseHtmlSubscription(html) {
 async function fetchLiveSubscription() {
   const urls = [...new Set([SOURCES.SUB_DASH_URL, SOURCES.SUB_WEB_URL].filter(Boolean))];
   if (!urls.length) throw new Error('No subscription source configured.');
+  const env = typeof process !== 'undefined' ? process.env || {} : {};
+  const directOnly = String(env.SOURCE_DIRECT_ONLY || '').toLowerCase() === 'true';
   for (let i = 0; i < urls.length; i++) {
     try {
       const result = await proxyRotator.fetchWithRotation(urls[i],
-        { timeoutMs: 20000, directOnly: true }, html => {
+        { timeoutMs: 20000, directOnly, maxAttempts: Number(env.SOURCE_PROXY_ATTEMPTS || 5) }, html => {
           const parsed = parseHtmlSubscription(html);
           return parsed.length > 0 && parsed.every(company =>
             company.companyName && !/^IPO \d+$/.test(company.companyName) && company.sharesBreakup.length > 0);
         });
       const companies = parseHtmlSubscription(result.text);
-      console.log(`[SUBSCRIPTION] Parsed ${companies.length} companies directly from ${i === 0 ? 'primary' : 'alternate'} source.`);
+      console.log(`[SUBSCRIPTION] Parsed ${companies.length} companies via ${result.strategy} from ${i === 0 ? 'primary' : 'alternate'} source.`);
       return companies;
     } catch (err) {
       console.warn(`[SUBSCRIPTION] ${i === 0 ? 'Primary' : 'Alternate'} source unavailable: ${err.message}`);

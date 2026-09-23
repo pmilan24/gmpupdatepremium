@@ -76,11 +76,13 @@ test('failed PUT does not report a successful cycle', async () => {
   await assert.rejects(sync.runSyncCycle(), /no backend updates succeeded/);
 });
 
-test('proxy requests use a real proxy and stop on rate limits', async () => {
+test('proxy requests use real proxies and block denied routes', async () => {
   const calls = [];
   const context = {
     require(name) {
       if (name === './sources') return {};
+      if (name === 'fs') return { readFileSync() { throw new Error('no cache'); },
+        mkdirSync() {}, writeFileSync() {} };
       if (name === 'child_process') return { execFile: (file, args, opts, callback) => {
         calls.push({ file, args }); callback(null, { stdout: 'limited\n429' });
       } };
@@ -92,8 +94,9 @@ test('proxy requests use a real proxy and stop on rate limits', async () => {
     module: { exports: {} }, URL, Date, console: { warn() {} }
   };
   vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../proxy-rotator.js'), 'utf8'), context);
-  await assert.rejects(context.module.exports.proxyRotator.fetchWithRotation('https://source.test/'), /429/);
-  assert.equal(calls.length, 1);
+  await assert.rejects(context.module.exports.proxyRotator.fetchWithRotation('https://source.test/'), /No healthy/);
+  assert.equal(calls.length, 3);
   assert.equal(calls[0].args[calls[0].args.indexOf('--proxy') + 1], 'http://proxy1.test:8080');
   assert.equal(calls[0].args.some(arg => /X-Forwarded|insecure/.test(arg)), false);
+  assert.equal(context.module.exports.proxyRotator.permanentBlocks.has('http://proxy1.test:8080'), true);
 });

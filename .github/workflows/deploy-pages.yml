@@ -2,6 +2,9 @@ name: Deploy Live Website
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'subscription-data.json'
+      - 'subscription-sync.log'
   workflow_dispatch:
   workflow_run:
     workflows:

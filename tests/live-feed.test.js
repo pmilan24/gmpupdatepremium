@@ -51,7 +51,7 @@ test('primary failure uses alternate direct source with validated content', asyn
   const context = { require(name) {
     if (name === './sources') return { SUB_DASH_URL: 'https://primary.test/', SUB_WEB_URL: 'https://alternate.test/' };
     if (name === './proxy-rotator') return { proxyRotator: { async fetchWithRotation(url, options, validate) {
-      calls.push(url); assert.equal(options.directOnly, true);
+      calls.push(url); assert.equal(options.directOnly, false);
       if (calls.length === 1) throw new Error('timeout');
       assert.equal(validate(html), true); return { text: html, strategy: 'direct' };
     } } };
