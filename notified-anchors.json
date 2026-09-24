@@ -157,5 +157,26 @@
     "notifiedAtEpoch": 1790183185231,
     "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_AONESTEELS.zip",
     "method": "sendDocument-file"
+  },
+  "NSE_GERMAN": {
+    "symbol": "GERMAN",
+    "notifiedAtIST": "24 Sept 2026, 07:47:52 pm IST",
+    "notifiedAtEpoch": 1790259474163,
+    "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_GERMAN.zip",
+    "method": "sendDocument-file"
+  },
+  "NSE_HIMALAYAN": {
+    "symbol": "HIMALAYAN",
+    "notifiedAtIST": "24 Sept 2026, 07:47:54 pm IST",
+    "notifiedAtEpoch": 1790259476215,
+    "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_HIMALAYAN.zip",
+    "method": "sendDocument-file"
+  },
+  "NSE_BMISL": {
+    "symbol": "BMISL",
+    "notifiedAtIST": "24 Sept 2026, 07:47:56 pm IST",
+    "notifiedAtEpoch": 1790259477158,
+    "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_BMISL.zip",
+    "method": "sendDocument-file"
   }
 }
