@@ -192,5 +192,12 @@
     "notifiedAtEpoch": 1790266981872,
     "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_ACEVECTOR.zip",
     "method": "sendDocument-file"
+  },
+  "NSE_RUNWALENTR": {
+    "symbol": "RUNWALENTR",
+    "notifiedAtIST": "24 Sept 2026, 11:00:39 pm IST",
+    "notifiedAtEpoch": 1790271042080,
+    "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_RUNWALENTR.zip",
+    "method": "sendDocument-file"
   }
 }
