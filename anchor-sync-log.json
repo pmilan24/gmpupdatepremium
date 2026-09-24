@@ -1,5 +1,21 @@
 [
   {
+    "timestampIST": "25 Sept 2026, 01:05:52 am IST",
+    "epochMs": 1790278552214,
+    "istDate": "25 Sept 2026",
+    "istTime": "01:05:52 am IST",
+    "status": "SUCCESS",
+    "message": "Synchronized 37 unified IPOs (18 Anchor Reports Released) [Manual / Forced Run].",
+    "details": {
+      "count": 37,
+      "anchorCount": 18,
+      "activeCadence": "Manual / Forced Run",
+      "telegramSentCount": 0,
+      "telegramFailedCount": 0,
+      "timeIST": "25 Sept 2026, 01:05:40 am IST"
+    }
+  },
+  {
     "timestampIST": "24 Sept 2026, 11:10:04 pm IST",
     "epochMs": 1790271604051,
     "istDate": "24 Sept 2026",
@@ -257,20 +273,6 @@
       "anchorCount": 9,
       "activeCadence": "Manual / Forced Run",
       "timeIST": "23 Sept 2026, 01:35:36 am IST"
-    }
-  },
-  {
-    "timestampIST": "23 Sept 2026, 12:51:20 am IST",
-    "epochMs": 1790104880640,
-    "istDate": "23 Sept 2026",
-    "istTime": "12:51:20 am IST",
-    "status": "SUCCESS",
-    "message": "Synchronized 28 unified IPOs (9 Anchor Reports Released) [Manual / Forced Run].",
-    "details": {
-      "count": 28,
-      "anchorCount": 9,
-      "activeCadence": "Manual / Forced Run",
-      "timeIST": "23 Sept 2026, 12:50:59 am IST"
     }
   }
 ]
