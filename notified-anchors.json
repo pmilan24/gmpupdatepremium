@@ -213,5 +213,12 @@
     "notifiedAtEpoch": 1790347287191,
     "pdfUrl": "https://nsearchives.nseindia.com/content/ipo/ANCHOR_SHAHINVEST.zip",
     "method": "sendDocument-file"
+  },
+  "BSE_VARMORA": {
+    "symbol": "VARMORA",
+    "notifiedAtIST": "26 Sept 2026, 01:10:14 am IST",
+    "notifiedAtEpoch": 1790365215799,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$029f5575-a9fd-48de-b7ba-b6da4192f049.pdf",
+    "method": "sendDocument-file"
   }
 }
