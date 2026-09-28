@@ -157,6 +157,34 @@
     return urls.verifiedPdfUrl || urls.logicNoticeUrl || urls.issuePageUrl || '';
   }
 
+  function getNseAnchorUrls(ipo) {
+    if (!ipo) return { verifiedPdfUrl: '', verifiedZipUrl: '', logicZipUrl: '', logicCircularUrl: '', issuePageUrl: '', hasVerifiedAnchor: false };
+
+    const symbol = (ipo.symbol || '').toUpperCase().trim();
+    const hasVerified = !!(ipo.anchor && ipo.anchor.available && (ipo.anchor.nseZipUrl || ipo.anchor.source === 'NSE' || ipo.anchor.source === 'BOTH'));
+
+    // 1. Verified PDF and ZIP
+    const rawPdf = ipo.anchor?.pdfUrl || (hasVerified ? `./anchors/ANCHOR_${symbol}.pdf` : '');
+    const verifiedPdfUrl = rawPdf ? resolveAnchorLink(rawPdf, 'nse-pdf', symbol) : '';
+    const verifiedZipUrl = ipo.anchor?.nseZipUrl ? resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse', symbol) : '';
+
+    // 2. Logic-built direct Archive URL (ANCHOR_<SYMBOL>.zip on nsearchives)
+    const logicZipUrl = symbol ? `https://nsearchives.nseindia.com/content/ipo/ANCHOR_${encodeURIComponent(symbol)}.zip` : '';
+
+    // 3. NSE Official Issue Page / Circular candidates
+    const issuePageUrl = symbol ? `https://www.nseindia.com/market-data/issue-information?symbol=${encodeURIComponent(symbol)}&series=${encodeURIComponent(ipo.series || 'EQ')}&type=Active` : '';
+    const logicCircularUrl = symbol ? `https://nsearchives.nseindia.com/content/circulars/IPOCIRCULAR_${encodeURIComponent(symbol)}.pdf` : '';
+
+    return {
+      verifiedPdfUrl,
+      verifiedZipUrl,
+      logicZipUrl,
+      logicCircularUrl,
+      issuePageUrl,
+      hasVerifiedAnchor: hasVerified && !!(verifiedPdfUrl || verifiedZipUrl)
+    };
+  }
+
   const ANCHOR_STORAGE_KEY = 'unified_anchor_history_v1';
   const API_URL = '/api/exchange/ipo-list';
   const FALLBACK_URL = './nse-ipo-data.json';
@@ -1104,15 +1132,39 @@
 
       // 1. Download Actions: strictly by platform
       let downloadActionsHtml = '';
-      if (hasNsePlatform && hasNseVerifiedPdf) {
-        downloadActionsHtml += `
-          <a href="${validNsePdf}" download="ANCHOR_${encodeURIComponent(ipo.symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" title="Download Official NSE Anchor PDF" onclick="event.stopPropagation();">
-            📄 NSE PDF
-          </a>
-          <a href="${resolveAnchorLink(ipo.anchor.nseZipUrl, 'nse', ipo.symbol)}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" title="Download Official NSE Archive (ZIP)" onclick="event.stopPropagation();">
-            💾 NSE ZIP
-          </a>
-        `;
+      const nseUrls = getNseAnchorUrls(ipo);
+
+      if (hasNsePlatform) {
+        if (hasNseVerifiedPdf && validNsePdf) {
+          downloadActionsHtml += `
+            <a href="${validNsePdf}" download="ANCHOR_${encodeURIComponent(ipo.symbol)}.pdf" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-download" title="Download Official NSE Anchor PDF" onclick="event.stopPropagation();">
+              📄 NSE PDF
+            </a>
+          `;
+        }
+        if (hasNseVerifiedPdf && nseUrls.verifiedZipUrl) {
+          downloadActionsHtml += `
+            <a href="${nseUrls.verifiedZipUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-zip" title="Download Official NSE Archive (ZIP)" onclick="event.stopPropagation();">
+              💾 NSE ZIP
+            </a>
+          `;
+        }
+        // Direct logic-built NSE Archive ZIP URL (accessible even before website marks verified)
+        if (nseUrls.logicZipUrl && (!hasNseVerifiedPdf || nseUrls.logicZipUrl !== nseUrls.verifiedZipUrl)) {
+          downloadActionsHtml += `
+            <a href="${nseUrls.logicZipUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-logic" title="Open direct candidate NSE Archive link (${nseUrls.logicZipUrl})" onclick="event.stopPropagation();">
+              📦 NSE Archive Candidate
+            </a>
+          `;
+        }
+        // Official NSE Issue Info Page
+        if (nseUrls.issuePageUrl) {
+          downloadActionsHtml += `
+            <a href="${nseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-page" title="Open Official NSE Issue Info Page" onclick="event.stopPropagation();">
+              🌐 NSE Issue Page
+            </a>
+          `;
+        }
       }
 
       if (hasBsePlatform) {
@@ -1466,6 +1518,14 @@
         renderUI();
       } else {
         const links = [];
+        const nseUrls = getNseAnchorUrls(updatedItem);
+
+        if ((exchange === 'NSE' || exchange === 'BOTH') && nseUrls.logicZipUrl) {
+          links.push(`<a href="${nseUrls.logicZipUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-logic" onclick="event.stopPropagation();">📦 Open NSE Archive Candidate</a>`);
+        }
+        if ((exchange === 'NSE' || exchange === 'BOTH') && nseUrls.issuePageUrl) {
+          links.push(`<a href="${nseUrls.issuePageUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-nse-page" onclick="event.stopPropagation();">🌐 Official NSE Issue Page</a>`);
+        }
         if ((exchange === 'BSE' || exchange === 'BOTH') && bseUrls.logicNoticeUrl) {
           links.push(`<a href="${bseUrls.logicNoticeUrl}" target="_blank" rel="noopener noreferrer" class="btn-anchor-download btn-bse-logic" onclick="event.stopPropagation();">📑 Open BSE Notice Candidate</a>`);
         }

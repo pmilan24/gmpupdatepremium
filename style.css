@@ -2101,6 +2101,30 @@ body {
   color: #e9d5ff !important;
 }
 
+.btn-nse-logic {
+  background: rgba(168, 85, 247, 0.15) !important;
+  color: #d8b4fe !important;
+  border: 1px solid rgba(168, 85, 247, 0.4) !important;
+}
+
+.btn-nse-logic:hover {
+  background: rgba(168, 85, 247, 0.3) !important;
+  color: #fff !important;
+  border-color: #c084fc !important;
+}
+
+.btn-nse-page {
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #7dd3fc !important;
+  border: 1px solid rgba(14, 165, 233, 0.4) !important;
+}
+
+.btn-nse-page:hover {
+  background: rgba(14, 165, 233, 0.3) !important;
+  color: #fff !important;
+  border-color: #38bdf8 !important;
+}
+
 .btn-bse-logic {
   background: rgba(59, 130, 246, 0.15) !important;
   color: #93c5fd !important;
