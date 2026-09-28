@@ -220,5 +220,47 @@
     "notifiedAtEpoch": 1790365215799,
     "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$029f5575-a9fd-48de-b7ba-b6da4192f049.pdf",
     "method": "sendDocument-file"
+  },
+  "BSE_SAIURJAIND": {
+    "symbol": "SAIURJAIND",
+    "notifiedAtIST": "28 Sept 2026, 11:16:11 pm IST",
+    "notifiedAtEpoch": 1790617574228,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Company_Anchor_Letter$fbc155cb-a389-409c-b48b-f82ca79d09c6.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_BLACKOPALC": {
+    "symbol": "BLACKOPALC",
+    "notifiedAtIST": "28 Sept 2026, 11:16:14 pm IST",
+    "notifiedAtEpoch": 1790617575527,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/ANCHOR_ALLOCATION$1e3a53db-a607-4a4f-8341-648b3a8617cb.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_EVERESTIMS": {
+    "symbol": "EVERESTIMS",
+    "notifiedAtIST": "28 Sept 2026, 11:16:15 pm IST",
+    "notifiedAtEpoch": 1790617576744,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor_Allocation_Letter_Signed$5c462e7b-d10b-4943-91fc-70f9d789ab02.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_VANSELECTR": {
+    "symbol": "VANSELECTR",
+    "notifiedAtIST": "28 Sept 2026, 11:16:16 pm IST",
+    "notifiedAtEpoch": 1790617578315,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Company_Letter_Anchor_Allocation_VANS$5d08c008-e86c-41ac-b478-b841a905a843.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_ACMEINDIAI": {
+    "symbol": "ACMEINDIAI",
+    "notifiedAtIST": "28 Sept 2026, 11:16:18 pm IST",
+    "notifiedAtEpoch": 1790617579575,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Acme_Anchor_letter$f9da295b-a2a4-45d7-a2a5-e873162d7aab.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_SHREETNBPO": {
+    "symbol": "SHREETNBPO",
+    "notifiedAtIST": "28 Sept 2026, 11:16:19 pm IST",
+    "notifiedAtEpoch": 1790617580837,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/AnchorIntimationletter$039a2e9d-b72c-4418-8e87-53ed59ef6ed2.pdf",
+    "method": "sendDocument-file"
   }
 }
