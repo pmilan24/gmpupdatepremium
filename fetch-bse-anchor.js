@@ -6,10 +6,16 @@ const BSE_BASE_URL = SOURCES.BSE_BASE_URL;
 const BSE_API_URL = SOURCES.BSE_API_URL;
 
 const BSE_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
   'Origin': BSE_BASE_URL,
   'Referer': `${BSE_BASE_URL}/`,
-  'Accept': 'application/json, text/plain, */*'
+  'Accept': 'application/json, text/plain, */*',
+  'sec-ch-ua': '"Chromium";v="128", "Not;A=Brand";v="24", "Google Chrome";v="128"',
+  'sec-ch-ua-mobile': '?0',
+  'sec-ch-ua-platform': '"macOS"',
+  'Sec-Fetch-Site': 'same-site',
+  'Sec-Fetch-Mode': 'cors',
+  'Sec-Fetch-Dest': 'empty'
 };
 
 // Generic HTTPS GET returning Buffer or String with insecureHTTPParser: true
@@ -222,10 +228,7 @@ async function findBSEAnchorInNotices(companyName, targetDates = []) {
 async function extractAttachmentFromNoticePdf(noticePdfUrl) {
   if (!noticePdfUrl) return null;
   try {
-    const pdfBuf = await httpsGet(noticePdfUrl, {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      'Referer': `${BSE_BASE_URL}/`
-    }, true);
+    const pdfBuf = await httpsGet(noticePdfUrl, BSE_HEADERS, true);
 
     const pdfStr = pdfBuf.toString('latin1');
     // Look for /URI attachments

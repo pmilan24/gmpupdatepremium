@@ -676,19 +676,30 @@
               ipoList = snapList;
               processAnchorDiff(ipoList);
               renderUI();
+              const snapTotalAnchors = ipoList.filter(i => i.anchor && i.anchor.available).length;
+              const snapNse = ipoList.filter(i => (i.platforms && i.platforms.includes('NSE')) || (i.exchange && i.exchange.includes('NSE'))).length;
+              const snapBse = ipoList.filter(i => (i.platforms && i.platforms.includes('BSE')) || (i.exchange && i.exchange.includes('BSE'))).length;
+              const snapTime = fbData.lastUpdated ? (fbData.lastUpdated.includes('IST') ? fbData.lastUpdated : formatIndiaDateTime(new Date(fbData.lastUpdated))) : formatIndiaTime(new Date());
+
               updateProgressTracker({
                 stageBadge: 'Complete',
-                title: `⚡ Live Exchange Snapshot Loaded (${ipoList.length} IPOs)`,
-                desc: 'Loaded latest unified exchange issues from GitHub snapshot.',
+                title: `⚡ Live Exchange Snapshot Loaded (${ipoList.length} IPOs · ${snapTotalAnchors} Anchors)`,
+                desc: `Loaded latest unified exchange issues from GitHub snapshot: NSE (${snapNse}) + BSE (${snapBse}).`,
                 progressPercent: 100,
-                step1Status: 'done',
-                step1Text: 'Snapshot Loaded',
-                step2Status: 'done',
-                step2Text: 'Snapshot Loaded',
+                step1Status: snapNse > 0 ? 'done' : 'warning',
+                step1Text: `✅ ${snapNse} NSE`,
+                step2Status: snapBse > 0 ? 'done' : 'warning',
+                step2Text: `✅ ${snapBse} BSE`,
                 step3Status: 'done',
-                step3Text: 'Ready',
+                step3Text: `✅ ${ipoList.length} Unified`,
                 isComplete: true
               });
+
+              if (els.lastUpdatedText) {
+                els.lastUpdatedText.textContent = `${snapTime} · Live Snapshot`;
+                els.lastUpdatedText.style.color = '';
+              }
+
               if (els.progressTracker) {
                 setTimeout(() => {
                   els.progressTracker.style.display = 'none';
