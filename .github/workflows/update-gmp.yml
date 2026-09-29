@@ -1,6 +1,10 @@
 name: Update Market GMP Data
 
-  workflow_dispatch: # Manual trigger only (Render server handles live data)
+on:
+  schedule:
+    # Run every 5 minutes, Monday to Friday only (IST market days)
+    - cron: '*/5 * * * 1-5'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
 
 permissions:
   contents: write
