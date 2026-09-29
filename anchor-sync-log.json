@@ -1,5 +1,21 @@
 [
   {
+    "timestampIST": "30 Sept 2026, 02:41:48 am IST",
+    "epochMs": 1790716308228,
+    "istDate": "30 Sept 2026",
+    "istTime": "02:41:48 am IST",
+    "status": "SUCCESS",
+    "message": "Synchronized 36 unified IPOs (12 Anchor Reports Released) [Manual / Forced Run].",
+    "details": {
+      "count": 36,
+      "anchorCount": 12,
+      "activeCadence": "Manual / Forced Run",
+      "telegramSentCount": 0,
+      "telegramFailedCount": 0,
+      "timeIST": "30 Sept 2026, 02:41:36 am IST"
+    }
+  },
+  {
     "timestampIST": "30 Sept 2026, 02:34:00 am IST",
     "epochMs": 1790715840879,
     "istDate": "30 Sept 2026",
