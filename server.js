@@ -235,6 +235,14 @@ const server = http.createServer(async (req, res) => {
   // Parse URL
   const parsedUrl = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = parsedUrl.pathname;
+
+  // --- HEALTH / PING ROUTE (For UptimeRobot / cron-job.org / Render Keep-Alive) ---
+  if (pathname === '/health' || pathname === '/ping') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() }));
+    return;
+  }
+
   const force = parsedUrl.searchParams.get('force') === '1';
   if (force) clearExchangeCaches();
 

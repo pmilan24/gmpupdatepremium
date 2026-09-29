@@ -1,0 +1,21 @@
+{
+  "name": "gmpupdatepremium",
+  "version": "1.0.0",
+  "description": "Multi-Exchange IPO & GMP Tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ipo",
+    "gmp",
+    "nse",
+    "bse"
+  ],
+  "author": "",
+  "license": "ISC"
+}
