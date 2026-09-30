@@ -262,5 +262,33 @@
     "notifiedAtEpoch": 1790617580837,
     "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/AnchorIntimationletter$039a2e9d-b72c-4418-8e87-53ed59ef6ed2.pdf",
     "method": "sendDocument-file"
+  },
+  "BSE_GERMAN": {
+    "symbol": "GERMAN",
+    "notifiedAtIST": "01 Oct 2026, 02:12:40 am IST",
+    "notifiedAtEpoch": 1790800962388,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor$e05285fd-0b21-49a9-b6f2-594610d8a6d6.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_RUNWALENTR": {
+    "symbol": "RUNWALENTR",
+    "notifiedAtIST": "01 Oct 2026, 02:12:42 am IST",
+    "notifiedAtEpoch": 1790800964856,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Allocation$0994af61-acbc-48cc-9aee-5d4d5865c1b9.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_ACEVECTOR": {
+    "symbol": "ACEVECTOR",
+    "notifiedAtIST": "01 Oct 2026, 02:12:44 am IST",
+    "notifiedAtEpoch": 1790800965999,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$4070299f-649e-4da3-af17-f47d77c65290.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_ORIENTCABL": {
+    "symbol": "ORIENTCABL",
+    "notifiedAtIST": "01 Oct 2026, 02:12:45 am IST",
+    "notifiedAtEpoch": 1790800967798,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor$4ef65653-d026-40f6-98c6-99738206f5ca.pdf",
+    "method": "sendDocument-file"
   }
 }
