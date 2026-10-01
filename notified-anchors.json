@@ -290,5 +290,19 @@
     "notifiedAtEpoch": 1790800967798,
     "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/Anchor$4ef65653-d026-40f6-98c6-99738206f5ca.pdf",
     "method": "sendDocument-file"
+  },
+  "BSE_SHAHINVEST": {
+    "symbol": "SHAHINVEST",
+    "notifiedAtIST": "01 Oct 2026, 10:09:27 pm IST",
+    "notifiedAtEpoch": 1790872770169,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$6a4ce778-b691-49cf-b49a-b920ac602484.pdf",
+    "method": "sendDocument-file"
+  },
+  "BSE_SRIT": {
+    "symbol": "SRIT",
+    "notifiedAtIST": "01 Oct 2026, 10:09:30 pm IST",
+    "notifiedAtEpoch": 1790872772060,
+    "pdfUrl": "https://www.bseindia.com/downloads/UploadDocs/Notices/Attach/anchor$832dd5eb-a38e-4589-8754-c22b3f05a2ad.pdf",
+    "method": "sendDocument-file"
   }
 }
